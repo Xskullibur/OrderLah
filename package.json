@@ -1,0 +1,16 @@
+{
+    "name": "OrderLah",
+    "version": "1.0.0",
+    "description": "An ordering system which enable seamless transactions between the customer and server by minimizing interactions.",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "ordering",
+      "system",
+      "OOADP"
+    ],
+    "author": "Zi Heng, Hsien Xiang, Alson, Bryan",
+    "license": "ISC"
+}
