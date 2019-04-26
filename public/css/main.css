@@ -9802,10 +9802,11 @@ h3 {
 }
 
 /* NavBar */
-.navbar .navbar-nav {
-  margin: auto;
+@media (min-width: 599px) {
+  .navbar .navbar-nav {
+    margin: auto;
+  }
 }
-
 .nav-fixed {
   transition: all 0.4s ease-in;
 }

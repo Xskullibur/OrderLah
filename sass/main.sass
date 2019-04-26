@@ -37,9 +37,16 @@ $body-bg: #f8f9fa
 
 /* NavBar */
 
-.navbar 
-    .navbar-nav 
-        margin: auto
+=for-desktop-only
+  @media (min-width: 599px)  
+      @content 
+
+
+@include for-desktop-only
+    .navbar 
+        .navbar-nav 
+            margin: auto
+
 
 
 
