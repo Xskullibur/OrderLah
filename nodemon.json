@@ -1,0 +1,5 @@
+{
+    "events": {
+        "exit": "sass --no-source-map sass:public/css"
+    }
+}

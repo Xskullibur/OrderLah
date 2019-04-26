@@ -1,0 +1,31 @@
+
+$body-bg: #F28C8C
+$gray-100: #FFFFFF
+$body-color: #FFFFFF
+    
+@import "../node_modules/bootstrap/scss/bootstrap"
+
+=fixed-size($size)
+  width: $size
+  height: $size
+
+
+/* Logo */
+.logo-fixed 
+    +fixed-size(50px)
+    transition: all .4s ease-in
+
+
+.logo-fixed.grow-scroll-growed 
+    +fixed-size(100px)
+
+
+
+/* NavBar */
+
+.nav-fixed 
+    transition: all .4s ease-in
+
+
+.nav-fixed.grow-scroll-growed 
+    min-height: 130px !important

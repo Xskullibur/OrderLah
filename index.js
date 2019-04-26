@@ -15,7 +15,7 @@ const exphbs = require('express-handlebars')
 const app = express()
 
 //Setup handlebars
-app.engine('handlebars', exphbs({defaultLayout: 'pratt_main_layout'}))
+app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
 app.set('view engine', 'handlebars')
 
 //Parsers

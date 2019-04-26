@@ -16,12 +16,14 @@
   "author": "Zi Heng, Hsien Xiang, Alson, Bryan",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^4.3.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
     "express-session": "^1.16.1"
   },
   "devDependencies": {
-    "nodemon": "^1.18.11"
+    "nodemon": "^1.18.11",
+    "sass": "^1.19.0"
   }
 }
