@@ -39,7 +39,7 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
-app.use(mainRoutes)
+app.use('/', mainRoutes)
 
 
 app.listen(port, () => {
