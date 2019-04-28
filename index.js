@@ -39,7 +39,9 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
+const registerRoutes = require('./server/routes/registerRoutes')
 app.use('/', mainRoutes)
+app.use('/registration', registerRoutes)
 
 
 app.listen(port, () => {
