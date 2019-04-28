@@ -18,4 +18,9 @@ router.get('/login', (req, res) => {
     res.render('login', {layout: 'blank_layout'})
 })
 
+router.get('/register', (req, res) => {
+    res.render('register', {layout: 'blank_layout'})
+})
+
+
 module.exports = router
