@@ -4,7 +4,7 @@
   "description": "An ordering system which enable seamless transactions between the customer and server by minimizing interactions.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node_modules/.bin/mocha",
     "start": "node index.js",
     "start:dev": "nodemon"
   },
@@ -16,6 +16,7 @@
   "author": "Zi Heng, Hsien Xiang, Alson, Bryan",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
@@ -23,6 +24,9 @@
     "express-session": "^1.16.1"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "nock": "^10.0.6",
     "nodemon": "^1.18.11",
     "sass": "^1.19.0"
   }
