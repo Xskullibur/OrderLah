@@ -41,6 +41,22 @@ app.use(express.static('public'))
 const mainRoutes = require('./server/routes/mainRoutes')
 app.use(mainRoutes)
 
+//Database
+const db = require('./server/models/db_init')
+const User = db.User
+
+User.create({
+    username: 'John',
+    email: 'Hancock',
+    birthday: '11/2/2018',
+    password: 'test',
+    phone: '1231231'
+}).then(john => {
+    console.log("Jane's auto-generated ID:", john.id);
+  }).catch(err => console.log(err))
+
+//connect to db
+db.connect()
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);
