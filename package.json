@@ -13,7 +13,9 @@
     "system",
     "OOADP"
   ],
-  "author": "Zi Heng, Hsien Xiang, Alson, Bryan",
+  "author": "Zi Heng <pehziheng2@gmail.com>",
+  "contributors": ["Hsien Xiang", "Alson", "Bryan"],
+  "repository": "gitlab:Riyfhx/orderlah",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
