@@ -37,6 +37,9 @@ module.exports = {
                     })
     
             })
+
+            //Verify password
+            User.prototype.verifyPassword = (password) => bcrypt.compareSync(password, this.password)
     
             //Return user model object IMPORTANT
             return User

@@ -4,6 +4,9 @@
 //Server will be listening on port 3000
 const port = 3000
 
+//Global
+const globalHandle = require('./server/libs/global/global')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -34,6 +37,15 @@ app.use(session({
     cookie: { secure: false }//Set this to true for https website
 }))
 
+//Database
+const db = require('./server/models/db_init')
+const User = db.User
+//Put User model inside global
+globalHandle.put('user', User)
+
+//connect to db
+db.connect()
+
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
 
@@ -41,9 +53,6 @@ app.use(express.static('public'))
 const mainRoutes = require('./server/routes/mainRoutes')
 app.use(mainRoutes)
 
-//Database
-const db = require('./server/models/db_init')
-const User = db.User
 
 User.create({
     username: 'John',
@@ -55,8 +64,6 @@ User.create({
     console.log("Jane's auto-generated ID:", john.id);
   }).catch(err => console.log(err))
 
-//connect to db
-db.connect()
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);

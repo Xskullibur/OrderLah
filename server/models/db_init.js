@@ -24,7 +24,6 @@ const Sequelize = require('sequelize')
 const db = new Sequelize(connection_details.database, connection_details.username, connection_details.password, {
     host: connection_details.host,
     dialect: 'mysql',
-    // operatorsAliases: false,
 
     define: {
         timestamps: false
