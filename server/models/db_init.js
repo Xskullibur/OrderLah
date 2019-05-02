@@ -44,7 +44,7 @@ module.exports = {
     //Models
     User,
 
-    connect: function (drop = false) {
+    connect: function (drop = false, done) {
         //Init database connections
         db.authenticate().then(() => {
             console.log("Successfully connected to database");
@@ -52,7 +52,10 @@ module.exports = {
             //Create tables
             db.sync({ // Creates table if none exists
                 force: drop
-            }).then(() =>{console.log('Created tables')}).catch(err=>console.log(err))
+            }).then(() =>{
+                console.log('Created tables') 
+                done()
+            }).catch(err=>console.log(err))
         }).catch((err) => {
             console.log("Oops, an error occur when connecting to database. Check if your database is running and the database account credentials are all correct!")
             console.log(`Details: \n\r${err}`)

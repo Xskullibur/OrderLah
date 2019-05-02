@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt')
 //Salt for my key derivation function
 const salt = require('../hashes').bcrypt_salt
 
-const salt_rounds = 20
+const salt_rounds = 10
 
 
 module.exports = {
@@ -39,7 +39,9 @@ module.exports = {
             })
 
             //Verify password
-            User.prototype.verifyPassword = (password) => bcrypt.compareSync(password, this.password)
+            User.prototype.verifyPassword = function(password) {
+                return bcrypt.compareSync(password, this.password)
+            }
     
             //Return user model object IMPORTANT
             return User

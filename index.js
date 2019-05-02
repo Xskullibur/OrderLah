@@ -16,6 +16,8 @@ const exphbs = require('express-handlebars')
 
 //Setup express
 const app = express()
+//Put app inside global
+globalHandle.put('app', app)
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
@@ -44,7 +46,18 @@ const User = db.User
 globalHandle.put('user', User)
 
 //connect to db
-db.connect()
+db.connect(true, () => {
+    //Create test user
+    User.create({
+        username: 'John',
+        email: 'Hancock@test',
+        birthday: '11/2/2018',
+        password: 'test',
+        phone: '1231231'
+    }).then(john => {
+        console.log("Jane's auto-generated ID:", john.id);
+    }).catch(err => console.log(err))
+})
 
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
@@ -53,16 +66,6 @@ app.use(express.static('public'))
 const mainRoutes = require('./server/routes/mainRoutes')
 app.use(mainRoutes)
 
-
-User.create({
-    username: 'John',
-    email: 'Hancock',
-    birthday: '11/2/2018',
-    password: 'test',
-    phone: '1231231'
-}).then(john => {
-    console.log("Jane's auto-generated ID:", john.id);
-  }).catch(err => console.log(err))
 
 
 app.listen(port, () => {

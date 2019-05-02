@@ -8,33 +8,36 @@ const globalHandle = require('../libs/global/global')
 //Get User model
 const User = globalHandle.get('user')
 
+//Get App
+const app = globalHandle.get('app')
 
 //Passport.js
 const passport = require('passport')
 
-router.use(passport.initialize())
-router.use(passport.session())
+app.use(passport.initialize())
+app.use(passport.session())
+
+var bcrypt = require('bcrypt');
 
 const LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy({usernameField: 'email',},
     function(email, password, done) {
-      User.findOne({ email }, function (err, user) {
-        if (err) { return done(err) }
+      User.findOne({ where:{email} }).then(user => {
         if (!user || !user.verifyPassword(password)) { return done(null, false) }
         return done(null, user)
-      })
+      }).catch(err => done(err))
     }
 ))
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function(user, done) {   
     done(null, user.id)
 })
   
 passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-        done(err, user)
-    })
+    User.findByPk(id)
+    .then(user => done(null, user))
+    .catch(done => console.log(done))
 })
 
 //Define main 'route' path
@@ -62,6 +65,15 @@ router.post('/login',
             successRedirect: '/',
             failureRedirect: '/login' 
     }))
+
+/**
+ * Logout GET '/logout' path, logout from session
+ */
+router.get('/logout', (req, res) => {
+    req.logout()
+    res.redirect('/login')
+})
+
 
 
 module.exports = router
