@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\index.js"m,
+            "program": "${workspaceFolder}\\index.js",
             "env": {
                 "DB_HOST":"192.168.99.100",
                 "DB_USERNAME":"orderlah_web_user",

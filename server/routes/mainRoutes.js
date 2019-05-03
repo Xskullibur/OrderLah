@@ -50,6 +50,14 @@ router.get('/', (req, res) => {
 })
 
 /**
+ * Login GET '/register' path
+ */
+router.get('/register', (req, res) => {
+    res.render('register', {layout: 'blank_layout'})
+})
+
+
+/**
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
