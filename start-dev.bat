@@ -1,3 +1,5 @@
+:: Windows bat script
+
 @ECHO OFF
 
 :: SET 'orderlah' database environment
