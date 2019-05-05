@@ -1,4 +1,11 @@
-var step_count = 1;
+
+$(document).ready(function() {
+    $('#register_carousel').carousel('pause');
+    $('#register_carousel').on('slide.bs.carousel', function () {
+        
+    });
+});
+
 
 /**
  * Animate stepping of register
@@ -10,4 +17,14 @@ function setProgressBarValue(progress_bar, step, max_step){
         //Change circle color
         $.Velocity.animate($('.progress-bar-' + step), {stroke: '#D80416'})
     });
+}
+
+/**
+ * Slide to specific slide
+ * @param {index of the side to slide to} number 
+ */
+function stepToSlide(number){
+    $('#register_carousel').carousel(number-1);
+    $('#register_carousel').carousel('pause');
+    setProgressBarValue($('#progress-bar'), number, 3);
 }
