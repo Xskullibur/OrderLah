@@ -1,4 +1,4 @@
-<div class="container" style="position: relative; top: 10vh; width:">
+<div class="container" id="test" style="position: relative; top: 10vh;">
     <div class="row justify-content-center">
         <div class="col-md-5 col-sm-3" style="min-width: 430px;">
             <div class="card shadow p-3 rounded" style="width: 100%;">
@@ -15,15 +15,15 @@
                     </svg>
                 </div>
                 <div class="card-body">
-                    <div id="register_carousel" class="carousel slide" data-ride="carousel">
+                    <div id="register_carousel" class="carousel slide overflow-hidden" data-ride="carousel">
                         <div class="carousel-inner px-3">
-                            <div class="carousel-item active">
+                            <div class="carousel-item active" id="register-1">
                             {{> register_1}}
                             </div>
-                            <div class="carousel-item">
+                            <div class="carousel-item" id="register-2">
                             {{> register_2}}
                             </div>
-                            <div class="carousel-item">
+                            <div class="carousel-item" id="register-3">
                             {{> register_3}}
                             </div>
                         </div>
