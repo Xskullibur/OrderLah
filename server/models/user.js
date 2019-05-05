@@ -1,7 +1,9 @@
 /**
  * This class define the 'user' model for the database definition
  * Definition:
- *  username: varchar(255) NN
+ *  username: varchar(255) NN U
+ *  firstName: varchar(255) NN
+ *  lastName: varchar(255) NN
  *  email: varchar(255) NN U
  *  birthday: DATE NN
  *  password: varchar(255) NN
@@ -22,7 +24,9 @@ module.exports = {
         return function (Sequelize, db){
             
             const User = db.define('user', {
-                username: {type: Sequelize.STRING, allowNull: false},
+                username: {type: Sequelize.STRING, allowNull: false, unique: true},
+                firstName: {type: Sequelize.STRING, allowNull: false},
+                lastName: {type: Sequelize.STRING, allowNull: true},
                 email:  {type: Sequelize.STRING, allowNull: false, unique: true},
                 birthday:  {type: Sequelize.DATE, allowNull: false},
                 password:  {type: Sequelize.STRING, allowNull: false},

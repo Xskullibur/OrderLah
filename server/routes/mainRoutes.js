@@ -56,7 +56,6 @@ router.get('/register', (req, res) => {
     res.render('register', {layout: 'blank_layout'})
 })
 
-
 /**
  * Login GET '/login' path
  */

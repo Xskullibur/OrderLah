@@ -50,6 +50,7 @@ db.connect(true, () => {
     //Create test user
     User.create({
         username: 'John',
+        firstName: 'john',
         email: 'Hancock@test',
         birthday: '11/2/2018',
         password: 'test',
