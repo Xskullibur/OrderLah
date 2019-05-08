@@ -5,6 +5,9 @@ const router = express.Router()
 //Global
 const globalHandle = require('../libs/global/global')
 
+//Setup uuid for csrf authentication
+const uuid_middleware = require('../uuid_middleware')
+
 //Get User model
 const User = globalHandle.get('user')
 
@@ -50,16 +53,25 @@ router.get('/', (req, res) => {
 })
 
 /**
- * Login GET '/register' path
+ * Register GET '/register' path
+ * Register page
  */
-router.get('/register', (req, res) => {
+router.get('/register', uuid_middleware.generate, (req, res) => {
+    res.render('register', {layout: 'blank_layout'})
+})
+
+/**
+ * Register POST '/register' path
+ * Params: email, password
+ */
+router.post('/register', uuid_middleware.verify, (req, res) => {
     res.render('register', {layout: 'blank_layout'})
 })
 
 /**
  * Login GET '/login' path
  */
-router.get('/login', (req, res) => {
+router.get('/login', uuid_middleware.generate, (req, res) => {
     res.render('login', {layout: 'blank_layout'})
 })
 
@@ -67,7 +79,7 @@ router.get('/login', (req, res) => {
  * Login POST '/login' path
  * Params: email, password
  */
-router.post('/login',  
+router.post('/login', uuid_middleware.verify, 
     passport.authenticate('local', { 
             successRedirect: '/',
             failureRedirect: '/login' 
