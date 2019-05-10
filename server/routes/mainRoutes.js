@@ -6,7 +6,10 @@ const router = express.Router()
 const globalHandle = require('../libs/global/global')
 
 //Setup uuid for csrf authentication
-const uuid_middleware = require('../uuid_middleware')
+const uuid_middleware = require('../libs/uuid_middleware')
+
+//Login authentication middleware
+const auth_login = require('../libs/auth_login')
 
 //Get User model
 const User = globalHandle.get('user')
@@ -48,7 +51,7 @@ passport.deserializeUser(function(id, done) {
 /**
  * Default GET '/' path
  */
-router.get('/', (req, res) => {
+router.get('/', auth_login.auth, (req, res) => {
     res.render('index')
 })
 
