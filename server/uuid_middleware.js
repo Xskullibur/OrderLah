@@ -30,6 +30,7 @@ module.exports = {
             //Correct
             next()
         }else{
+            res.status(401)
             res.send('Incorrect CSRF token!')
         }
     }

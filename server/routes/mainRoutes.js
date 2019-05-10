@@ -65,13 +65,32 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
  * Params: email, password
  */
 router.post('/register', uuid_middleware.verify, (req, res) => {
-    res.render('register', {layout: 'blank_layout'})
+    
+    //Create the user account
+    User.create({
+        username: req.body.username,
+        email: req.body.email,
+        firstName: req.body.fname,
+        lastName: req.body.lname,
+        birthday: req.body.dob,
+        phone: req.body.phone,
+        password: req.body.password
+    }).then(user => {
+        console.log("User's auto-generated ID:", user.id);
+        res.send('Success')
+    }).catch(err => {
+        console.log(err)
+        res.status(400)//Bad request
+        res.send('Failed')
+    })
+
+    
 })
 
 /**
  * Login GET '/login' path
  */
-router.get('/login', uuid_middleware.generate, (req, res) => {
+router.get('/login', (req, res) => {
     res.render('login', {layout: 'blank_layout'})
 })
 
@@ -79,7 +98,7 @@ router.get('/login', uuid_middleware.generate, (req, res) => {
  * Login POST '/login' path
  * Params: email, password
  */
-router.post('/login', uuid_middleware.verify, 
+router.post('/login', 
     passport.authenticate('local', { 
             successRedirect: '/',
             failureRedirect: '/login' 
