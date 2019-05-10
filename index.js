@@ -54,9 +54,10 @@ db.connect(true, () => {
         email: 'Hancock@test',
         birthday: '11/2/2018',
         password: 'test',
-        phone: '1231231'
+        phone: '1231231',
+        role: 'Admin',
     }).then(john => {
-        console.log("Jane's auto-generated ID:", john.id);
+        console.log("John's auto-generated ID:", john.id);
     }).catch(err => console.log(err))
 })
 
