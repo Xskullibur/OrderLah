@@ -38,17 +38,27 @@ const db = new Sequelize(connection_details.database, connection_details.usernam
 })
 
 const User = require('./user').model(Sequelize, db)
-
+const Stall = require('./stall').model(Sequelize, db)
+const MenuItem = require('./menuItem').model(Sequelize, db)
+const Order = require('./order').model(Sequelize, db)
+const OrderItem = require('./orderItem').model(Sequelize, db)
 
 module.exports = {
     //Models
-    User,
+    User, Stall, MenuItem, Order, OrderItem,
 
     connect: function (drop = false, done) {
         //Init database connections
         db.authenticate().then(() => {
             console.log("Successfully connected to database");
             
+            User.hasOne(Stall);
+            User.hasMany(Order);
+            Stall.hasMany(MenuItem);
+            Stall.hasMany(Order);
+            Order.hasMany(OrderItem);
+            MenuItem.hasMany(OrderItem);
+
             //Create tables
             db.sync({ // Creates table if none exists
                 force: drop

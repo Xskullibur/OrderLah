@@ -31,6 +31,7 @@ module.exports = {
                 birthday:  {type: Sequelize.DATE, allowNull: false},
                 password:  {type: Sequelize.STRING, allowNull: false},
                 phone:  {type: Sequelize.STRING(10), allowNull: false},
+                role: {type: Sequelize.ENUM('Customer', 'Admin'), allowNull: false},
             })
     
             //Hash the password using bcrypt
