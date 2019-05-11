@@ -49,6 +49,10 @@ const MenuItem = db.MenuItem
 
 //Put User model inside global
 globalHandle.put('user', User)
+globalHandle.put('stall', Stall)
+globalHandle.put('order', Order)
+globalHandle.put('orderItem', OrderItem)
+globalHandle.put('menuItem', MenuItem)
 
 //connect to db
 db.connect(true, () => {
