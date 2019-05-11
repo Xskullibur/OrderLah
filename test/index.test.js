@@ -20,7 +20,7 @@ describe('Users', () => {
       csrf_test.getCSRFToken(request).then(res => {
         csrf = res.text
         done()
-      })
+      }).catch(err => done(err))
     })
 
     it('Register user (Good)', (done) => {
@@ -37,7 +37,7 @@ describe('Users', () => {
           expect(res.text).to.equal('Success')
 
           done()
-      })
+      }).catch(err => done(err))
       
     })
 
@@ -50,7 +50,7 @@ describe('Users', () => {
       user_test.login(request, 'johnny123@gmail.com', 'funnyguy101')
       .then(res => {
         done()
-      })
+      }).catch(err => done(err))
     })
     
     it('Update user')

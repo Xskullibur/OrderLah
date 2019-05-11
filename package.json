@@ -4,7 +4,7 @@
   "description": "An ordering system which enable seamless transactions between the customer and server by minimizing interactions.",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha --timeout 999999",
+    "test": "node_modules/.bin/mocha --timeout 5000",
     "start": "node index.js",
     "start:dev": "nodemon"
   },
