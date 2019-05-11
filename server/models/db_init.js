@@ -38,17 +38,19 @@ const db = new Sequelize(connection_details.database, connection_details.usernam
 })
 
 const User = require('./user').model(Sequelize, db)
-
+const Stall = require('./stall').model(Sequelize, db)
 
 module.exports = {
     //Models
-    User,
+    User, Stall,
 
     connect: function (drop = false, done) {
         //Init database connections
         db.authenticate().then(() => {
             console.log("Successfully connected to database");
             
+            User.hasOne(Stall);
+
             //Create tables
             db.sync({ // Creates table if none exists
                 force: drop
