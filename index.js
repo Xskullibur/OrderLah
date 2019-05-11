@@ -43,6 +43,9 @@ app.use(session({
 const db = require('./server/models/db_init')
 const User = db.User
 const Stall = db.Stall
+const Order = db.Order
+const OrderItem = db.OrderItem
+const MenuItem = db.MenuItem
 
 //Put User model inside global
 globalHandle.put('user', User)
