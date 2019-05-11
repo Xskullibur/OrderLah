@@ -10,7 +10,7 @@ module.exports = {
     debugSetup: (app) => {
         //Set route for debugging
         if(process.env.NODE_ENV === 'dev'){
-
+            app.use(cors({ origin: 'localhost:3000', credentials: true}))
             /**
              * GET '/csrf' path, get CSRF token 
              */

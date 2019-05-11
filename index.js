@@ -18,8 +18,6 @@ const exphbs = require('express-handlebars')
 const app = express()
 //Put app inside global
 globalHandle.put('app', app)
-const cors = require('cors')
-app.use(cors({ origin: 'localhost:3000', credentials: true}))
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
@@ -38,7 +36,6 @@ app.use(session({
     secret: ']x?f4c?3STdk3<6q_h>4jL%{Hi}_',
     resave: false,
     saveUninitialized: true,
-    httpOnly: false,
     cookie: { secure: false }//Set this to true for https website
 }))
 
