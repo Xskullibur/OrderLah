@@ -115,6 +115,13 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+//Set route for debugging
+if(process.env.NODE_ENV === 'dev'){
+    /**
+     * GET '/csrf' path, get CSRF token 
+     */
+    router.get('/csrf-token-debug', uuid_middleware.debug)
+}
 
 
 module.exports = router

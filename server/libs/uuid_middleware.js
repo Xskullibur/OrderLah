@@ -33,6 +33,22 @@ module.exports = {
             res.status(401)
             res.send('Incorrect CSRF token!')
         }
+    },
+
+    /**
+     * Send CSRF token to client, IMPORTANT: this should be disabled in production
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    debug: function(req,res){
+        if(res.locals.csrf == undefined) {
+            res.status(400)//Bad request
+            res.send('Bad request')
+        }
+        else{
+            res.send(res.locals.csrf)
+        }
     }
 
 }
