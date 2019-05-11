@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 app.use(cookieParser())
 
 //Session
@@ -38,6 +38,11 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false }//Set this to true for https website
 }))
+
+//Setup debug if needed
+const debug = require('./server/debug')
+debug.debugSetup(app)
+
 
 //Database
 const db = require('./server/models/db_init')
