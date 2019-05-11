@@ -26,7 +26,7 @@ module.exports = {
      */
     verify: function (req, res, next) {
         //Check token
-        if(req.session.csrf === req.body.csrf){
+        if(req.session.csrf !== undefined && req.session.csrf === req.body.csrf){
             //Correct
             next()
         }else{
