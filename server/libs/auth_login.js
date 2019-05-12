@@ -2,11 +2,10 @@
  * Middleware which check if the user is logged in by checking if the req.user is null
  */
 
- const process = require('process')
 
 module.exports = {
     auth: function(req, res, next){
-
+        console.log(process.env.NODE_ENV)
         //Dev
         if(process.env.NODE_ENV === 'dev') {
             next()
