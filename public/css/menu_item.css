@@ -1,0 +1,60 @@
+.shine {
+  background: #f6f7f8;
+  background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-repeat: no-repeat;
+  background-size: 800px 200px;
+  display: inline-block;
+  position: relative;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-fill-mode: forwards;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: placeholderShimmer;
+  -webkit-animation-timing-function: linear;
+}
+
+box {
+  height: 104px;
+  width: 100px;
+}
+
+lines {
+  height: 1.25rem;
+  margin-top: 10px;
+  width: 200px;
+}
+
+photo {
+  display: block !important;
+  width: 325px;
+  height: 100px;
+}
+
+@-webkit-keyframes placeholderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+/* Utilities */
+.menu-item-img {
+  height: 180px;
+  width: 100%;
+}
+
+.menu-item-btn {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  border-radius: 35px;
+  font-size: 24px;
+  line-height: 1.33;
+  position: relative;
+  top: -35px;
+}
+
+.menu-item-body {
+  position: relative;
+  top: -35px;
+}
