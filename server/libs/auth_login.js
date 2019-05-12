@@ -5,7 +5,6 @@
 
 module.exports = {
     auth: function(req, res, next){
-        console.log(process.env.NODE_ENV)
         //Dev
         if(process.env.NODE_ENV === 'dev') {
             next()
