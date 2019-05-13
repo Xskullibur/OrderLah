@@ -10,4 +10,4 @@ export DB_USERNAME="orderlah_web_user"
 export DB_PASSWORD="mysecurepassword"
 
 # start nodemon
-npm run start:dev
+npm run start
