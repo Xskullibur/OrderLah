@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 
 //Global
-const globalHandle = require('../libs/global/global')
+const globalHandle = require('../../libs/global/global')
 
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../libs/uuid_middleware')
