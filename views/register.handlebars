@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="container" style="position: relative; top: 10vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-5 col-sm-3">
@@ -26,8 +27,50 @@
                             <button type="submit" class="btn btn-outline-success float-right">Register</button>
                         </form>
                     </section>
+=======
+<div class="container" id="test" style="position: relative; top: 10vh;">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-sm-3" style="min-width: 430px;">
+            <div class="card shadow p-3 rounded" style="width: 100%;">
+                <div class="progress-status text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="350" height="100" >
+                        <rect x="0" y="50" width="100%" height="5" fill="#F2B8B3" />
+                        <rect id="progress-bar"  x="0" y="50" width="0" height="5" fill="#D80416"/>
+                        <circle class="progress-bar-1" cx="41" cy="50" r="40" stroke="#D80416" stroke-width="2" fill="white"/>
+                        <text x="41" y="50" text-anchor="middle" stroke="#D80416" stroke-width="2px" dy=".3em">1</text>
+                        <circle class="progress-bar-2" cx="50%" cy="50" r="40" stroke="#F2B8B3" stroke-width="2" fill="white"/>
+                        <text x="50%" y="50" text-anchor="middle" stroke="#D80416" stroke-width="2px" dy=".3em">2</text>
+                        <circle class="progress-bar-3" cx="100%" cy="50" r="40" stroke="#F2B8B3" stroke-width="2" fill="white" style="transform: translateX(-41px);"/>
+                        <text x="100%" y="50" text-anchor="middle" stroke="#D80416" stroke-width="2px" dy=".3em" style="transform: translateX(-41px);">3</text>
+                    </svg>
+                </div>
+                <div class="card-body">
+                    <div id="register_carousel" class="carousel slide overflow-hidden" data-ride="carousel">
+                        <div class="carousel-inner px-3">
+                            <div class="carousel-item active" id="register-1">
+                            {{> register_1}}
+                            </div>
+                            <div class="carousel-item" id="register-2">
+                            {{> register_2}}
+                            </div>
+                            <div class="carousel-item" id="register-3">
+                            {{> register_3}}
+                            </div>
+                        </div>
+                    </div>
+                    
+>>>>>>> master
                 </div>
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+<input id="csrf" type="hidden" value="{{csrf}}"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.ui.min.js" type="text/javascript"></script>
+<script src="js/register.js" type="text/javascript"></script>
+<script src="js/progress_bar.js" type="text/javascript"></script>
+>>>>>>> master

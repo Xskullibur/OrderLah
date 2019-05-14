@@ -1,0 +1,29 @@
+
+@import "./shimmer"
+@import "./utils"
+
+// Menu Item
+
+.menu-item-img 
+    height: 180px
+    width: 100%
+
+$menu-item-btn-size: 70px
+
+// Btn
+.menu-item-btn
+    +fixed-size($menu-item-btn-size)
+    padding: 10px 16px
+    border-radius: 35px
+    font-size: 24px
+    line-height: 1.33
+
+    //Offset set by size
+    position: relative
+    top: -($menu-item-btn-size / 2)
+
+
+//Body
+.menu-item-body
+    position: relative
+    top: -$menu-item-btn-size / 2

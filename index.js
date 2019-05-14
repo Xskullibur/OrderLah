@@ -4,6 +4,9 @@
 //Server will be listening on port 3000
 const port = 3000
 
+//Global
+const globalHandle = require('./server/libs/global/global')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -13,6 +16,8 @@ const exphbs = require('express-handlebars')
 
 //Setup express
 const app = express()
+//Put app inside global
+globalHandle.put('app', app)
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
@@ -23,7 +28,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 app.use(cookieParser())
 
 //Session
@@ -34,6 +39,30 @@ app.use(session({
     cookie: { secure: false }//Set this to true for https website
 }))
 
+//Setup debug if needed
+const debug = require('./server/debug')
+debug.debugSetup(app)
+
+
+//Database
+const db = require('./server/models/db_init')
+const User = db.User
+const Stall = db.Stall
+const Order = db.Order
+const OrderItem = db.OrderItem
+const MenuItem = db.MenuItem
+
+//Put User model inside global
+globalHandle.put('user', User)
+globalHandle.put('stall', Stall)
+globalHandle.put('order', Order)
+globalHandle.put('orderItem', OrderItem)
+globalHandle.put('menuItem', MenuItem)
+
+//connect to db
+const dummy = require('./dummy')
+db.connect(true, dummy)
+
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
 
@@ -42,7 +71,6 @@ const mainRoutes = require('./server/routes/mainRoutes')
 const registerRoutes = require('./server/routes/registerRoutes')
 app.use('/', mainRoutes)
 app.use('/registration', registerRoutes)
-
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);
