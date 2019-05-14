@@ -29,9 +29,6 @@
     "express": "^4.16.4",
     "express-handlebars": "^3.0.2",
     "express-session": "^1.16.1",
-<<<<<<< HEAD
-    "nodemailer": "^6.1.1"
-=======
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^1.6.5",
     "passport": "^0.4.0",
@@ -39,7 +36,6 @@
     "sequelize": "^5.8.1",
     "supertest": "^4.0.2",
     "uuid": "^3.3.2"
->>>>>>> master
   },
   "devDependencies": {
     "chai": "^4.2.0",
