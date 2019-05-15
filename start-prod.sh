@@ -11,3 +11,9 @@ export DB_PASSWORD="mysecurepassword"
 
 # start nodemon
 npm run start
+
+trap "kill -9 $! && echo \"killed $!\" && exit 0" SIGINT SIGQUIT SIGTSTP SIGKILL
+while :
+do
+        sleep 60	
+done
