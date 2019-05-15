@@ -14,6 +14,4 @@ SET DB_PASSWORD=mysecurepassword
 :: start nodemon
 start /b "nodemon" npm run start:dev
 
-taskkill /FI "WindowTitle eq nodemon*" /T /F
-
 PAUSE
