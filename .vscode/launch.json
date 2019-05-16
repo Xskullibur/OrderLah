@@ -9,10 +9,10 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\index.js",
+            "program": "${workspaceFolder}/index.js",
             "env": {
                 "NODE_ENV":"dev",
-                "DB_HOST":"192.168.99.100",
+                "DB_HOST":"localhost",
                 "DB_USERNAME":"orderlah_web_user",
                 "DB_PASSWORD":"mysecurepassword"
 
