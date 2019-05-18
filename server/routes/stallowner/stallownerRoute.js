@@ -20,7 +20,13 @@ const app = globalHandle.get('app')
 const MenuItem = globalHandle.get('menuItem')
 
 router.get('/showMenu', (req, res) => {
-    res.render('stallowner-menu')
+    MenuItem.findAll().then((item) =>{
+        res.render('stallowner-menu', {
+            item:item
+        })
+    })
+
+    //res.render('stallowner-menu')
 })
 
 router.post('/submitItem', (req, res) =>{
@@ -31,6 +37,7 @@ router.post('/submitItem', (req, res) =>{
     MenuItem.create({ itemName, price, itemDesc}).then(function() {
         // alert("Item successfully added")
         res.send('Good')
+        //res.render('stallowner-menu')
     }).catch(err => console.log(err))
 })
 
