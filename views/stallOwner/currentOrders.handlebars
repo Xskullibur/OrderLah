@@ -1,0 +1,49 @@
+<div class="container" style="position: relative; top: 5vh; width:">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow p-3 rounded" style="width: 100%;">
+
+                <div class="accordion" id="accordion"  role="tablist" aria-multiselectable="true">
+
+                    {{#each orders as |singleOrder|}}
+                        <div class="card">
+                            <div class="card-header" role="tab" id="head{{@index}}">
+                                    <button class="btn btn-link container-fluid" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
+                                        <span class="fa-pull-left">
+                                            {{{singleOrder.orderId}}}) |
+                                            {{#each singleOrder.orderItem as |orderItem|}}
+                                                {{orderItem.itemName}} x{{orderItem.quantity}} |
+                                            {{/each}}
+                                        </span>
+                                        <span class="fa-pull-right">{{singleOrder.orderTiming}}</span>
+                                    </button>
+                            </div>
+                            <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}}" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
+                                <div class="card-body container">
+                                    {{#each singleOrder.orderItem as |item|}}
+                                    <div class="container-fluid">
+                                        <div class="container-fluid row">
+                                            <span class="col">{{item.itemName}}</span>
+                                            <span class="col text" style="text-align: right;">x{{item.quantity}}</span>
+                                        </div>
+                                        
+                                        <div class="container-fluid row">
+                                            <span class="container-fluid col">Price: {{item.price}}</span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {{/each}}
+                                    <hr>    
+                                    <div class="row">
+                                        <span class="col">Total: {{calcTotal singleOrder}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    {{/each}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

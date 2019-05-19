@@ -68,7 +68,9 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
+const stallOwnerRoutes = require('./server/routes/stallOwnerRoutes');
 app.use(mainRoutes)
+app.use(stallOwnerRoutes)
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);
