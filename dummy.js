@@ -139,7 +139,7 @@ module.exports = () => {
         })
     }).catch(err => console.error("Chicken Rice: \n" + err))
 
-    //Western (1 Stall Owner, 3 Food Item)
+    //Western (1 Stall Owner, 3 Food Item, 3 Orders)
     User.create({
         username: 'Nayrb',
         firstName: 'Nayrb',
@@ -416,7 +416,7 @@ module.exports = () => {
         })
     }).catch(err => console.error("Noodle: \n" + err))
     
-    //Drink
+    //Drink (1 Stall Owner, 2 Item, 6 Orders)
     User.create({
         username: 'Knird',
         firstName: 'Knird',
