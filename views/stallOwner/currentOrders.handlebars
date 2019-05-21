@@ -21,14 +21,18 @@
                             <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}}" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
                                 <div class="card-body container">
                                     {{#each singleOrder.orderItem as |item|}}
-                                    <div class="container-fluid">
-                                        <div class="container-fluid row">
-                                            <span class="col">{{item.itemName}}</span>
-                                            <span class="col text" style="text-align: right;">x{{item.quantity}}</span>
-                                        </div>
-                                        
-                                        <div class="container-fluid row">
-                                            <span class="container-fluid col">Price: {{item.price}}</span>
+                                    <div class="card text-white bg-primary">
+                                        <img class="card-img-top" src="holder.js/100px180/" alt="">
+                                        <div class="card-body">
+                                            <div class="container">
+                                                <div class="row justify-content-between">
+                                                    <h5 class="col p-0">{{item.itemName}}</h5>
+                                                    <h5 class="col text-right">x{{item.quantity}}</h5>
+                                                </div>
+                                                <div class="row">
+                                                    <p class="card-text">Price: {{item.price}}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <br>
