@@ -13,6 +13,7 @@ const auth_login = require('../libs/auth_login')
 
 //Get User model
 const User = globalHandle.get('user')
+const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
 
 //Get App
@@ -120,8 +121,12 @@ router.get('/getRatingData', (req, res) =>{
 
     const db = globalHandle.get('db');
     let rating_matrix = [];
-    Order.findAll().then((menuItems) =>{
-        res.send();
+
+    User.findAll().then(users=>{
+        users.forEach(user => {
+            rating_matrix[user.id] = []
+        });
+        res.send(rating_matrix)
     })
 })
 
