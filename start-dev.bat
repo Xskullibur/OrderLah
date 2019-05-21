@@ -12,7 +12,6 @@ SET DB_USERNAME=orderlah_web_user
 SET DB_PASSWORD=mysecurepassword
 
 :: start nodemon
-npm run start:dev
-
+start /b "nodemon" npm run start:dev
 
 PAUSE
