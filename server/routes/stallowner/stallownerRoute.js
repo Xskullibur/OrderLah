@@ -2,6 +2,9 @@ const express = require('express')
 
 const router = express.Router()
 
+const fs = require('fs');
+const upload = require('./upload');
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -33,6 +36,14 @@ router.post('/submitItem', (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
+
+    if (!fs.existsSync('./public/uploads')){
+        fs.mkdirSync('./public/uploads');
+    }
+
+    upload(req, res, (err) => {     
+        res.json({ file: `/uploads/test` });   
+    });
 
     MenuItem.create({ itemName, price, itemDesc}).then(function() {
         // alert("Item successfully added")
