@@ -70,7 +70,7 @@ module.exports = {
             console.log("Oops, an error occur when connecting to database. Check if your database is running and the database account credentials are all correct!")
             console.log(`Details: \n\r${err}`)
         })
-    }
-
+    },
+    db
 }
 

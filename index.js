@@ -51,6 +51,7 @@ const Stall = db.Stall
 const Order = db.Order
 const OrderItem = db.OrderItem
 const MenuItem = db.MenuItem
+const sequelize_db = db.db
 
 //Put User model inside global
 globalHandle.put('user', User)
@@ -58,6 +59,7 @@ globalHandle.put('stall', Stall)
 globalHandle.put('order', Order)
 globalHandle.put('orderItem', OrderItem)
 globalHandle.put('menuItem', MenuItem)
+globalHandle.put('db', sequelize_db)
 
 //connect to db
 const dummy = require('./dummy')

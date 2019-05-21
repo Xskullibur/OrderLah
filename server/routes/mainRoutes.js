@@ -13,6 +13,7 @@ const auth_login = require('../libs/auth_login')
 
 //Get User model
 const User = globalHandle.get('user')
+const Order = globalHandle.get('order')
 
 //Get App
 const app = globalHandle.get('app')
@@ -115,5 +116,13 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+router.get('/getRatingData', (req, res) =>{
+
+    const db = globalHandle.get('db');
+    let rating_matrix = [];
+    Order.findAll().then((menuItems) =>{
+        res.send();
+    })
+})
 
 module.exports = router
