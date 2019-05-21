@@ -42,8 +42,16 @@ router.post('/submitItem', (req, res) =>{
     }
 
     upload(req, res, (err) => {     
-        res.json({ file: `/uploads/test` });   
-    });
+        if (err) {
+            res.send("error")
+        } else {
+            if (req.file === undefined) {
+                res.send("undefined")
+            } else {
+                res.json({ file: `/uploads/test` });
+            }  
+        } 
+    })
 
     MenuItem.create({ itemName, price, itemDesc}).then(function() {
         // alert("Item successfully added")
