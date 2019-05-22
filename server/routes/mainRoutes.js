@@ -11,6 +11,8 @@ const uuid_middleware = require('../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
 
+const MenuItem = globalHandle.get('menuItem')
+
 //Get User model
 const User = globalHandle.get('user')
 const OrderItem = globalHandle.get('orderItem')
@@ -55,6 +57,12 @@ passport.deserializeUser(function(id, done) {
  */
 router.get('/', auth_login.auth, (req, res) => {
     res.render('index')
+})
+
+router.get('/menuItem', auth_login.auth, (req, res) => {
+   MenuItem.findAll({}).then( menuItems => {
+       res.send(JSON.stringify(menuItems))
+   })
 })
 
 /**
