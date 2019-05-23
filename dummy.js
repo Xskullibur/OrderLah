@@ -84,7 +84,59 @@ module.exports = () => {
                 }).then(customer => {
                     Order.create({
                         status: 'Order Pending',
-                        orderTiming: new Date,
+                        orderTiming: new Date('2000-09-16 21:05:00'),
+                        userId: customer.id,
+                        stallId: stall.id
+                    }).then(order => {
+                        OrderItem.create({
+                            quantity: 2,
+                            orderId: order.id,
+                            menuItemId: item.id
+                        })
+                    })
+
+                    Order.create({
+                        status: 'Order Pending',
+                        orderTiming: new Date('2000-09-16 21:06:00'),
+                        userId: customer.id,
+                        stallId: stall.id
+                    }).then(order => {
+                        OrderItem.create({
+                            quantity: 2,
+                            orderId: order.id,
+                            menuItemId: item.id
+                        })
+                    })
+
+                    Order.create({
+                        status: 'Order Pending',
+                        orderTiming: new Date('2000-09-16 21:07:00'),
+                        userId: customer.id,
+                        stallId: stall.id
+                    }).then(order => {
+                        OrderItem.create({
+                            quantity: 2,
+                            orderId: order.id,
+                            menuItemId: item.id
+                        })
+                    })
+
+                    Order.create({
+                        status: 'Order Pending',
+                        orderTiming: new Date('2000-09-16 21:08:00'),
+                        userId: customer.id,
+                        stallId: stall.id
+                    }).then(order => {
+                        OrderItem.create({
+                            quantity: 2,
+                            orderId: order.id,
+                            menuItemId: item.id
+                        })
+                    })
+
+                    Order.create({
+                        status: 'Order Pending',
+                        orderTiming: new Date('2000-09-16 21:09:00'),
                         userId: customer.id,
                         stallId: stall.id
                     }).then(order => {

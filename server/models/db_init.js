@@ -71,6 +71,5 @@ module.exports = {
             console.log(`Details: \n\r${err}`)
         })
     }
-
 }
 

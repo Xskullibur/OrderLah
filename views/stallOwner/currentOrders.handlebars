@@ -5,32 +5,32 @@
 
                 <div class="accordion" id="accordion"  role="tablist" aria-multiselectable="true">
 
-                    {{#each orders as |singleOrder|}}
+                    {{#each currentOrders as |order|}}
                         <div class="card">
                             <div class="card-header" role="tab" id="head{{@index}}">
                                     <button class="btn btn-link container-fluid" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
                                         <span class="fa-pull-left">
-                                            {{{singleOrder.orderId}}}) |
-                                            {{#each singleOrder.orderItem as |orderItem|}}
-                                                {{orderItem.itemName}} x{{orderItem.quantity}} |
+                                            {{{order.id}}}) |
+                                            {{#each order.orderItems as |item|}}
+                                                Menu Item ID:{{item.menuItemId}} x{{item.quantity}} |
                                             {{/each}}
                                         </span>
-                                        <span class="fa-pull-right">{{singleOrder.orderTiming}}</span>
+                                        <span class="fa-pull-right">{{order.orderTiming}}</span>
                                     </button>
                             </div>
                             <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}}" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
                                 <div class="card-body container">
-                                    {{#each singleOrder.orderItem as |item|}}
-                                    <div class="card text-white bg-primary">
+                                    {{#each order.item as |item|}}
+                                    <div class="card">
                                         <img class="card-img-top" src="holder.js/100px180/" alt="">
                                         <div class="card-body">
                                             <div class="container">
                                                 <div class="row justify-content-between">
-                                                    <h5 class="col p-0">{{item.itemName}}</h5>
-                                                    <h5 class="col text-right">x{{item.quantity}}</h5>
+                                                    <h5 class="col p-0">Menu Item Id: {{item.menuItemId}} x{{item.quantity}} @ Price</h5>
+                                                    <h5 class="col text-right">Total Price</h5>
                                                 </div>
                                                 <div class="row">
-                                                    <p class="card-text">Price: {{item.price}}</p>
+                                                    <p class="card-text">Price: -</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -39,7 +39,7 @@
                                     {{/each}}
                                     <hr>    
                                     <div class="row">
-                                        <span class="col">Total: {{calcTotal singleOrder}}</span>
+                                        <span class="col">Total Price</span>
                                     </div>
                                 </div>
                             </div>
