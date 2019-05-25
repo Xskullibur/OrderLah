@@ -2,11 +2,15 @@
 const express = require('express');
 const router = express.Router();
 
+//MomentJS
+const moment = require('moment')
+
 //Global
 const globalHandle = require('../libs/global/global')
 const Order = globalHandle.get('order');
 const OrderItem = globalHandle.get('orderItem');
 const MenuItem = globalHandle.get('menuItem');
+const User = globalHandle.get('user');
 
 //Sequelize
 const Sequelize = require('sequelize')
@@ -35,28 +39,6 @@ const db = new Sequelize(connection_details.database, connection_details.usernam
 
 router.get('/currentOrders', (req, res, next) => {
 
-    // db.query(`SELECT orderlah_db.orders.id, orderlah_db.orders.orderTiming, orderlah_db.menuItems.id, orderlah_db.menuItems.itemName, orderlah_db.menuItems.price, orderlah_db.orderItems.quantity
-    // FROM orderlah_db.menuItems, orderlah_db.orderItems, orderlah_db.orders
-    // WHERE orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id AND orderlah_db.orderItems.orderId = orderlah_db.orders.id AND orderlah_db.orders.status != 'Collection Confirmed'
-    // ORDER BY orderlah_db.orders.orderTiming`, { type: Sequelize.QueryTypes.SELECT }).then(currentOrders => {
-
-    //     // res.send(currentOrders)
-
-    //     res.render('../views/stallOwner/currentOrders', {
-    //         helpers: {
-    //             calcTotal(order){
-    //                 let sum = 0;
-    //                 order.orderItem.forEach(order => {
-    //                     sum += order.price*order.quantity
-    //                 });
-    //                 return sum;
-    //             }
-    //         },
-    //         currentOrders
-    //     });
-
-    // })
-
     Order.findAll({
         where: {
             status: {
@@ -64,27 +46,64 @@ router.get('/currentOrders', (req, res, next) => {
             }
         },
         order: Sequelize.col('orderTiming'),
-        include:[{
-            model: OrderItem,
-            where: { orderId: Sequelize.col('order.id') }
+        include: [{
+            model: MenuItem
         }]
-    }).then(currentOrders => {
 
-        // res.send(currentOrders)
+    }).then((currentOrders) => {
+        // res.send(currentOrders);
 
+        const testImg = process.cwd() + '/public/img/no-image'
         res.render('../views/stallOwner/currentOrders', {
-            // helpers: {
-            //     calcTotal(order){
-            //         let sum = 0;
-            //         order.orderItem.forEach(order => {
-            //             sum += order.price*order.quantity
-            //         });
-            //         return sum;
-            //     }
-            // },
+            helpers: {
+                calcTotal(order){
+                    let sum = 0;
+                    order.menuItems.forEach(order => {
+                        sum += order.price*order.orderItem.quantity
+                    });
+                    return sum.toFixed(2);
+                },
+                calcItemPrice(items){
+                    return (items.price * items.orderItem.quantity).toFixed(2)
+                },
+                formatDate(date, formatType){
+                    return moment(date).format(formatType);
+                },
+                getTitle(menuItem){
+                    let title = []
+
+                    menuItem.forEach(item => {
+                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
+                    });
+
+                    return title.join(', ')
+                },
+                getNextStatus(status){
+                    let updatedStatus = "";
+                    switch (status) {
+                        case 'Order Pending':
+                            updatedStatus = "Preparing Order"
+                            break;
+                    
+                        case 'Preparing Order':
+                            updatedStatus = "Ready for Collection"
+                            break;
+
+                        case 'Ready for Collection':
+                            updatedStatus = "Collection Confirmed"
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    return updatedStatus;
+                }
+            },
             currentOrders
         });
-    })
+
+    }).catch((err) => console.error(err));
 
 });
 

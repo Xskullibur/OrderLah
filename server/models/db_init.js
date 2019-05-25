@@ -56,8 +56,8 @@ module.exports = {
             User.hasMany(Order);
             Stall.hasMany(MenuItem);
             Stall.hasMany(Order);
-            Order.hasMany(OrderItem);
-            MenuItem.hasMany(OrderItem);
+            Order.belongsToMany(MenuItem, { through: OrderItem })
+            MenuItem.belongsToMany(Order, { through: OrderItem })
 
             //Create tables
             db.sync({ // Creates table if none exists

@@ -85,20 +85,26 @@ module.exports = () => {
                     Order.create({
                         status: 'Order Pending',
                         orderTiming: new Date('2000-09-16 21:05:00'),
-                        userId: customer.id,
+                        userId: 1,
                         stallId: stall.id
                     }).then(order => {
                         OrderItem.create({
                             quantity: 2,
                             orderId: order.id,
                             menuItemId: item.id
+                        }).then(() => {
+                            OrderItem.create({
+                                quantity: 1,
+                                orderId: order.id,
+                                menuItemId: item.id + 1
+                            })
                         })
                     })
 
                     Order.create({
                         status: 'Order Pending',
                         orderTiming: new Date('2000-09-16 21:06:00'),
-                        userId: customer.id,
+                        userId: 2,
                         stallId: stall.id
                     }).then(order => {
                         OrderItem.create({

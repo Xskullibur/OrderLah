@@ -7,41 +7,67 @@
 
                     {{#each currentOrders as |order|}}
                         <div class="card">
-                            <div class="card-header" role="tab" id="head{{@index}}">
-                                    <button class="btn btn-link container-fluid" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
-                                        <span class="fa-pull-left">
-                                            {{{order.id}}}) |
-                                            {{#each order.orderItems as |item|}}
-                                                Menu Item ID:{{item.menuItemId}} x{{item.quantity}} |
-                                            {{/each}}
+
+                            <div class="card-header bg-danger" role="tab" id="head{{@index}}">
+                                    <button class="btn btn-link container-fluid text-white font-weight-bold" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
+                                        <span class="float-left">
+                                            {{{order.id}}})
+                                            {{getTitle order.menuItems}}
                                         </span>
-                                        <span class="fa-pull-right">{{order.orderTiming}}</span>
                                     </button>
                             </div>
-                            <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}}" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
-                                <div class="card-body container">
-                                    {{#each order.item as |item|}}
-                                    <div class="card">
-                                        <img class="card-img-top" src="holder.js/100px180/" alt="">
-                                        <div class="card-body">
-                                            <div class="container">
-                                                <div class="row justify-content-between">
-                                                    <h5 class="col p-0">Menu Item Id: {{item.menuItemId}} x{{item.quantity}} @ Price</h5>
-                                                    <h5 class="col text-right">Total Price</h5>
+                            <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}} p-3 bg-secondary" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
+
+                                <div class="card container">
+                                    <div class="card-body">
+                                        {{!-- Order Details --}}
+                                        <div class="row">
+                                            <div class="col">
+                                                <h3 class="mb-0">Order: {{order.id}}</h3>    
+                                            </div>
+                                            <div class="col text-right">
+                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "HH:MM:SS"}}</p>
+                                                <p class="mb-0">User ID: {{order.userId}}</p>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        {{!-- Order Items --}}
+                                        {{#each order.menuItems as |item|}}
+                                        <div class="card mb-3">
+                                            <div class="card-body row">
+                                                <div class="col-2">
+                                                    <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}img/no-image.jpg{{/if}}" alt"">
                                                 </div>
-                                                <div class="row">
-                                                    <p class="card-text">Price: -</p>
+                                                <div class="col">
+                                                    {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                                                </div>
+                                                <div class="col" style="text-align: right;">
+                                                    ${{calcItemPrice item}}
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <br>
-                                    {{/each}}
-                                    <hr>    
-                                    <div class="row">
-                                        <span class="col">Total Price</span>
+                                        {{/each}}
+                                        {{!-- Total Price   --}}
+                                        <hr>  
+                                        <div class="row text-right">
+                                            <div class="col">
+                                                <b>Total Amount: ${{calcTotal order}}</b>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        {{!-- Status Update --}}
+                                        <div class="row">
+                                            <u class="mx-auto">Current Status:</u>
+                                        </div>
+                                        <div class="row">
+                                            <h4 class="mx-auto">{{order.status}}</h4>
+                                        </div>
+                                        <div class="row">
+                                            <button type="button" class="btn btn-primary btn-lg mx-auto">Update: <b>{{getNextStatus order.status}}</b></button>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div> 
                     {{/each}}
