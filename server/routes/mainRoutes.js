@@ -56,9 +56,12 @@ passport.deserializeUser(function(id, done) {
  * Default GET '/' path
  */
 router.get('/', auth_login.auth, (req, res) => {
-    res.render('index')
+    res.render('index', {size: MenuItem.count()})
 })
 
+/**
+ * Get all menu items inside the database as JSON
+ */
 router.get('/menuItem', auth_login.auth, (req, res) => {
    MenuItem.findAll({}).then( menuItems => {
        res.send(JSON.stringify(menuItems))
