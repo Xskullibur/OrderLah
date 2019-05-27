@@ -57,4 +57,12 @@ router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     }).catch(err => console.log(err))
 })
 
+// router.post('/updateItem', upload.single("itemImage"), (req, res) =>{
+//     const itemName = req.body.itemName
+//     const price = req.body.itemPrice
+//     const itemDesc = req.body.itemDescription
+
+//     MenuItem.update({itemName, price, itemDesc},{where:{id: req.body.id}})
+// })
+
 module.exports = router
