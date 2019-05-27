@@ -1,28 +1,23 @@
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Item</button>
 
-<div>
-    <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#if item}}
-                    {{#each item}}  
-                        <tr>
-                            <th scope="row">{{this.id}}</th>
-                            <td>{{this.itemName}}</td>
-                            <td>${{this.price}}</td>
-                            <td>{{this.itemDesc}}</td>
-                        </tr>
-                    {{/each}}
-                {{/if}}
-            </tbody>
-    </table>
+
+
+
+{{#if item}}
+        {{#each item}}
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="/uploads/sample.jpg" alt="">
+                <div class="card-body">
+                    <h5 class="card-title">{{this.itemName}}  ${{this.price}}</h5>
+                    <p class="card-text">{{this.itemDesc}}</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Edit</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Delete</button>
+                </div>
+            </div>
+        {{/each}}
+{{/if}}
+
+
     {{!-- {{#if item}}
         {{#each item}}
             <h3>{{this.id}}</h3>
@@ -31,7 +26,6 @@
             <h3>{{this.itemDesc}}</h3>
         {{/each}}
     {{/if}} --}}
-</div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
