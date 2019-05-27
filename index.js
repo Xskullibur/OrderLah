@@ -51,6 +51,7 @@ const Stall = db.Stall
 const Order = db.Order
 const OrderItem = db.OrderItem
 const MenuItem = db.MenuItem
+const Cusine = db.Cusine
 const sequelize_db = db.db
 
 //Put User model inside global
@@ -59,6 +60,7 @@ globalHandle.put('stall', Stall)
 globalHandle.put('order', Order)
 globalHandle.put('orderItem', OrderItem)
 globalHandle.put('menuItem', MenuItem)
+globalHandle.put('cusine', Cusine)
 globalHandle.put('db', sequelize_db)
 
 //connect to db
@@ -70,7 +72,9 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
+const stallOwnerRoutes = require('./server/routes/stallOwnerRoutes');
 app.use(mainRoutes)
+app.use(stallOwnerRoutes)
 
 // //Locals middleware
 // app.use((req, res, next)=>{
