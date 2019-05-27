@@ -58,3 +58,7 @@ photo {
   position: relative;
   top: -35px;
 }
+
+.menu-list li {
+  background-color: #f8f9fa;
+}
