@@ -21,6 +21,10 @@
 
 </head>
 <body>
+    {{!-- Loading screen if first time login --}}
+    {{!-- {{#if firstLogin}} --}}
+      {{> loading}}
+    {{!-- {{/if}} --}}
     {{> nav}}
     {{{body}}}
   <input id="csrf-token" type="hidden" value="{{csrf-token}}"/>
