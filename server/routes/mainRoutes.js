@@ -11,8 +11,12 @@ const uuid_middleware = require('../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
 
+const MenuItem = globalHandle.get('menuItem')
+
 //Get User model
 const User = globalHandle.get('user')
+const OrderItem = globalHandle.get('orderItem')
+const Order = globalHandle.get('order')
 
 //Get App
 const app = globalHandle.get('app')
@@ -52,7 +56,16 @@ passport.deserializeUser(function(id, done) {
  * Default GET '/' path
  */
 router.get('/', auth_login.auth, (req, res) => {
-    res.render('index')
+    res.render('index', {size: MenuItem.count()})
+})
+
+/**
+ * Get all menu items inside the database as JSON
+ */
+router.get('/menuItem', auth_login.auth, (req, res) => {
+   MenuItem.findAll({}).then( menuItems => {
+       res.send(JSON.stringify(menuItems))
+   })
 })
 
 /**
@@ -115,5 +128,17 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+router.get('/getRatingData', (req, res) =>{
+
+    const db = globalHandle.get('db');
+    let rating_matrix = [];
+
+    User.findAll().then(users=>{
+        users.forEach(user => {
+            rating_matrix[user.id] = []
+        });
+        res.send(rating_matrix)
+    })
+})
 
 module.exports = router
