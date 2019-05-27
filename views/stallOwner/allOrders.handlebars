@@ -1,0 +1,100 @@
+<div class="container" style="position: relative; top: 5vh; width:">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card p-3" style="width: 100%;">
+                <div class="card-body">
+
+                    <div class="container-fluid">
+
+                        {{!-- Filter --}}
+                        <div class="row mb-3">
+                            <div class="card col">
+                                <div class="card-body">
+                                    <form action="">
+                                        
+                                        <div class="form-row">
+                                            <div class="col-3">
+                                                <div class="row">
+                                                    <label for="orderNo">Order No.</label> 
+                                                </div>
+                                                <div class="row">
+                                                    <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="row">
+                                                    <label for="orderDate">Date</label>
+                                                </div>
+                                                <div class="row">
+                                                    <input type="date" name="orderDate" id="orderDate">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row float-right">
+                                            <input type="submit" value="Submit">
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{!-- Pagination Start --}}
+                        <div class="row">
+                            <div class="col">
+                                <nav aria-label="Order Page">
+                                    <ul class="pagination justify-content-end">
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        Order Items
+
+                        {{!-- Pagination End --}}
+                        <div class="row">
+                            <div class="col">
+                                <nav aria-label="Order Page">
+                                    <ul class="pagination justify-content-end">
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
