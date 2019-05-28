@@ -25,6 +25,12 @@ const passport = require('passport')
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use((req, res, next) => {
+    //Set the user to local for handlebars to access
+    if(req.user != undefined)res.locals.user = req.user
+    next()
+})
+
 var bcrypt = require('bcrypt');
 
 const LocalStrategy = require('passport-local').Strategy;
