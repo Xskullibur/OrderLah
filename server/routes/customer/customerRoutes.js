@@ -21,6 +21,12 @@ const app = globalHandle.get('app')
 
 //Define main 'customer' path
 
+router.get('/review', (req, res) => {
+    res.render('../views/customer/review',{})
+});
 
+router.get('/pastorders', (req, res) => {
+    res.render('../views/customer/pastorders',{})
+});
 
 module.exports = router
