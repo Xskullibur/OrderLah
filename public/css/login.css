@@ -1,0 +1,19 @@
+/* Utilities */
+@media (min-width: 599px) {
+  .login-body {
+    position: relative;
+    top: 10vh;
+  }
+}
+.login-body {
+  padding: 0;
+}
+.login-body .card-body div {
+  margin: 0;
+  padding: 0;
+}
+.login-body img {
+  margin: 0 auto;
+  width: 150px;
+  height: 150px;
+}

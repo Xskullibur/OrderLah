@@ -1,4 +1,19 @@
 
+$(document).ready(function() {
+    
+});
+
+function doStaggerAnimation(){
+    var menu_items = $('.menu-item');
+    //Do stagger animation
+    menu_items.each(index => {
+        var menu_item = $(menu_items[index]);
+        setTimeout(() => {
+            menu_item.addClass('anim')
+        }, 220 * index);
+    });
+}
+
 function MenuItem(imgSrc, foodTitle, rating){
     this.imgSrc = imgSrc;
     this.foodTitle = foodTitle;

@@ -12,7 +12,10 @@
             //Slide up
             $.Velocity.animate(loading_body, {
                 top: '-100vh'
-            }, {delay: 500,duration: 2000})
+            }, {delay: 500,duration: 2000}).then(() => {
+                //Do staggering animations for the items
+                doStaggerAnimation();
+            })
         });
     });  
 </script>
