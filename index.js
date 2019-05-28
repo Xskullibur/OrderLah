@@ -73,8 +73,10 @@ app.use(express.static('public'))
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
 const stallOwnerRoutes = require('./server/routes/stallOwnerRoutes');
+const customerRoutes = require('./server/routes/customer/customerRoutes'); //when the '/customer is added, it fails to load the bootstrap'
 app.use(mainRoutes)
 app.use(stallOwnerRoutes)
+app.use(customerRoutes)
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);

@@ -3,13 +3,13 @@ const express = require('express')
 const router = express.Router()
 
 //Global
-const globalHandle = require('../libs/global/global')
+const globalHandle = require('../../libs/global/global')
 
 //Setup uuid for csrf authentication
-const uuid_middleware = require('../libs/uuid_middleware')
+const uuid_middleware = require('../../libs/uuid_middleware')
 
 //Login authentication middleware
-const auth_login = require('../libs/auth_login')
+const auth_login = require('../../libs/auth_login')
 
 //Get User model
 const User = globalHandle.get('user')
@@ -22,11 +22,12 @@ const app = globalHandle.get('app')
 //Define main 'customer' path
 
 router.get('/review', (req, res) => {
-    res.render('../views/customer/review',{})
+    res.render('customer/review',{})
 });
 
 router.get('/pastorders', (req, res) => {
-    res.render('../views/customer/pastorders',{})
+    res.render('customer/pastorders',{})
 });
+
 
 module.exports = router
