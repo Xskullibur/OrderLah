@@ -43,6 +43,7 @@ router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
+    const active = true;
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
@@ -50,7 +51,7 @@ router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
 
     
 
-    MenuItem.create({ itemName, price, itemDesc}).then(function() {
+    MenuItem.create({ itemName, price, itemDesc, active}).then(function() {
         // alert("Item successfully added")
         res.send('Good')
         //res.render('stallowner-menu')
