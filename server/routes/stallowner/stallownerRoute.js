@@ -2,6 +2,12 @@ const express = require('express')
 
 const router = express.Router()
 
+// Uploads for menu item
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./upload');
+const upload = multer({storage : storage })
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -19,19 +25,44 @@ const app = globalHandle.get('app')
 
 const MenuItem = globalHandle.get('menuItem')
 
+router.use(auth_login.auth)
+
 router.get('/showMenu', (req, res) => {
-    res.render('stallowner-menu')
+    MenuItem.findAll().then((item) =>{
+        res.render('stallowner-menu', {
+            item:item
+        })
+    })
+
+    //res.render('stallowner-menu')
 })
 
-router.post('/submitItem', (req, res) =>{
+
+
+router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
 
+    if (!fs.existsSync('./public/uploads')){
+        fs.mkdirSync('./public/uploads');
+    }
+
+    
+
     MenuItem.create({ itemName, price, itemDesc}).then(function() {
         // alert("Item successfully added")
         res.send('Good')
+        //res.render('stallowner-menu')
     }).catch(err => console.log(err))
 })
+
+// router.post('/updateItem', upload.single("itemImage"), (req, res) =>{
+//     const itemName = req.body.itemName
+//     const price = req.body.itemPrice
+//     const itemDesc = req.body.itemDescription
+
+//     MenuItem.update({itemName, price, itemDesc},{where:{id: req.body.id}})
+// })
 
 module.exports = router

@@ -1,6 +1,36 @@
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Item</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createForm">Add Item</button>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+
+<div class="row">
+    {{#if item}}
+            {{#each item}}
+                <div class="column">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="/uploads/sample.jpg" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">{{this.itemName}} --  ${{this.price}}</h5>
+                            <p class="card-text">{{this.itemDesc}}</p>
+                            <input type="hidden" id="custId" name="custId" value="{{this.id}}">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateForm">Edit</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="">Delete</button>
+                        </div>
+                    </div>
+                </div>    
+            {{/each}}
+    {{/if}}
+</div>
+
+    {{!-- {{#if item}}
+        {{#each item}}
+            <h3>{{this.id}}</h3>
+            <h3>{{this.itemName}}</h3>
+            <h3>{{this.price}}</h3>
+            <h3>{{this.itemDesc}}</h3>
+        {{/each}}
+    {{/if}} --}}
+
+<div class="modal fade" id="createForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,7 +39,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/stallOwner/submitItem">
+            <form method="POST" action="/stallOwner/submitItem" enctype="">
                 <div class="modal-body">
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
@@ -30,7 +60,7 @@
                         </div>
                     </div>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage" required>
+                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
                         <label class="custom-file-label" for="itemImage">Choose image</label>
                         <div class="invalid-feedback">Invalid file</div>
                     </div>
@@ -41,3 +71,49 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="updateForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="m" enctype="">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="itemName" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="itemName" id="itemName" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="itemPrice" id="itemPrice" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" required>
+                        </div>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage"
+                            accept="image/png,image/jpeg,image/jpg">
+                        <label class="custom-file-label" for="itemImage">Choose image</label>
+                        <div class="invalid-feedback">Invalid file</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button submit" class="btn btn-primary">Update</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+    
