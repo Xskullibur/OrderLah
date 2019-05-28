@@ -21,12 +21,17 @@ const app = globalHandle.get('app')
 
 //Define main 'customer' path
 
+//Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review', (req, res) => {
     res.render('customer/review',{})
 });
 
-router.get('/pastorders', (req, res) => {
+router.get('/pastOrders', (req, res) => {
     res.render('customer/pastorders',{})
+});
+
+router.get('/orderStatus', (req, res) => {
+    res.render('customer/orderStatus',{})
 });
 
 
