@@ -56,51 +56,6 @@ router.get('/currentOrders', (req, res, next) => {
 
         const testImg = process.cwd() + '/public/img/no-image'
         res.render('../views/stallOwner/currentOrders', {
-            helpers: {
-                calcTotal(order){
-                    let sum = 0;
-                    order.menuItems.forEach(order => {
-                        sum += order.price*order.orderItem.quantity
-                    });
-                    return sum.toFixed(2);
-                },
-                calcItemPrice(items){
-                    return (items.price * items.orderItem.quantity).toFixed(2)
-                },
-                formatDate(date, formatType){
-                    return moment(date).format(formatType);
-                },
-                getTitle(menuItem){
-                    let title = []
-
-                    menuItem.forEach(item => {
-                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
-                    });
-
-                    return title.join(', ')
-                },
-                getNextStatus(status){
-                    let updatedStatus = "";
-                    switch (status) {
-                        case 'Order Pending':
-                            updatedStatus = "Preparing Order"
-                            break;
-                    
-                        case 'Preparing Order':
-                            updatedStatus = "Ready for Collection"
-                            break;
-
-                        case 'Ready for Collection':
-                            updatedStatus = "Collection Confirmed"
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    return updatedStatus;
-                }
-            },
             currentOrders
         });
 
@@ -108,21 +63,52 @@ router.get('/currentOrders', (req, res, next) => {
 
 });
 
-router.get('/allOrders', (req, res, next) => {
+router.get('/allOrders/:pageNo', (req, res, next) => {
 
-    Order.findAndCountAll({
-        include: [{
-            model: MenuItem
-        }]
-    }).then(currentOrders => {
-        // res.send(currentOrders.count.toString())
-        // res.send(currentOrders.rows)
+    Order.count().then(orderCount => {
+        const currentPage = req.params.pageNo;
+        let offset = 0;
+        let limit = 5;
 
-        res.render('../views/stallOwner/allOrders',{
-            
+        if (currentPage === 1) {
+            offset = 0;
+        } else {
+            offset = (currentPage - 1) * 5
+        }
+
+        const pages = Math.ceil(orderCount / limit);
+
+        Order.findAll({
+            where: { status: 'Collection Confirmed' },
+            offset,
+            limit,
+            order: Sequelize.col('orderTiming'),
+            include: [{
+                model: MenuItem
+            }]
+        }).then(allOrders => {
+            // res.send(allOrders)
+            res.render('../views/stallOwner/allOrders',{
+                 pages, allOrders,
+            })
         })
+
+
     })
 
 });
+
+router.get('/monthlySummary', (req, res, next) => {
+
+    db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") FROM orderlah_db.orders`, { raw: true }).then(dates => {
+
+        res.send(dates)
+
+        // res.render('../views/stallOwner/monthlySummary',{
+        //     dates,
+        // })
+    })
+
+})
 
 module.exports = router;

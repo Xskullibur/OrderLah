@@ -195,6 +195,58 @@ module.exports = () => {
                                 })
                             })
             
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 1,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 2,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 3,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 4,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
                             //Completed Order
                             Order.create({
                                 status: 'Collection Confirmed',

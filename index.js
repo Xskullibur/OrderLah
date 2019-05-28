@@ -14,13 +14,15 @@ const session = require('express-session')
 
 const exphbs = require('express-handlebars')
 
+const helpers = require('./public/js/helpers')
+
 //Setup express
 const app = express()
 //Put app inside global
 globalHandle.put('app', app)
 
 //Setup handlebars
-app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
+app.engine('handlebars', exphbs({defaultLayout: 'main_layout', helpers}))
 app.set('view engine', 'handlebars')
 
 //Parsers
