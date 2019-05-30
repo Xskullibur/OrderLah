@@ -1,0 +1,21 @@
+.bottom-list
+    position: fixed
+    min-height: 400px
+    min-width: 100vw
+    transition: bottom 1500ms ease-in
+    &.list-open
+        bottom: 0
+    &.list-close
+        bottom: -350px
+        
+.bottom-list-content
+    height: 350px
+    background-color: white
+    opacity: 1
+
+.container-scoll
+    overflow-x: auto
+    
+    .row > .col
+        display: inline-block
+        float: none

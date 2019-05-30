@@ -1,0 +1,49 @@
+<link type="text/css" rel="stylesheet", href="/css/bottom_list.css">
+<script type="text/javascript">
+    var open = false;
+    function toggleBottomList(){
+        open = !open;
+        openBottomList(open);
+    }
+
+    function openBottomList(open){
+        var list = $('#bottom-list');
+        if(open){
+            //open
+            list.removeClass('list-close');
+            list.addClass('list-open');
+        }else{
+            //close
+            list.removeClass('list-open');
+            list.addClass('list-close');
+        }
+    }
+
+</script>
+<div id="bottom-list" class="container bottom-list list-close">
+    <div class="row">
+        <div class="col-1 offset-md-11">
+
+        <button type="button" class="btn btn-danger btn-circle menu-item-btn mr-3" onclick="toggleBottomList()"><i class="fas fa-angle-double-up"></i></button>
+        </div>
+    </div>
+    <div class="row bottom-list-content">
+        <div class="container container-scoll">
+            <div class="col">
+            <div class="row">
+                <div class="col-12 h-20" style="background-color: #f8f9fa;height: 50px;border: 1px solid rgba(0,0,0,.3);">
+                    <div class="col text-center" ><h3 class="p-2">Order Items</h3></div>
+                </div>
+            </div>
+            <div class="row">
+
+                    {{#each size}}
+                        <div class="col"></div>
+                        {{> menu_item index=@index}}
+                        </div>
+                    {{/each}}
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
