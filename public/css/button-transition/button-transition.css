@@ -30,31 +30,3 @@
   transform: rotate(180deg) scale(0.5);
   opacity: 0;
 }
-
-.bottom-list {
-  position: fixed;
-  min-height: 400px;
-  min-width: 100vw;
-  transition: bottom 500ms ease-in;
-}
-.bottom-list.list-open {
-  bottom: 0;
-}
-.bottom-list.list-close {
-  bottom: -490px;
-}
-
-.bottom-list-content {
-  height: 490px;
-  background-color: white;
-  opacity: 1;
-}
-
-.container-scoll {
-  overflow-x: auto;
-  white-space: nowrap;
-}
-.container-scoll .row .col .menu-item {
-  display: inline-block;
-  float: none;
-}
