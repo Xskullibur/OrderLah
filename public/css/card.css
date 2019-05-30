@@ -67,7 +67,7 @@ img {
 .card__title {
   color: black;
   margin-top: 0;
-  font-weight: 200;
+  font-weight: 400;
   letter-spacing: 0.01em;
 }
 .card__content {
@@ -113,7 +113,7 @@ img {
 .red-btn{
   border: 2px solid red;
   border-radius: 6px;
-  padding: 4px 20px;
+  padding: 4px 10px;
   color: red;
   border-color: red;
   background-color: white;

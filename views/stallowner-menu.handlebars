@@ -10,13 +10,21 @@
                             <div class="card__image-container shimmerBG media">
                                 <img class="card__image" src="https://images.unsplash.com/photo-1519999482648-25049ddd37b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2126&q=80" height="140" width="225" alt="">
                             </div>
-
+                            <br>
                             <div class="card__content">
                                 <h6 class="card__title">{{this.itemName}}     ${{this.price}}</h3>
                                 <p>{{this.itemDesc}} </p>
                                 <center>
-                                    <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">Edit</button>
-                                    <button type="button" class="red-btn" data-toggle="modal">Delete</button>
+                                    <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
+                                        <svg width="24" height="24" viewBox="0 0 24 24">
+                                            <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="red-btn" data-toggle="modal">
+                                        <svg width="24" height="24" viewBox="0 0 24 24">
+                                            <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/>
+                                        </svg>
+                                    </button>
                                 </center>
                             </div>
                         </div>
@@ -26,34 +34,6 @@
         {{/each}}
     {{/if}}
 </div>
-
-{{!-- <div class="row">
-    {{#if item}}
-            {{#each item}}
-                <div class="column">
-                    <div class="card" style="width: 18rem;">
-                        <img class="card-img-top" src="/uploads/sample.jpg" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">{{this.itemName}} --  ${{this.price}}</h5>
-                            <p class="card-text">{{this.itemDesc}}</p>
-                            <input type="hidden" id="custId" name="custId" value="{{this.id}}">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateForm">Edit</button>
-                            <button type="button" class="btn btn-primary" data-toggle="modal">Delete</button>
-                        </div>
-                    </div>
-                </div>    
-            {{/each}}
-    {{/if}}
-</div> --}}
-
-    {{!-- {{#if item}}
-        {{#each item}}
-            <h3>{{this.id}}</h3>
-            <h3>{{this.itemName}}</h3>
-            <h3>{{this.price}}</h3>
-            <h3>{{this.itemDesc}}</h3>
-        {{/each}}
-    {{/if}} --}}
 
 <div class="modal fade" id="createForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
