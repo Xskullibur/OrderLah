@@ -3,14 +3,15 @@ ul.menu-list li.category-list-item {
   transform: skew(0);
   transition: transform 0.2s, background-color 0.2s;
 }
-ul.menu-list li.category-list-item > span {
+ul.menu-list li.category-list-item > div {
   color: black;
+  transform: skew(0);
 }
 ul.menu-list li.category-list-item:hover {
   background-color: #D80416;
   transform: skew(20deg);
 }
-ul.menu-list li.category-list-item:hover > span {
+ul.menu-list li.category-list-item:hover > div {
   color: white;
-  transform: skew(20deg);
+  transform: skew(-20deg);
 }
