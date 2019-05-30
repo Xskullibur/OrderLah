@@ -116,7 +116,7 @@
                                 {{/each}}
                                 <div class="row text-right">
                                     <div class="col">
-                                        <b>Total Amount: ${{calcTotal order}}</b>   
+                                        <b>Total Amount: ${{calcOrderTotal order}}</b>   
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                                         </li>
 
                                         {{#for pages}}
-                                            <li class="page-item"><a class="page-link" href="#">{{this}}</a></li>
+                                            <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
                                         {{/for}}
                                         
                                         <li class="page-item">

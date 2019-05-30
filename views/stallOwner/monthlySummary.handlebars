@@ -1,35 +1,112 @@
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="p-3" style="width: 100%;">
+            <div class="px-md-5 px-sm-3" style="width: 100%;">
 
-                <div class="card">
-                    <div class="card-body container-fluid">
-                        <div class="row justify-content-end p-3">
-                            <div class="dropdown">
-                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="month" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Select Month
-                                </a>
+                {{!-- <button onclick="scrollTop()" id="scrollTop">
+                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                </button> --}}
 
-                                <div class="dropdown-menu">
-                                    {{#each date as |date|}}
-                                        <a class="dropdown-item" href="">{{date}}</a>
-                                    {{/each}}
-                                    <a class="dropdown-item" href="#">Janurary</a>
-                                    <a class="dropdown-item" href="#">Feburary</a>
-                                    <a class="dropdown-item" href="#">March</a>
-                                    <a class="dropdown-item" href="#">April</a>
-                                    <a class="dropdown-item" href="#">May</a>
-                                    <a class="dropdown-item" href="#">June</a>
-                                    <a class="dropdown-item" href="#">July</a>
-                                    <a class="dropdown-item" href="#">August</a>
-                                    <a class="dropdown-item" href="#">September</a>
-                                    <a class="dropdown-item" href="#">October</a>
-                                    <a class="dropdown-item" href="#">November</a>
-                                    <a class="dropdown-item" href="#">December</a>
-                                </div>
+                {{!-- Month Selection / Header --}}
+                <div class="row-md-12 mb-3">
+                    <div class="dropdown text-right">
+                        <a class="btn md-btn-lg btn-secondary dropdown-toggle" href="#" role="button" id="month" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-calendar-alt"></i>
+                            Select Month
+                        </a>
+
+                        <div class="dropdown-menu">
+                            {{#each month}}
+                                <a class="dropdown-item" href="../{{formatDate month.uniqueDate 'MM'}}/{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+
+                {{!-- Body --}}
+                <div class="row-md-12">
+                    <div class="card container-fluid p-md-5 p-4">
+
+                        {{!-- Title --}}
+                        <div class="row pb-3">
+                            <div class="col">
+                                <h1 class="text-center mb-3">{{title}}</h1>
                             </div>
                         </div>
+
+                        {{!-- Options --}}
+                        <div class="row pb-3">
+                            <div class="col">
+                                <button class="btn btn-block md-btn-lg btn-primary">
+                                    <i class="fa fa-file-pdf"></i>
+                                    Export to PDF
+                                </button>
+                            </div>
+
+                            <div class="col">
+                                <button class="btn btn-block md-btn-lg btn-success">
+                                    <i class="fas fa-print"></i>
+                                    Print
+                                </button>
+                            </div>
+                        </div>
+
+                        {{!-- Daily Order Details --}}
+                        {{#each formatedOrder as |dayOrder|}}
+                        <div class="row pb-3">
+
+                            <div class="col">
+                                {{!-- missing mb-3 --}}
+                                <div class="card container-fluid p-0">
+
+                                    {{!-- Date Title --}}
+                                    <div class="card-header container">
+                                        <div class="row font-weight-bold">
+                                            <div class="col">
+                                                Date: {{dayOrder.orderDate}}
+                                            </div>
+                                            <div class="md-col sm-col-1 text-right">
+                                                ${{calcDailyTotal dayOrder}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{!-- Daily Order Details --}}
+                                    <div class="card-body">
+                                        {{#each dayOrder.orders as |orderItems|}}
+                                        <div class="container mb-3">
+                                            <div class="row justify-content-between">
+                                                <div class="col">
+                                                    <p class="mb-0"><u>Order ID: {{orderItems.id}}</u></p>
+                                                </div>
+                                                <div class="col text-right">
+                                                    $ {{calcOrderTotal orderItems}}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    {{#each orderItems.menuItems as |menuItem|}}
+                                                        <p class="mb-0 font-weight-light">{{menuItem.itemName}} x{{menuItem.orderItem.quantity}} @ {{menuItem.price}}</p>
+                                                    {{/each}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{/each}}
+                                    </div>
+                                        
+                                </div>
+                            </div>
+
+                        </div>
+                        {{/each}}
+
+                        {{!-- Monthly Total --}}
+                        <div class="row">
+                            <div class="col text-right">
+                                <h3>Monthly Total: $ {{calcMonthlyTotal formatedOrder}}</h3>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

@@ -18,8 +18,12 @@ module.exports = {
         }
         return accum;
     },
+    
+    calcItemPrice(items){
+        return (items.price * items.orderItem.quantity).toFixed(2)
+    },
 
-    calcTotal(order){
+    calcOrderTotal(order){
         let sum = 0;
         order.menuItems.forEach(order => {
             sum += order.price*order.orderItem.quantity
@@ -27,8 +31,55 @@ module.exports = {
         return sum.toFixed(2);
     },
 
-    calcItemPrice(items){
-        return (items.price * items.orderItem.quantity).toFixed(2)
+    calcDailyTotal(orders){
+        let sum = 0
+        
+        for (const order in orders.orders) {
+            if (orders.orders.hasOwnProperty(order)) {
+                const orderItem = orders.orders[order];
+                
+                for (const item in orderItem.menuItems) {
+                    if (orderItem.menuItems.hasOwnProperty(item)) {
+
+                        const menuItem = orderItem.menuItems[item];
+                        sum += menuItem.price * menuItem.orderItem.quantity
+                        
+                    }
+                }
+
+            }
+        }
+
+        return sum.toFixed(2)
+    },
+
+    calcMonthlyTotal(orders){
+        let sum = 0;
+
+        for (const order in orders) {
+            if (orders.hasOwnProperty(order)) {
+                const dailyOrder = orders[order];
+                
+                for (const orderItems in dailyOrder.orders) {
+                    if (dailyOrder.orders.hasOwnProperty(orderItems)) {
+                        const orderItem = dailyOrder.orders[orderItems];
+                        
+                        for (const menuItems in orderItem.menuItems) {
+                            if (orderItem.menuItems.hasOwnProperty(menuItems)) {
+
+                                const menuItem = orderItem.menuItems[menuItems];
+                                sum += menuItem.price * menuItem.orderItem.quantity
+
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        return sum.toFixed(2)
     },
 
     getTitle(menuItem){

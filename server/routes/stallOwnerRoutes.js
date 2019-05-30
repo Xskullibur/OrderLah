@@ -98,15 +98,70 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 
 });
 
-router.get('/monthlySummary', (req, res, next) => {
+router.get('/monthlySummary/:month/:year', (req, res, next) => {
 
-    db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") FROM orderlah_db.orders`, { raw: true }).then(dates => {
+    const inputMonthYear = `${req.params.month}/01/${req.params.year}`
+    const title = `Monthly Summary (${moment(inputMonthYear).format("MMM-YYYY")})`
 
-        res.send(dates)
+    //Fill Months
+    db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders`, { raw: true }).then(([month, metadata]) => {
 
-        // res.render('../views/stallOwner/monthlySummary',{
-        //     dates,
-        // })
+        //Other Info
+        Order.findAll({
+            where: [
+                db.where(db.fn('MONTH', Sequelize.col('orderTiming')), req.params.month),
+                db.where(db.fn('YEAR', Sequelize.col('orderTiming')), req.params.year),
+                {
+                    status: {
+                        [Sequelize.Op.or]: ['Collection Confirmed']
+                    },
+                    // stallId: req.user.id
+                }
+            ],
+            order: Sequelize.col('orderTiming'),
+            include: [{
+                model: MenuItem
+            }]
+        }).then(monthlyOrder => {
+
+            let formatedOrder = []
+
+            for (const i in monthlyOrder) {
+                if (monthlyOrder.hasOwnProperty(i)) {
+
+                    const order = monthlyOrder[i];
+                    const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY") 
+
+                    if (formatedOrder.length == 0) {
+                        formatedOrder.push({orderDate: orderDate, orders: []})
+                    }
+
+                    let dateNotFound = true;
+
+                    formatedOrder.forEach(object => {
+
+                        if (object.orderDate == orderDate) {
+                            object.orders.push(order)
+                            dateNotFound = false
+                            return
+                        }
+
+                    });
+
+                    if (dateNotFound) {
+                        formatedOrder.push({orderDate: orderDate, orders: [order]})
+                    }
+                    
+                }
+            }
+            
+            res.render('../views/stallOwner/monthlySummary',{
+                month, formatedOrder, title
+           })
+
+            // res.send(formatedOrder)
+        })
+
     })
 
 })
