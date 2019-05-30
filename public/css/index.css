@@ -1,0 +1,16 @@
+ul.menu-list li.category-list-item {
+  box-sizing: border-box;
+  transform: skew(0);
+  transition: transform 0.2s, background-color 0.2s;
+}
+ul.menu-list li.category-list-item > span {
+  color: black;
+}
+ul.menu-list li.category-list-item:hover {
+  background-color: #D80416;
+  transform: skew(20deg);
+}
+ul.menu-list li.category-list-item:hover > span {
+  color: white;
+  transform: skew(20deg);
+}

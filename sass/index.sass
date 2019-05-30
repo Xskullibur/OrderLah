@@ -1,0 +1,18 @@
+
+@import "./colors"   
+ul.menu-list 
+    li.category-list-item
+        box-sizing: border-box
+        transform: skew(0)
+        transition: transform 0.2s, background-color 0.2s
+
+        & > span
+            color: black
+            transform: skew(0)
+
+        &:hover
+            background-color: $coral-1
+            transform: skew(20deg)
+            & > span
+                color: white
+                transform: skew(-20deg)
