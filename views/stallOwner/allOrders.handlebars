@@ -1,44 +1,46 @@
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card p-3" style="width: 100%;">
-                <div class="card-body">
+            
+            <div class="text-center">
+                <h1>Current Orders</h1>
+            </div>
 
-                    <div class="container-fluid">
+            <div class="card" style="width: 100%;">
 
-                        {{!-- Filter --}}
-                        <div class="row mb-3">
-                            <div class="card col">
-                                <div class="card-body">
-                                    <form action="">
-                                        
-                                        <div class="form-row">
-                                            <div class="col-3">
-                                                <div class="row">
-                                                    <label for="orderNo">Order No.</label> 
-                                                </div>
-                                                <div class="row">
-                                                    <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="row">
-                                                    <label for="orderDate">Date</label>
-                                                </div>
-                                                <div class="row">
-                                                    <input type="date" name="orderDate" id="orderDate">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-row float-right">
-                                            <input type="submit" value="Submit">
-                                        </div>
-
-                                    </form>
+                {{!-- Filter --}}
+                <div class="card-header container-fluid">
+                    <form action="" class="p-3">
+                        
+                        <div class="form-row">
+                            <div class="col-3">
+                                <div class="row">
+                                    <label for="orderNo">Order No.</label> 
+                                </div>
+                                <div class="row">
+                                    <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="row">
+                                    <label for="orderDate">Date</label>
+                                </div>
+                                <div class="row">
+                                    <input type="date" name="orderDate" id="orderDate">
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-row float-right">
+                            <input class="btn btn-primary" type="submit" value="Submit">
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="container-fluid">
 
                         {{!-- Pagination Start --}}
                         <div class="row">
@@ -51,10 +53,10 @@
                                             </a>
                                         </li>
                                         
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        
+                                        {{#for pages}}
+                                            <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
+                                        {{/for}}
+
                                         <li class="page-item">
                                             <a class="page-link" href="#" aria-label="Next">
                                                 <span aria-hidden="true">&raquo;</span>
@@ -65,7 +67,62 @@
                             </div>
                         </div>
 
-                        Order Items
+                        {{#each allOrders as |order|}}                            
+                        <div class="row card mb-3">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col">
+                                        Order ID: {{order.id}}
+                                    </div>
+                                    <div class="col text-right">
+                                        {{formatDate order.orderTiming "DD/MM/YYYY, HH:MM:SS"}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body container">
+                                {{#each order.menuItems as |item|}}
+                                <div class="card mb-3 row">
+                                    <div class="col">
+                                        <div class="card-body row">
+                                            <div class="col-2">
+                                                <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}/img/no-image.jpg{{/if}}" alt"">
+                                            </div>
+                                            <div class="col">
+                                                <div class="row font-weight-bold mb-3">
+                                                    <div class="col">
+                                                        {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                                                    </div>
+                                                    <div class="col" style="text-align: right;">
+                                                        ${{calcItemPrice item}}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        Rating:
+                                                        {{#for item.orderItem.rating}}
+                                                        <i class="fas fa-star text-danger"></i>
+                                                        {{/for}}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">Comments: 
+                                                        <p class="font-weight-light">{{item.orderItem.comments}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/each}}
+                                <div class="row text-right">
+                                    <div class="col">
+                                        <b>Total Amount: ${{calcOrderTotal order}}</b>   
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+
 
                         {{!-- Pagination End --}}
                         <div class="row">
@@ -78,9 +135,9 @@
                                             </a>
                                         </li>
 
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        {{#for pages}}
+                                            <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
+                                        {{/for}}
                                         
                                         <li class="page-item">
                                             <a class="page-link" href="#" aria-label="Next">
