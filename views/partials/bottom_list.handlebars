@@ -28,22 +28,27 @@
         </div>
     </div>
     <div class="row bottom-list-content">
-        <div class="container container-scoll">
-            <div class="col">
+        <div class="col">
             <div class="row">
-                <div class="col-12 h-20" style="background-color: #f8f9fa;height: 50px;border: 1px solid rgba(0,0,0,.3);">
-                    <div class="col text-center" ><h3 class="p-2">Order Items</h3></div>
+                    <div class="col-12 h-20" style="background-color: #f8f9fa;height: 50px;border: 1px solid rgba(0,0,0,.3);">
+                        <div class="col text-center" ><h3 class="p-2">Order Items</h3></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="container-fluid container-scoll">
+                            <div class="row">
+                                <div class="col">
+                                    {{#each size}}
+                                        {{> menu_item index=@index}}
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <div class="row">
-
-                    {{#each size}}
-                        <div class="col"></div>
-                        {{> menu_item index=@index}}
-                        </div>
-                    {{/each}}
-            </div>
-        </div>
         </div>
     </div>
 </div>
