@@ -44,6 +44,15 @@ const Order = require('./order').model(Sequelize, db)
 const OrderItem = require('./orderItem').model(Sequelize, db)
 const Cusine = require('../models/cusine').model(Sequelize, db)
 
+//Relations
+User.hasOne(Stall);
+User.hasMany(Order);
+Stall.hasMany(MenuItem);
+Stall.hasMany(Order);
+Cusine.hasOne(Stall);
+Order.belongsToMany(MenuItem, { through: OrderItem })
+MenuItem.belongsToMany(Order, { through: OrderItem })
+
 module.exports = {
     //Models
     User, Stall, MenuItem, Order, OrderItem, Cusine,
@@ -53,13 +62,7 @@ module.exports = {
         db.authenticate().then(() => {
             console.log("Successfully connected to database");
             
-            User.hasOne(Stall);
-            User.hasMany(Order);
-            Stall.hasMany(MenuItem);
-            Stall.hasMany(Order);
-            Cusine.hasOne(Stall);
-            Order.belongsToMany(MenuItem, { through: OrderItem })
-            MenuItem.belongsToMany(Order, { through: OrderItem })
+
 
             //Create tables
             db.sync({ // Creates table if none exists
@@ -73,6 +76,7 @@ module.exports = {
             console.log(`Details: \n\r${err}`)
         })
     },
+    //DB
     db
 }
 

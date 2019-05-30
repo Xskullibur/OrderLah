@@ -6,36 +6,16 @@ const router = express.Router();
 const moment = require('moment')
 
 //Global
-const globalHandle = require('../libs/global/global')
+//Models
+const globalHandle = require('../../libs/global/global')
 const Order = globalHandle.get('order');
 const OrderItem = globalHandle.get('orderItem');
 const MenuItem = globalHandle.get('menuItem');
 const User = globalHandle.get('user');
 
-//Sequelize
+//Sequelize and DB
 const Sequelize = require('sequelize')
-const process = require('process')
-const connection_details = {
-    host: process.env.DB_HOST,
-    database: "orderlah_db",
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD
-}
-const db = new Sequelize(connection_details.database, connection_details.username, connection_details.password, {
-    host: connection_details.host,
-    dialect: 'mysql',
-
-    define: {
-        timestamps: false
-    },
-
-    pool:{
-        max: 15, // MAX of 15 concurrent connections
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
-})
+const db = globalHandle.get('db')
 
 router.get('/currentOrders', (req, res, next) => {
 

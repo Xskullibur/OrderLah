@@ -13,8 +13,6 @@
  *  
  */
 const bcrypt = require('bcrypt')
-//Salt for my key derivation function
-const salt = require('../hashes').bcrypt_salt
 
 const salt_rounds = 10
 

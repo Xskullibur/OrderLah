@@ -74,7 +74,7 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
-const stallOwnerRoutes = require('./server/routes/stallOwnerRoutes');
+const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 app.use(mainRoutes)
 app.use(stallOwnerRoutes)
 
