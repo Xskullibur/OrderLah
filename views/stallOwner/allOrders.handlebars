@@ -1,74 +1,82 @@
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            
-            <div class="text-center">
-                <h1>Current Orders</h1>
-            </div>
+            <div class="px-md-5 px-sm-3" style="width: 100%;">
 
-            <div class="card" style="width: 100%;">
+                <div class="card container p-5">
 
-                {{!-- Filter --}}
-                <div class="card-header container-fluid">
-                    <form action="" class="p-3">
-                        
-                        <div class="form-row">
-                            <div class="col-3">
-                                <div class="row">
-                                    <label for="orderNo">Order No.</label> 
-                                </div>
-                                <div class="row">
-                                    <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="row">
-                                    <label for="orderDate">Date</label>
-                                </div>
-                                <div class="row">
-                                    <input type="date" name="orderDate" id="orderDate">
-                                </div>
-                            </div>
+                    {{!-- Title --}}
+                    <div class="row mb-3">
+                        <div class="col text-center">
+                            <h1>Current Orders</h1> 
                         </div>
+                    </div>
 
-                        <div class="form-row float-right">
-                            <input class="btn btn-primary" type="submit" value="Submit">
-                        </div>
+                    {{!-- Filter --}}
+                    <div class="row mb-3">
+                        <div class="col">
 
-                    </form>
-                </div>
+                            <div class="card">
+                                <form action="">
+                                    
+                                    <div class="form-row">
+                                        <div class="col-3">
+                                            <div class="row">
+                                                <label for="orderNo">Order No.</label> 
+                                            </div>
+                                            <div class="row">
+                                                <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="row">
+                                                <label for="orderDate">Date</label>
+                                            </div>
+                                            <div class="row">
+                                                <input type="date" name="orderDate" id="orderDate">
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <div class="card-body">
+                                    <div class="form-row float-right">
+                                        <input class="btn btn-primary" type="submit" value="Submit">
+                                    </div>
 
-                    <div class="container-fluid">
-
-                        {{!-- Pagination Start --}}
-                        <div class="row">
-                            <div class="col">
-                                <nav aria-label="Order Page">
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        
-                                        {{#for pages}}
-                                            <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
-                                        {{/for}}
-
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                                </form>
                             </div>
-                        </div>
 
-                        {{#each allOrders as |order|}}                            
-                        <div class="row card mb-3">
+                        </div>
+                    </div>
+
+                    {{!-- Pagination Start --}}
+                    <div class="row mb-3">
+                        <div class="col">
+                            <nav aria-label="Order Page">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    
+                                    {{#for pages}}
+                                        <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
+                                    {{/for}}
+
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    {{!-- Order Details --}}
+                    {{#each allOrders as |order|}}                            
+                    <div class="row card mb-3">
+                        <div class="col p-0">
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col">
@@ -121,36 +129,36 @@
                                 </div>
                             </div>
                         </div>
-                        {{/each}}
-
-
-                        {{!-- Pagination End --}}
-                        <div class="row">
-                            <div class="col">
-                                <nav aria-label="Order Page">
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-
-                                        {{#for pages}}
-                                            <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
-                                        {{/for}}
-                                        
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-
                     </div>
+                    {{/each}}
+
+                    {{!-- Pagination End --}}
+                    <div class="row mb-3">
+                        <div class="col">
+                            <nav aria-label="Order Page">
+                                <ul class="pagination justify-content-end">
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    {{#for pages}}
+                                        <li class="page-item"><a class="page-link" href="./{{this}}">{{this}}</a></li>
+                                    {{/for}}
+                                    
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
         </div>
     </div>
