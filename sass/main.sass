@@ -5,32 +5,7 @@
 
 @import "./utils"
 
-/* Logo */
-.logo-fixed 
-    +fixed-size(50px)
-    transition: all .4s ease-in
-
-
-.logo-fixed.grow-scroll-growed 
-    +fixed-size(100px)
-
-
-
-/* NavBar */
-
-
-@include for-md-only
-    .navbar 
-        .navbar-nav 
-            margin: auto
-
-
-.nav-fixed 
-    transition: all .4s ease-in
-
-
-.nav-fixed.grow-scroll-growed 
-    min-height: 130px !important
+@import "./nav"
 
 
 /* Circle Btn */

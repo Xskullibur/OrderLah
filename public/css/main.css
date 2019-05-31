@@ -9790,6 +9790,7 @@ h3 {
   }
 }
 /* Utilities */
+/* Utilities */
 /* Logo */
 .logo-fixed {
   width: 50px;
@@ -9814,6 +9815,11 @@ h3 {
 
 .nav-fixed.grow-scroll-growed {
   min-height: 130px !important;
+}
+
+.navbar {
+  border-bottom: 2px solid #F28C8C !important;
+  background-color: rgba(255, 255, 255, 0.925);
 }
 
 /* Circle Btn */
