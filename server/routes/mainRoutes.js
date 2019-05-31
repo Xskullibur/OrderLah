@@ -108,7 +108,18 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
+    User.create({
+        username: "Administrator",
+        email: "admin@gmail.com",
+        firstName: "lee",
+        lastName: "hsienxiang",
+        birthday: "2019-05-01",
+        phone: "13623232",
+        password: "password",
+        role : "admin"
+    })
     res.render('login', {layout: 'blank_layout'})
+
 })
 
 /**

@@ -37,13 +37,23 @@ router.get('/showMenu', (req, res) => {
     //res.render('stallowner-menu')
 })
 
+router.get('/adminPanel', (req, res) =>{
+    User.findOne({ where: {id} }).then(user => {
+        if (user.role === 'Admin') {
+            res.render('admin')
+        }else{
+            res.send('not admin')           
+        }      
+      })
+})
 
 
 router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
-    const active = true;
+    //const stallId = req.user.id
+    const active = true
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
