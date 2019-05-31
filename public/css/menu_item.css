@@ -62,3 +62,14 @@ photo {
 .menu-list li {
   background-color: #f8f9fa;
 }
+
+.menu-item {
+  position: relative;
+  top: -150px;
+  opacity: 0;
+  transition: top 250ms linear, opacity 350ms linear;
+}
+.menu-item.anim {
+  top: 0;
+  opacity: 1;
+}

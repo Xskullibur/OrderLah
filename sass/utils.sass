@@ -1,5 +1,13 @@
 
-    /* Utilities */
+/* Utilities */
 =fixed-size($size)
   width: $size
   height: $size
+
+=for-md-only
+  @media (min-width: 599px)  
+    @content 
+  
+=for-sm-only
+  @media (max-width: 599px)  
+    @content 

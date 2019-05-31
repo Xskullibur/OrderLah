@@ -1,7 +1,7 @@
 
 
 @import "./colors"    
-@import "./shimmer"
+@import "./css/shimmer"
 @import "./utils"
 
 // Menu Item
@@ -34,3 +34,13 @@ $menu-item-btn-size: 70px
 .menu-list
     li
         background-color: $body-bg
+        
+//Animations
+.menu-item 
+    position: relative
+    top: -150px
+    opacity: 0
+    transition: top 250ms linear, opacity 350ms linear
+    &.anim
+        top: 0
+        opacity: 1

@@ -1,0 +1,62 @@
+<link type="text/css" rel="stylesheet", href="/css/bottom_list.css">
+<script type="text/javascript">
+    var open = false;
+    function toggleBottomList(){
+        open = !open;
+        openBottomList(open);
+    }
+
+    function openBottomList(open){
+        var list = $('#bottom-list');
+        var btn = $('#toggle_bottom_list_btn');
+        if(open){
+            //open
+            list.removeClass('list-close');
+            list.addClass('list-open');
+            btn.addClass('done');
+        }else{
+            //close
+            list.removeClass('list-open');
+            list.addClass('list-close');
+            btn.removeClass('done')
+        }
+    }
+
+</script>
+<div id="bottom-list" class="container bottom-list list-close">
+    <div class="row">
+        <div class="col-1 offset-md-11">
+
+        <button id="toggle_bottom_list_btn" type="button" class="btn btn-danger btn-circle mr-3 mb-3" onclick="toggleBottomList()">
+            <div class="icons">
+                <i class="fas fa-angle-double-up icon-default"></i>
+                <i class="fas fa-angle-double-down icon-second"></i>
+            </div>
+        </button>
+        </div>
+    </div>
+    <div class="row bottom-list-content">
+        <div class="col">
+            <div class="row">
+                    <div class="col-12 h-20" style="background-color: #f8f9fa;height: 50px;border: 1px solid rgba(0,0,0,.3);">
+                        <div class="col text-center" ><h3 class="p-2">Order Items</h3></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="container-fluid container-scoll">
+                            <div class="row">
+                                <div class="col">
+                                    {{#each size}}
+                                        {{> menu_items/menu_item_bottom_list index=@index}}
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

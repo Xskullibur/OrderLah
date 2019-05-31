@@ -18,12 +18,8 @@
 
 /* NavBar */
 
-=for-desktop-only
-  @media (min-width: 599px)  
-      @content 
 
-
-@include for-desktop-only
+@include for-md-only
     .navbar 
         .navbar-nav 
             margin: auto
@@ -38,13 +34,20 @@
 
 
 /* Circle Btn */
-.btn-circle 
-    width: 30px
-    height: 30px
-    padding: 6px 0px
-    border-radius: 15px
+.btn-circle
+    position: relative
+    +fixed-size(60px)
+    padding: 0
+    border-radius: 35px
     text-align: center
-    font-size: 12px
+    font-size: 20px
     line-height: 1.42857
 
+
+/*Fixed bottom container*/
+.bottom-container
+    position: fixed
+    min-width: 100vw
+    max-width:100%
+    bottom: 0
 
