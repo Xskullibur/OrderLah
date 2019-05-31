@@ -35,7 +35,7 @@ router.get('/currentOrders', (req, res, next) => {
         // res.send(currentOrders);
 
         const testImg = process.cwd() + '/public/img/no-image'
-        res.render('../views/stallOwner/currentOrders', {
+        res.render('../views/stallOwner/currentOrders2', {
             currentOrders
         });
 
