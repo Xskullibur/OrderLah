@@ -46,7 +46,7 @@ router.get('/currentOrders', (req, res, next) => {
 router.get('/allOrders/:pageNo', (req, res, next) => {
 
     Order.count().then(orderCount => {
-        const currentPage = req.params.pageNo;
+        let currentPage = req.params.pageNo;
         let offset = 0;
         let limit = 5;
 
@@ -56,7 +56,7 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
             offset = (currentPage - 1) * 5
         }
 
-        const pages = Math.ceil(orderCount / limit);
+        const pages = Math.floor(orderCount / limit);
 
         Order.findAll({
             where: { status: 'Collection Confirmed' },
@@ -68,8 +68,10 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
             }]
         }).then(allOrders => {
             // res.send(allOrders)
+
+            currentPage = parseInt(currentPage)
             res.render('../views/stallOwner/allOrders',{
-                 pages, allOrders,
+                 pages, allOrders, currentPage
             })
         })
 

@@ -1,0 +1,30 @@
+<style>
+    html{ scroll-behavior: smooth; }
+</style>
+
+{{> fixed_button}}
+
+<script>
+    function checkScrollLocation(){
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+            document.getElementById('bottom_btn').style.display = "block"
+        }
+        else {
+            document.getElementById('bottom_btn').style.display = "none"
+        }
+    }
+
+    $('#bottom_btn').ready(function(){
+        checkScrollLocation()
+    })
+
+    window.onscroll = function() {
+        checkScrollLocation()
+    }
+
+    $(`#bottom_btn`).click(function(){
+        document
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    });
+</script>
