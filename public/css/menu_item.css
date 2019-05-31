@@ -39,6 +39,7 @@ photo {
 }
 /* Utilities */
 .menu-item-img {
+  position: relative;
   height: 180px;
   width: 100%;
 }
@@ -63,13 +64,13 @@ photo {
   background-color: #f8f9fa;
 }
 
-.menu-item {
+.menu-item.load-animation {
   position: relative;
   top: -150px;
   opacity: 0;
   transition: top 250ms linear, opacity 350ms linear;
 }
-.menu-item.anim {
+.menu-item.load-animation.anim {
   top: 0;
   opacity: 1;
 }

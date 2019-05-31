@@ -1,0 +1,31 @@
+{{!-- Styling for menu_item.handlebars --}}
+<link rel="stylesheet" type="text/css" href="css/menu_item.css"/>
+<script
+    src="https://www.paypal.com/sdk/js?client-id=AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU&currency=SGD">
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card m-5">
+                <div class="card-header"><h2>Orders</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        {{> list_menu_items}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" align="center">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+paypal.Buttons().render('#paypal-button-container');
+</script>

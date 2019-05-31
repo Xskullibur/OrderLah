@@ -78,7 +78,7 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
 
 /**
  * Register POST '/register' path
- * Params: email, password
+ * Params: email, password, fname, lname, dob, phone
  */
 router.post('/register', uuid_middleware.verify, (req, res) => {
     
