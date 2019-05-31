@@ -1,94 +1,103 @@
 <div class="container" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-12 mb-4">
             <div style="width: 100%;">
 
-                <div class="row">
-                    <div class="col">
-                        <div class="card container-fluid p-3">
+                {{!-- Block --}}
+                <div class="card p-3">
 
-                            <div class="text-center row">
-                                <div class="col">
-                                    <h1>Current Orders</h1> 
-                                </div>
-                            </div>
+                    {{!-- Title --}}
+                    <div class="text-center row">
+                        <div class="col">
+                            <h1>Current Orders</h1> 
+                        </div>
+                    </div>
 
-                            <div class="row">
-                                <div class="col p-3">
-                                    {{#each currentOrders as |order|}}
+                    {{!-- Body --}}
+                    <div class="row">
+                        <div class="col">
 
-                                        <div class="card d-inline-block m-4">
-                                            <div class="card shadow-sm">
+                            <div class="card container-fluid bg-light">
+                                <div class="row">
+                                    <div class="col">
 
-                                                {{!-- Card Header --}}
-                                                <div class="card-header font-weight-bold bg-danger text-white">
-                                                    <div class="row justify-content-between">
-                                                        <div class="col-md-auto">
-                                                            Order: {{order.id}}
-                                                        </div>
-                                                        <div class="col text-right">
-                                                            {{formatDate order.orderTiming "HH:MM:SS"}}
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        {{#each currentOrders as |order|}}
 
-                                                {{!-- Card Body --}}
-                                                <div class="card-body" style="font-family: Roboto">
+                                            <div class="card d-inline-block m-4">
+                                                <div class="card shadow-sm">
 
-                                                    {{!-- Current Order Status --}}
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <div class="row">
-                                                                <u class="mx-auto">Current Status:</u>
-                                                            </div>
-                                                            <div class="row">
-                                                                <b class="mx-auto">{{order.status}}</b>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <hr>
-
-                                                    {{!-- Order Info --}}
-                                                    {{#each order.menuItems as |item|}}
-                                                        <div class="row font-weight-light">
+                                                    {{!-- Card Header --}}
+                                                    <div class="card-header font-weight-bold bg-danger text-white">
+                                                        <div class="row justify-content-between">
                                                             <div class="col-md-auto">
-                                                                {{item.itemName}}
+                                                                Order: {{order.id}}
                                                             </div>
                                                             <div class="col text-right">
-                                                                <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
+                                                                {{formatDate order.orderTiming "HH:MM:SS"}}
                                                             </div>
                                                         </div>
-                                                    {{/each}}
+                                                    </div>
 
-                                                    <hr>
+                                                    {{!-- Card Body --}}
+                                                    <div class="card-body" style="font-family: Roboto">
 
-                                                    {{!-- Order Total --}}
-                                                    <div class="row">
-                                                        <div class="col text-right">
-                                                            ${{calcOrderTotal order}}   
+                                                        {{!-- Current Order Status --}}
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <div class="row">
+                                                                    <u class="mx-auto">Current Status:</u>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <b class="mx-auto">{{order.status}}</b>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <hr>
+
+                                                        {{!-- Order Info --}}
+                                                        {{#each order.menuItems as |item|}}
+                                                            <div class="row font-weight-light">
+                                                                <div class="col-md-auto">
+                                                                    {{item.itemName}}
+                                                                </div>
+                                                                <div class="col text-right">
+                                                                    <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
+                                                                </div>
+                                                            </div>
+                                                        {{/each}}
+
+                                                        <hr>
+
+                                                        {{!-- Order Total --}}
+                                                        <div class="row">
+                                                            <div class="col text-right">
+                                                                ${{calcOrderTotal order}}   
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                {{!-- Card Footer / Update Status --}}
-                                                <div class="card-footer text-muted">
-                                                    <div class="row">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary mx-auto ">
-                                                            <b>{{getNextStatus order.status}}</b>
-                                                        </button>
+                                                    {{!-- Card Footer / Update Status --}}
+                                                    <div class="card-footer text-muted">
+                                                        <div class="row">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary mx-auto ">
+                                                                <b>{{getNextStatus order.status}}</b>
+                                                            </button>
+                                                        </div>
                                                     </div>
+
                                                 </div>
-
                                             </div>
-                                        </div>
 
-                                    {{/each}}
+                                        {{/each}}
+
+                                    </div>
                                 </div>
                             </div>
 
                         </div>
                     </div>
+
                 </div>
 
             </div>
