@@ -1,11 +1,13 @@
+<style>
+    html{ scroll-behavior: smooth; }
+</style>
+
+{{> fixed_button}}
+
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="px-md-5 px-sm-3" style="width: 100%;">
-
-                {{!-- <button onclick="scrollTop()" id="scrollTop">
-                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                </button> --}}
 
                 {{!-- Month Selection / Header --}}
                 <div class="row-md-12 mb-3">
@@ -114,3 +116,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    function checkScrollLocation(){
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20){
+            document.getElementById('bottom_btn').style.display = "block"
+        }
+        else {
+            document.getElementById('bottom_btn').style.display = "none"
+        }
+    }
+
+    $('#bottom_btn').ready(function(){
+        checkScrollLocation()
+    })
+
+    window.onscroll = function() {
+        checkScrollLocation()
+    }
+
+    $(`#bottom_btn`).click(function(){
+        document
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    });
+</script>
