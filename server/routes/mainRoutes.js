@@ -118,6 +118,26 @@ router.get('/login', (req, res) => {
         password: "password",
         role : "admin"
     })
+    User.create({
+        username: "Yummy Steak",
+        email: "ys@gmail.com",
+        firstName: "Anna",
+        lastName: "Tan",
+        birthday: "2019-05-11",
+        phone: "13623232",
+        password: "password",
+        role : "Stallowner"
+    })
+    User.create({
+        username: "John Wick",
+        email: "jw@gmail.com",
+        firstName: "John",
+        lastName: "Wick",
+        birthday: "2019-05-21",
+        phone: "13623232",
+        password: "password",
+        role : "Customer"
+    })
     res.render('login', {layout: 'blank_layout'})
 
 })
