@@ -56,7 +56,7 @@ passport.deserializeUser(function(id, done) {
  * Default GET '/' path
  */
 router.get('/', auth_login.auth, (req, res) => {
-    res.render('index', {size: MenuItem.count()})
+    res.render('index', {size: [1,2,2,3,55,5,6,6,67,7,7]})
 })
 
 /**

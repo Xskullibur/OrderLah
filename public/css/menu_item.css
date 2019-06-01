@@ -64,11 +64,25 @@ photo {
   background-color: #f8f9fa;
 }
 
+.menu-item-price {
+  color: #D84141;
+  font-size: 1.6em;
+  font-style: italic;
+  font-weight: bold;
+}
+
 .menu-item.load-animation {
   position: relative;
   top: -150px;
   opacity: 0;
-  transition: top 250ms linear, opacity 350ms linear;
+  transition: top 250ms cubic-bezier(0.5, -0.5, 0.5, 1.5), opacity 350ms linear;
+}
+.menu-item.load-animation .card {
+  box-shadow: none;
+  transition: box-shadow 60ms linear;
+}
+.menu-item.load-animation .card:hover {
+  box-shadow: 0px 0px 10px 2px #d80416;
 }
 .menu-item.load-animation.anim {
   top: 0;
