@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/css/admin.css">
 <br>
-<center><button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Item</button></center>
+<center><button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Stallowner</button></center>
 <br><br>
 <div class="row" style="padding-left: 5em">
     {{#if displayStallowner}}
@@ -9,12 +9,13 @@
                     <div class="column">
                         <div class="container">
                             <div class="card">
+                                <br>                 
                                 <div class="card__image-container shimmerBG media">
-                                    <img class="card__image" src="https://images.unsplash.com/photo-1519999482648-25049ddd37b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2126&q=80" height="140" width="225" alt="">
+                                    <center><img class="card__image" src="https://images.unsplash.com/photo-1519999482648-25049ddd37b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2126&q=80" height="140" width="225" alt=""></center>
                                 </div>
                                 <br>
                                 <div class="card__content">
-                                    <h6 class="card__title">{{this.username}}
+                                    <center><h4 class="card__title">{{this.username}}</h4></center>
                                     <center>
                                         <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
                                             <svg width="24" height="24" viewBox="0 0 24 24">
