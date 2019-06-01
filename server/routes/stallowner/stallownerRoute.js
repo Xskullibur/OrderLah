@@ -28,7 +28,7 @@ const MenuItem = globalHandle.get('menuItem')
 router.use(auth_login.auth)
 
 router.get('/showMenu', (req, res) => {
-    MenuItem.findAll().then((item) =>{
+    MenuItem.findAll({where: {owner: req.user.id, active: true}}).then((item) =>{
         res.render('stallowner-menu', {
             item:item
         })
@@ -37,22 +37,22 @@ router.get('/showMenu', (req, res) => {
     //res.render('stallowner-menu')
 })
 
-router.get('/adminPanel', (req, res) =>{
-    User.findOne({ where: {id} }).then(user => {
-        if (user.role === 'Admin') {
-            res.render('admin')
-        }else{
-            res.send('not admin')           
-        }      
-      })
-})
+// router.get('/adminPanel', (req, res) =>{
+//     User.findOne({ where: {id} }).then(user => {
+//         if (user.role === 'Admin') {
+//             res.render('admin')
+//         }else{
+//             res.send('not admin')           
+//         }      
+//       })
+// })
 
 
 router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
-    //const stallId = req.user.id
+    const owner = req.user.id
     const active = true
 
     if (!fs.existsSync('./public/uploads')){
@@ -61,7 +61,7 @@ router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
 
     
 
-    MenuItem.create({ itemName, price, itemDesc, active}).then(function() {
+    MenuItem.create({ itemName, price, itemDesc, owner, active}).then(function() {
         // alert("Item successfully added")
         res.send('Good')
         //res.render('stallowner-menu')

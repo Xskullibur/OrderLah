@@ -8,6 +8,7 @@ module.exports = {
                 itemDesc: { type: Sequelize.STRING(255), allowNulls: false, unique: false },
                 price: { type: Sequelize.DECIMAL(10, 2), allowNulls: false, unique: false },
                 active: { type: Sequelize.BOOLEAN, allowNulls: true, unique: false},
+                owner: { type: Sequelize.STRING, allowNulls: false, unique: false }
             })
 
             return MenuItem;
