@@ -29,3 +29,41 @@
   border-bottom: 2px solid #F28C8C !important;
   background-color: rgba(255, 255, 255, 0.925);
 }
+
+/*Hover show*/
+.navbar-nav li:hover .dropdown-menu {
+  display: block;
+}
+
+/* Profile nav */
+.nav-profile > a {
+  color: #BF0303 !important;
+}
+.nav-profile::after {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #000;
+  content: "";
+  display: inline-block;
+  transform: rotate(0deg);
+  transition: transform 0.125s linear;
+  height: 0;
+  width: 0;
+}
+.nav-profile:hover::after {
+  transform: rotate(180deg);
+}
+
+.profile-dropdown-toggle {
+  position: relative;
+  top: 2px;
+}
+
+.nav-profile-img {
+  max-width: 25px;
+  max-height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  border-radius: 50%;
+  object-fit: cover;
+}
