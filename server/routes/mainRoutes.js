@@ -60,6 +60,14 @@ router.get('/', auth_login.auth, (req, res) => {
 })
 
 /**
+ * GET '/profile' path
+ * Get Profile page
+ */
+router.get('/profile', auth_login.auth, (req, res) => {
+    res.render('profile')
+})
+
+/**
  * Get all menu items inside the database as JSON
  */
 router.get('/menuItem', auth_login.auth, (req, res) => {
