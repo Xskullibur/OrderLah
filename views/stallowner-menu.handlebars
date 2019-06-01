@@ -15,8 +15,8 @@
                                 </div>
                                 <br>
                                 <div class="card__content">
-                                    <h6 class="card__title">{{this.itemName}}     ${{this.price}}</h3>
-                                    <p>{{this.itemDesc}} </p>
+                                    <h6 class="card__title"></h3>
+                                    <p> </p>
                                     <center>
                                         <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
                                             <svg width="24" height="24" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/stallOwner/submitItem" enctype="">
+            <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>

@@ -1,0 +1,141 @@
+* {
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif;
+}
+
+img {
+    max-width: 100%;
+    border-radius: 50%;
+}
+
+.card {
+    position: relative;
+    background: #f4f4f4;
+    width: 225px;
+    height: 300px;
+    border-radius: 6px;
+    padding: 2rem;
+    color: black;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    overflow: hidden;
+}
+
+.card .shimmerBG {
+    -webkit-animation-duration: 1.7s;
+    animation-duration: 1.7s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-name: shimmer;
+    animation-name: shimmer;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-size: 1200px 100%;
+}
+
+@-webkit-keyframes shimmer {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1200px 0;
+    }
+
+    100% {
+        background-position: 1200px 0;
+    }
+}
+
+.card__image-container {
+    margin: -2rem -2rem 1rem -2rem;
+}
+
+.card__line {
+    opacity: 0;
+    animation: LineFadeIn .8s .8s forwards ease-in;
+}
+
+.card__image {
+    opacity: 0;
+    animation: ImageFadeIn .8s 1.4s forwards;
+}
+
+.card__title {
+    color: black;
+    margin-top: 0;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+.card__content {
+    margin-top: -1rem;
+    opacity: 0;
+    animation: ContentFadeIn 1.5s 2.5s forwards;
+}
+
+.card__svg {
+    position: absolute;
+    left: 0;
+    top: 115px;
+}
+
+@keyframes ContentFadeIn {
+    0% {
+        transform: translateY(-1rem);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes ImageFadeIn {
+    0% {
+        transform: translate(-0.5rem, -0.5rem) scale(1.05);
+        opacity: 0;
+        filter: blur(2px);
+    }
+
+    50% {
+        opacity: 1;
+        filter: blur(2px);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/*button*/
+
+.red-btn {
+    border: 2px solid red;
+    border-radius: 6px;
+    padding: 4px 10px;
+    color: red;
+    border-color: red;
+    background-color: white;
+    text-transform: uppercase;
+    font-style: bold;
+    transition: background-color .4s ease-in-out;
+}
+
+.red-btn:hover {
+    background-color: red;
+    color: white;
+}

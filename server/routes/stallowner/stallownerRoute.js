@@ -57,10 +57,14 @@ router.get('/adminPanel', (req, res) =>{
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
         if (user.role === 'Admin') {
-            res.render('admin')
+            User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
+                res.render('admin', {
+                    displayStallowner: stallowner
+                })
+            })
         }else{
             res.send('not admin')           
-        }      
+        }   
       })
 })
 
