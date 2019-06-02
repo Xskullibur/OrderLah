@@ -70,7 +70,7 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
             // res.send(allOrders)
 
             currentPage = parseInt(currentPage)
-            res.render('../views/stallOwner/allOrders',{
+            res.render('stallOwner\\allOrders',{
                  pages, allOrders, currentPage
             })
         })
