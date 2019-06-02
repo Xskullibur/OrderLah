@@ -10,8 +10,8 @@ const size = 350
 module.exports.genProfileImage = (char) => {
     let promise = new Promise(function(resolve, reject) {
         const gradient = tinygradient([
-            {color: {h:(Math.random() * 361), s:(Math.random() * 101), v:(Math.random() * 51) + 50 }, pos: 0},
-            {color: {h:(Math.random() * 361), s:(Math.random() * 101), v:(Math.random() * 51) + 50 }, pos: 1},
+            {color: {h:(Math.random() * 361), s:(Math.random() * 101), v:(Math.random() * 31) + 70 }, pos: 0},
+            {color: {h:(Math.random() * 361), s:(Math.random() * 101), v:(Math.random() * 31) + 70 }, pos: 1},
           ]);
         
         const colorsRgb = gradient.rgb(size)
