@@ -1,5 +1,6 @@
 {
     "events": {
-        "exit": "sass --no-source-map sass:public/css"
+        "start": "npm run compile-sass",
+        "exit": "npm run compile-sass"
     }
 }
