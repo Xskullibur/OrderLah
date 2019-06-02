@@ -1,5 +1,5 @@
 /**
- * Simple gradient profile generator
+ * Simple gradient profile generator by Zi Heng
  */
 const tinygradient = require('tinygradient')
 const Jimp = require('jimp')
