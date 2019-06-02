@@ -17,7 +17,7 @@ function doStaggerAnimation(){
         var menu_item = $(menu_items[index]);
         setTimeout(() => {
             menu_item.addClass('show')
-            loadContent(menu_item, new MenuItem('https://dummyimage.com/170x150/000/fff', 'Hello ' + index, 5, '$4.5'))
+            //loadContent(menu_item, new MenuItem('https://dummyimage.com/170x150/000/fff', 'Hello ' + index, 5, '$4.5'))
         }, 220 * index);
     });
 }

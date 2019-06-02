@@ -79,7 +79,7 @@ router.get('/profile', auth_login.auth, (req, res) => {
 /**
  * Get all menu items inside the database as JSON
  */
-router.get('/menuItem', auth_login.auth, (req, res) => {
+router.get('/menuItems', auth_login.auth, (req, res) => {
    MenuItem.findAll({}).then( menuItems => {
        res.send(JSON.stringify(menuItems))
    })
