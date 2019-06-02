@@ -108,38 +108,7 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
-    User.create({
-        username: "Administrator",
-        email: "admin@gmail.com",
-        firstName: "lee",
-        lastName: "hsienxiang",
-        birthday: "2019-05-01",
-        phone: "13623232",
-        password: "password",
-        role : "admin"
-    })
-    User.create({
-        username: "Yummy Steak",
-        email: "ys@gmail.com",
-        firstName: "Anna",
-        lastName: "Tan",
-        birthday: "2019-05-11",
-        phone: "13623232",
-        password: "password",
-        role : "Stallowner"
-    })
-    User.create({
-        username: "John Wick",
-        email: "jw@gmail.com",
-        firstName: "John",
-        lastName: "Wick",
-        birthday: "2019-05-21",
-        phone: "13623232",
-        password: "password",
-        role : "Customer"
-    })
     res.render('login', {layout: 'blank_layout'})
-
 })
 
 /**

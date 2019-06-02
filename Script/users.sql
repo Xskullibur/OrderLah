@@ -1,0 +1,5 @@
+﻿INSERT INTO `orderlah_db`.`users` (`id`, `username`, `firstName`, `lastName`, `email`, `birthday`, `password`, `phone`, `role`) 
+VALUES ('1', 'Administrator', 'lee', 'hsienxiang', 'admin@gmail.com', '2019-05-01 00:00:00', '$2b$10$8HAJa4uPyTj78b2lz2.Uh.oYDDSjfVMkayFm6512ojABLuIvPZtFe', '13623232', 'Admin'), 
+('2', 'Yummy Steak', 'Anna', 'Tan', 'ys@gmail.com', '2019-05-11 00:00:00', '$2b$10$xTAwTkZyIJKOjC3sDGC4YOW87H8/fpWU9s6RJgTxwWP.w8NHSzIsS', '13623232', 'Stallowner'),
+('3', 'John Wick', 'John', 'Wick', 'jw@gmail.com', '2019-05-21 00:00:00', '$2b$10$C83/2mvuc6fj2xdbcEr9UOIg/TERWFxj/xqHD.hrCZhRXrmZU.E..', '13623232', 'Customer'),
+('4', 'Tasty Noodle', 'May', 'Lim', 'ml@gmail.com', '2019-06-20 00:00:00', '$2b$10$VBhGM4A8yfCM1Lu0d3O79Oqqzd0QQWCocERBozu.pC6mRkXV.gwPi', '34834839', 'Stallowner');
