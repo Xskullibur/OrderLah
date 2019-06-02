@@ -60,7 +60,12 @@ typings/
 # next.js build output
 .next
 
-# uploads folder
+# uploads folder content
 public/uploads/*
 #profile picture
 public/img/profiles/*
+
+#keep uploads folder
+!public/uploads
+#keep profile picture
+!public/img/profiles
