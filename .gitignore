@@ -61,6 +61,6 @@ typings/
 .next
 
 # uploads folder
-public/uploads
+public/uploads/
 #profile picture
-public/img/profiles
+public/img/profiles/*
