@@ -64,8 +64,3 @@ typings/
 public/uploads/*
 #profile picture
 public/img/profiles/*
-
-#keep uploads folder
-!public/uploads
-#keep profile picture
-!public/img/profiles
