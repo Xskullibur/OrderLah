@@ -6,6 +6,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 @import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -9832,7 +9833,12 @@ h3 {
 .nav-profile > a {
   color: #BF0303 !important;
 }
-.nav-profile::after {
+
+.profile-dropdown-toggle {
+  position: relative;
+  top: 2px;
+}
+.profile-dropdown-toggle::after {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #000;
@@ -9843,13 +9849,8 @@ h3 {
   height: 0;
   width: 0;
 }
-.nav-profile:hover::after {
+.profile-dropdown-toggle:hover::after {
   transform: rotate(180deg);
-}
-
-.profile-dropdown-toggle {
-  position: relative;
-  top: 2px;
 }
 
 .nav-profile-img {
@@ -9863,7 +9864,7 @@ h3 {
 
 /* Font */
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* Circle Btn */

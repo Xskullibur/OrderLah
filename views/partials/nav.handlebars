@@ -55,10 +55,14 @@
           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-        
+        {{!-- Profile navbar for sm --}}
+        <div class="nav navbar-nav pull-right d-inline-block d-md-none">
+            {{> profile_nav}}
+        </div>
       </div>
   </div>
-  <div class="nav navbar-nav pull-right">
+  {{!-- Profile navbar for md --}}
+  <div class="nav navbar-nav pull-right d-none d-md-inline-block">
       {{> profile_nav}}
   </div>
 </nav>

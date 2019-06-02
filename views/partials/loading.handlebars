@@ -13,6 +13,8 @@
             $.Velocity.animate(loading_body, {
                 top: '-100vh'
             }, {delay: 500,duration: 2000}).then(() => {
+                //Hide the loading screen
+                loading_body.addClass('d-none');
                 //Do staggering animations for the items
                 doStaggerAnimation();
             })
