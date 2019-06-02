@@ -83,7 +83,7 @@ photo {
 .menu-item.load-animation .card:hover {
   box-shadow: 0px 0px 10px 2px #d80416;
 }
-.menu-item.load-animation.anim {
+.menu-item.load-animation.show {
   top: 0;
   opacity: 1;
 }

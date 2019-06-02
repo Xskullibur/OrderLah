@@ -1,0 +1,11 @@
+.popup-item {
+  z-index: 1000;
+  position: relative;
+  top: -100%;
+  opacity: 0;
+  transition: top 0.5s ease-in, opacity 0.5s ease-in;
+}
+.popup-item.show {
+  opacity: 1;
+  top: -100%;
+}

@@ -1,0 +1,44 @@
+<link type="text/css" rel="stylesheet" href="/css/top-popup.css">
+<script>
+    var alertCount = 0;
+    /**
+    * Show alert message box
+    * @param {message} message to be shown on the alert
+    * @param {timeout} set the timeout time (ms) for the alert to be dismissed (default: 3000ms)
+    * @param {type} set the bootstrap alert type (default: alert-primary)
+    */
+    function showAlert(message, timeout=3000, type="alert-primary"){
+        const popup_html = $(`<div id="popup-alert-${alertCount}" class="popup-item">
+                <div class="alert m-0 ${type}" role="alert">
+                <button type="button" class="close" aria-label="Close" onclick="removeAlert($('#popup-alert-${alertCount}'))">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                ${message}
+                </div>
+                </div>`);
+        popup_html.appendTo('#popup-container');
+        //Reflow
+        popup_html.css('opacity');
+
+        popup_html.addClass('show');
+
+        //Hide element after timeout
+        setTimeout(function(){removeAlert(popup_html)}, timeout);
+
+    }
+
+    /**
+    * Remove/Dismiss the given alert element
+    * @param {alert} alert DOM object to be removed/dismiss
+    */
+    function removeAlert(alert){
+        alert.removeClass('show');
+        setTimeout(function(){
+            //Remove alert after animation
+            alert.remove();
+        }, 500);
+    }
+
+</script>
+<div id="popup-container">
+</div>
