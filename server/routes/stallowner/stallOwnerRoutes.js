@@ -71,7 +71,19 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 
             currentPage = parseInt(currentPage)
             res.render('stallOwner\\allOrders',{
-                 pages, allOrders, currentPage
+                 pages, allOrders, currentPage,
+                 helpers: {
+                    getPrevious(currentPg){
+                        if (currentPg > 1) {
+                            return currentPg - 1
+                        }
+                     },
+                     getNext(currentPg){
+                         if (currentPg < pages) {
+                             return currentPg + 1
+                         }
+                     }, 
+                }
             })
         })
 
