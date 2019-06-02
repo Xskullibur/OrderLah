@@ -24,6 +24,9 @@ const app = globalHandle.get('app')
 //Passport.js
 const passport = require('passport')
 
+//moment
+const moment = require('moment')
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -70,7 +73,7 @@ router.get('/', auth_login.auth, (req, res) => {
  * Get Profile page
  */
 router.get('/profile', auth_login.auth, (req, res) => {
-    res.render('profile')
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
 })
 
 /**
