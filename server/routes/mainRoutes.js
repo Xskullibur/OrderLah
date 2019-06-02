@@ -82,6 +82,7 @@ router.get('/menuItem', auth_login.auth, (req, res) => {
    })
 })
 
+const profile_gen = require('../libs/profile_img_generator')
 /**
  * Register GET '/register' path
  * Register page
@@ -106,7 +107,12 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
         phone: req.body.phone,
         password: req.body.password
     }).then(user => {
-        console.log("User's auto-generated ID:", user.id);
+        console.log("User's auto-generated ID:", user.id)
+        //Create profile pic
+        profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
+            img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
+            console.log('Generated image for user:' + user.id)
+        })
         res.send('Success')
     }).catch(err => {
         console.log(err)
