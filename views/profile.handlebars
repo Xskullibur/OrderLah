@@ -3,14 +3,15 @@
 <div class="container my-5">
     <div class="row justify-content-md-center" align="center">
         <div class="col-md-8 col-12">
-            <div class="card p-3">
-                <img class="card-img-top profile-img" src="/img/Homepage-3.jpg" alt="Profile Picture">
+            <div class="card">
+                <div class="card-header mb-2"><h3>Profile</h3></div>
+                <img class="card-img-top profile-img border border-danger" src="/img/Homepage-3.jpg" alt="Profile Picture">
                 {{!-- Hidden form to update image --}}
                 <form>
-                    <input type="text">
+                    <input type="text" hidden>
                 </form>
                 <div class="card-body">
-                    <h5 class="card-title text-center">{Username}</h5>
+                    <h4 class="card-title text-center">{{user.username}}</h4>
                     <br><br>
                         <div id="accordion">
                             <div class="card">
@@ -26,15 +27,15 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-3"><h5>Email:</h5></div>
-                                        <div class="col-auto"><p class="font-weight-light">{email}</p></div>
+                                        <div class="col-auto"><p class="font-weight-light">{{user.email}}</p></div>
                                     </div>
                                     <div class="row">
                                         <div class="col-3"><h5>Phone:</h5></div>
-                                        <div class="col-auto"><p class="font-weight-light">{phone}</p></div>
+                                        <div class="col-auto"><p class="font-weight-light">{{user.phone}}</p></div>
                                     </div>
                                     <div class="row">
                                         <div class="col-3"><h5>Birthday:</h5></div>
-                                        <div class="col-auto"><p class="font-weight-light">{dob}</p></div>
+                                        <div class="col-auto"><p class="font-weight-light">{{user.dob}}</p></div>
                                     </div>
                                 </div>
                                 </div>
