@@ -1,6 +1,6 @@
 {
     "events": {
         "start": "npm run compile-sass",
-        "exit": "npm run compile-sass"
+        "restart": "npm run compile-sass"
     }
 }
