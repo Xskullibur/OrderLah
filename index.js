@@ -14,7 +14,7 @@ const session = require('express-session')
 
 const exphbs = require('express-handlebars')
 
-const helpers = require('./public/js/helpers')
+const helpers = require('./server/helpers/helpers')
 
 //Setup express
 const app = express()
