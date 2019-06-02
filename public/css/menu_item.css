@@ -19,8 +19,7 @@ box {
 
 lines {
   height: 1.25rem;
-  margin-top: 10px;
-  width: 200px;
+  width: 160px;
 }
 
 photo {
@@ -45,19 +44,19 @@ photo {
 }
 
 .menu-item-btn {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   padding: 10px 16px;
   border-radius: 35px;
   font-size: 24px;
   line-height: 1.33;
   position: relative;
-  top: -35px;
+  top: -25px;
 }
 
 .menu-item-body {
   position: relative;
-  top: -35px;
+  top: -25px;
 }
 
 .menu-list li {

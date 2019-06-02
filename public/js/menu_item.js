@@ -28,11 +28,17 @@ function loadContent(menuItemDoc, menuItem){
     var img = $(menuItemDoc.find('img')[0]);
     var title = $(menuItemDoc.find('h5')[0]);
     var price = $(menuItemDoc.find('h5')[1]);
+    var rating = $(menuItemDoc.find('.rating')[0]);
 
     //Set all values
     img.attr('src', menuItem.imgSrc);
     title.text(menuItem.foodTitle);
     price.text(menuItem.price);
+
+    for (let index = 0; index < menuItem.rating; index++) {
+        //Add the star
+        rating.append("<i class=\"fas fa-star text-danger\"></i>");
+    }
 
     //Once the img finished loading we show the element
     img.on('load', function(){
@@ -44,7 +50,8 @@ function loadContent(menuItemDoc, menuItem){
         //Show all elements
         img.removeAttr('hidden');
         title.removeAttr('hidden');
-        price.removeAttr('hidden')
+        price.removeAttr('hidden');
+        rating.removeAttr('hidden');
 
     });
 
