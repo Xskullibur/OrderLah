@@ -108,5 +108,21 @@ router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
 });
 
+router.post('/checkOrder', (req, res) =>{
+    //trying to retrieve the ordernumber via the handbar
+    let number = req.body.number;
+    console.log(number)
+
+    Order.findOne({
+        where:{
+            id: number //matches the order number input with the id in "order" table (just to test)
+        }
+    }).then((order) => {
+        res.render('customer/orderStatus', {
+            order
+        });
+    })
+    console.log(number)
+})
 
 module.exports = router
