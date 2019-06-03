@@ -132,7 +132,7 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 });
 
 //Monthly Summary
-router.get('/monthlySummary/:month?/:year?', (req, res, next) => {
+router.get('/monthlySummary/:month?/:year?/', (req, res, next) => {
 
     getStallID(req.user.id).then(stallID => {
         //Paramaters
