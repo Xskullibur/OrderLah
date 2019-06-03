@@ -132,11 +132,11 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 });
 
 //Monthly Summary
-router.get('/monthlySummary/:month?/:year?/', (req, res, next) => {
+router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     getStallID(req.user.id).then(stallID => {
         //Paramaters
-        const inputMonthYear = `${req.params.month}/01/${req.params.year}`
+        const inputMonthYear = `${req.params.monthYear}`
         let title = `Monthly Summary`
     
         //Get all months of stall where there are orders => month
@@ -144,7 +144,7 @@ router.get('/monthlySummary/:month?/:year?/', (req, res, next) => {
 
             let monthYearSelected = false
 
-            if (req.params.month == undefined || req.params.month == undefined) {
+            if (req.params.monthYear == undefined) {
                 monthYearSelected = true;
                 res.render('../views/stallOwner/monthlySummary',{
                     month, monthYearSelected, title
@@ -154,14 +154,17 @@ router.get('/monthlySummary/:month?/:year?/', (req, res, next) => {
 
                 title += ` (${moment(inputMonthYear).format("MMM-YYYY")})`
 
+                const selectedMonth = moment(inputMonthYear).format('MM')
+                const selectedYear = moment(inputMonthYear).format('YYYY')
+
                 /**
                  * Get all orders
                  * BASED on provided Month and Year
                  */
                 Order.findAll({
                     where: [
-                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), req.params.month),
-                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), req.params.year),
+                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), selectedMonth),
+                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),
                         {
                             status: {
                                 [Sequelize.Op.or]: ['Collection Confirmed']
