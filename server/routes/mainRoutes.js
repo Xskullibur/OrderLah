@@ -38,6 +38,14 @@ app.use((req, res, next) => {
     next()
 })
 
+//Nav Middleware
+app.use((req, res, next) => {
+    if (req.user != undefined) {
+        res.locals.isCustomer = (req.user.role == 'Customer')        
+    }
+    next()
+})
+
 app.use((req, res, next)=>{
     //Set first login if not
     if(req.user){
@@ -153,9 +161,15 @@ router.get('/login', (req, res) => {
  */
 router.post('/login', 
     passport.authenticate('local', { 
-            successRedirect: '/',
-            failureRedirect: '/login' 
-    }))
+        failureRedirect: '/login' 
+    }), (req, res) => {
+        if (req.user.role === "Customer") {
+            res.redirect('/')
+        }
+        else {
+            res.redirect('/stallOwner/')
+        }
+    })
 
 /**
  * Logout GET '/logout' path, logout from session
