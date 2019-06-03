@@ -18,5 +18,9 @@
     @content 
   
 =for-sm-only
-  @media (max-width: 576px)  
+  @media (max-width: 576px)
     @content 
+
+=for-min-height-only($height)
+  @media (max-height: $height)
+    @content
