@@ -172,11 +172,58 @@ router.get('/getRatingData', (req, res) =>{
     const db = globalHandle.get('db');
     let rating_matrix = [];
 
-    User.findAll().then(users=>{
-        users.forEach(user => {
-            rating_matrix[user.id] = []
+    let menuArray = [];
+
+    MenuItem.findAll({attribute: 'id'}).then(items => {
+        items.forEach(item => {
+            menuArray.push(item.id)
         });
-        res.send(rating_matrix)
+
+        User.findAll().then(users => {
+
+            users.forEach(user => {
+                
+                rating_matrix[user.id] = []
+                let userRating = []
+
+                menuArray.forEach(menuItemId => {
+
+                    let promise = new Promise((resolve, reject) => {
+                        //Get the rating of the menuItem provided by user
+                        db.query(`
+                        SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
+                        FROM orderlah_db.orderItems
+                        INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
+                        INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+                        WHERE orderlah_db.orders.status = 'Collection Confirmed'
+                        AND orderlah_db.orders.userId = ${user.id}
+                        AND orderlah_db.orderItems.menuItemId = ${menuItemId}
+                        ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
+                        `).then(result => {
+    
+                            let rating = 0;
+                            if (result.rating != undefined) {
+                                rating = result.rating
+                            }
+    
+                            userRating.push(rating)
+                            resolve()
+                            
+                        });
+                    })
+
+                })
+
+                promise.then(() => {
+                    rating_matrix[user.id].push(userRating)
+                })
+
+            });
+
+            res.send(rating_matrix)
+
+        })
+
     })
 })
 
