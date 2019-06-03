@@ -7,6 +7,7 @@ const moment = require('moment')
 //Global
 const globalHandle = require('../../libs/global/global')
 const Order = globalHandle.get('order');
+const OrderItem = globalHandle.get('orderItem');
 const MenuItem = globalHandle.get('menuItem');
 
 //Sequelize
@@ -29,7 +30,13 @@ const app = globalHandle.get('app')
 //Define main 'customer' path
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review', (req, res) => {
+
+router.get('/review/:id', (req, res)=> {
+    OrderItem.findOne({
+        where: {
+            orderId: req.params.id
+        }
+    })
     res.render('customer/review',{})
 });
 
@@ -74,35 +81,14 @@ router.get('/pastOrders', (req, res) => {
 
                     return title.join(', ')
                 },
-                getNextStatus(status){
-                    let updatedStatus = "";
-                    switch (status) {
-                        case 'Order Pending':
-                            updatedStatus = "Preparing Order"
-                            break;
-                    
-                        case 'Preparing Order':
-                            updatedStatus = "Ready for Collection"
-                            break;
-
-                        case 'Ready for Collection':
-                            updatedStatus = "Collection Confirmed"
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    return updatedStatus;
-                }
+                
             },
             currentOrders
         });
 
     }).catch((err) => console.error(err));
 
-});/*res.render('customer/pastorders',{})
-});*/
+});
 
 router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
