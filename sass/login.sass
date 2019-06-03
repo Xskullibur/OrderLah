@@ -2,13 +2,14 @@
 @import "./utils"
 
 @include for-md-only
-    .login-body 
-        position: relative
-        top: 10vh
+.login-body 
+    position: relative
+    top: 10vh
         
-
+@include for-sm-only
 .login-body
     padding: 0
+    min-width: 100vw
 
     .card-body div
         margin: 0
@@ -17,5 +18,9 @@
     img
         margin: 0 auto
         +fixed-size(150px)
+
+    input[type='checkbox']
+        position: relative
+        margin-left: 0
 
 
