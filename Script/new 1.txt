@@ -1,0 +1,76 @@
+ User.create({
+            username: 'administrator',
+            firstName: 'lee',
+            lastName: 'hsienxiang',
+            email: 'admin@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Admin',
+        })
+
+        User.create({
+            username: 'Yummy Steak',
+            firstName: 'Anna',
+            lastName: 'Tan',
+            email: 'ys@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
+        User.create({
+            username: 'Tasty Noodle',
+            firstName: 'Ben',
+            lastName: 'Lim',
+            email: 'tn@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
+        User.create({
+            username: 'John',
+            firstName: 'John',
+            lastName: 'Lim',
+            email: 'john@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'test',
+            phone: '91234567',
+            role: 'Customer',
+        })
+        
+        User.create({
+            username: 'Lama',
+            firstName: 'lama',
+            lastName: 'Lim',
+            email: 'lama@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'test',
+            phone: '91234567',
+            role: 'Customer',
+        })
+        
+        User.create({
+            username: 'Tom',
+            firstName: 'tom',
+            lastName: 'Lim',
+            email: 'tom@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'test',
+            phone: '91234567',
+            role: 'Customer',
+        })
+        
+        User.create({
+            username: 'Dick',
+            firstName: 'dick',
+            lastName: 'Lim',
+            email: 'dick@customer',
+            birthday: new Date('2000/09/16'),
+            password: 'test',
+            phone: '91234567',
+            role: 'Customer',
+        })
