@@ -10,10 +10,45 @@ const Cusine = globalHandle.get('cusine')
 module.exports = () => {
     
     function createCustomers() {
+
+        User.create({
+            username: 'administrator',
+            firstName: 'lee',
+            lastName: 'hsienxiang',
+            email: 'admin@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Admin',
+        })
+
+        User.create({
+            username: 'Yummy Steak',
+            firstName: 'Anna',
+            lastName: 'Tan',
+            email: 'ys@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
+        User.create({
+            username: 'Tasty Noodle',
+            firstName: 'Ben',
+            lastName: 'Lim',
+            email: 'tn@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
         //Customers
         User.create({
             username: 'John',
             firstName: 'John',
+            lastName: 'Tan',
             email: 'john@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -24,6 +59,7 @@ module.exports = () => {
         User.create({
             username: 'Lama',
             firstName: 'lama',
+            lastName: 'Tan',
             email: 'lama@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -34,6 +70,7 @@ module.exports = () => {
         User.create({
             username: 'Tom',
             firstName: 'tom',
+            lastName: 'Tan',
             email: 'tom@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -44,6 +81,7 @@ module.exports = () => {
         User.create({
             username: 'Dick',
             firstName: 'dick',
+            lastName: 'Tan',
             email: 'dick@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -68,7 +106,7 @@ module.exports = () => {
                 birthday: new Date('2001/01/19'),
                 password: 'test',
                 phone: '945612378',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Nayrb\'s Western',
