@@ -77,8 +77,7 @@ const mainRoutes = require('./server/routes/mainRoutes')
 const customerRoutes = require('./server/routes/customer/customerRoutes')
 const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 app.use(mainRoutes)
-app.use(customerRoutes)
-app.use(stallOwnerRoutes)
+app.use('/stallOwner', stallOwnerRoutes)
 
 
 
