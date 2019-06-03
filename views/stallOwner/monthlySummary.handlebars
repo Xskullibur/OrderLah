@@ -15,7 +15,7 @@
 
                         <div class="dropdown-menu">
                             {{#each month}}
-                                <a class="dropdown-item" href="{{#if monthYearSelected}}..{{else}}. {{/if}}/{{formatDate month.uniqueDate 'MM'}}/{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
+                                <a class="dropdown-item" href="{{formatDate month.uniqueDate 'MMM'}}-{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
                             {{/each}}
                         </div>
                     </div>
