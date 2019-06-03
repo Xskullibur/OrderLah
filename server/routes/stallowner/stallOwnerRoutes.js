@@ -35,7 +35,7 @@ router.get('/currentOrders', (req, res, next) => {
         // res.send(currentOrders);
 
         const testImg = process.cwd() + '/public/img/no-image'
-        res.render('../views/stallOwner/currentOrders2', {
+        res.render('stallOwner/currentOrders2', {
             currentOrders
         });
 
@@ -70,7 +70,7 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
             // res.send(allOrders)
 
             currentPage = parseInt(currentPage)
-            res.render('stallOwner\\allOrders',{
+            res.render('stallOwner/allOrders',{
                  pages, allOrders, currentPage,
                  helpers: {
                     getPrevious(currentPg){
