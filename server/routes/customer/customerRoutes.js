@@ -17,8 +17,7 @@ const auth_login = require('../../libs/auth_login')
 //Get Models
 const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
-const Order = globalHandle.get('order');
-const MenuItem = globalHandle.get('menuItem');
+const Order = globalHandle.get('order')
 
 //Sequelize
 const Sequelize = require('sequelize')
