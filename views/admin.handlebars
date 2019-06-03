@@ -1,3 +1,4 @@
+
 <link rel="stylesheet" href="/css/admin.css">
 <br>
 
@@ -6,12 +7,11 @@
         <div class="col-sm-4">
         </div>
         <div class="col-sm-2">
-            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Search Menu"
-                style="width: 200px;">
+            <input type="text" class="form-control" aria-describedby="" placeholder="Search Menu" style="width: 200px;">
             <br>
         </div>
         <div class="col-sm-1">
-            <button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Stall</button>
+            <button type="button" class="red-btn" data-toggle="modal" data-target="#createStall">Add Stall</button>
         </div>
         <div class="col-sm-5">
         </div>
@@ -28,7 +28,7 @@
                             <div class="card">
                                 <br>                 
                                 <div class="card__image-container shimmerBG media">
-                                    <center><img class="card__image" src="/uploads/{{this.id}}.jpeg" onerror="this.src='/uploads/error.jpg';" height="140" width="225" alt=""></center>
+                                    <center><img class="card__image" src="/uploads/{{this.id}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt=""></center>
                                 </div>
                                 <br>
                                 <div class="card__content">
@@ -53,3 +53,83 @@
         {{/each}}
     {{/if}}
 </div>
+
+
+<div class="modal fade" id="createStall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Stall</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="/stallOwner/submitStall" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <br>
+                    {{!-- <div class="form-group row">
+                            <div class="col-sm-2 imgUp">
+                                <div class="imagePreview"></div>                            
+                                    <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
+                                </div>
+                    </div> --}}
+                    <div class="form-group row">
+                        <label for="itemName" class="col-sm-2 col-form-label">username</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="username" id="username" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemName" class="col-sm-2 col-form-label">firstname</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="firstName" id="firstName" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemName" class="col-sm-2 col-form-label">lastname</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="lastName" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" name="email" id="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="birthday" class="col-sm-2 col-form-label">birthday</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" name="birthday" id="birthday" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" name="password" id="password" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">phone</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="phone" id="phone" required>
+                        </div>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage"
+                            accept="image/png,image/jpeg,image/jpg">
+                        <label class="custom-file-label" for="itemImage">Choose image</label>
+                        <div class="invalid-feedback">Invalid file</div>
+                    </div>
+                    <input type="hidden" id="holder" name="holder"  value="">
+                    <div class="modal-footer">
+                        <button type="button submit" class="red-btn">Create</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+

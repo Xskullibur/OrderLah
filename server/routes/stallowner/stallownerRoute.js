@@ -61,7 +61,23 @@ router.get('/adminPanel', (req, res) =>{
     })
 })
 
+// router.post('/submitStall',  (req, res) =>{
+//     const username = req.body.username
+//     const firstName = req.body.firstName
+//     const lastName = req.body.lastName
+//     const email = req.body.email
+//     const birthday = req.body.birthday
+//     const password = req.body.password
+//     const phone = req.body.phone
+//     const role = 'Stallowner'
 
+//     User.create({
+//         username, firstName, lastName, email, birthday, password, phone, role
+//     }).then(function(){
+//         res.send('good')
+//     }).catch(err => console.log(err))
+
+// })
 
 router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
