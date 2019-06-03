@@ -9,22 +9,37 @@ const moment = require('moment')
 //Models
 const globalHandle = require('../../libs/global/global')
 const Order = globalHandle.get('order');
-const OrderItem = globalHandle.get('orderItem');
 const MenuItem = globalHandle.get('menuItem');
-const User = globalHandle.get('user');
+const Stall = globalHandle.get('stall');
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
-router.get('/currentOrders', (req, res, next) => {
+//Function to get stallID based on logged in Stall Owner ID
+function getStallID(userID) {
+    Stall.findOne({
+        attributes: [ 'id' ],
+        where: {
+            userId: userID
+        }
+    }).then(stall => {
+        return stall.id
+    })
+}
 
+//Current Orders
+router.get('/currentOrders', (req, res, next) => {
+    
+    const stallID = getStallID(req.user.id)
+
+    //Get stall's current orders based on StallID | Where status != Collection Completed
     Order.findAll({
         where: {
             status: {
                 [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
             },
-            // stallId: req.user.id
+            stallId: stallID
         },
         order: Sequelize.col('orderTiming'),
         include: [{
@@ -32,9 +47,8 @@ router.get('/currentOrders', (req, res, next) => {
         }]
 
     }).then((currentOrders) => {
-        // res.send(currentOrders);
 
-        const testImg = process.cwd() + '/public/img/no-image'
+        //Render CurrentOrders2 Handlebars and pass currentOrders
         res.render('../views/stallOwner/currentOrders2', {
             currentOrders
         });
@@ -43,8 +57,12 @@ router.get('/currentOrders', (req, res, next) => {
 
 });
 
+//All Orders
 router.get('/allOrders/:pageNo', (req, res, next) => {
 
+    const stallID = getStallID(req.user.id)
+
+    //Get nunmber of orders for pagination 
     Order.count().then(orderCount => {
         let currentPage = req.params.pageNo;
         let offset = 0;
@@ -58,8 +76,14 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 
         const pages = Math.floor(orderCount / limit);
 
+        /**
+         * Get all Stall's Orders
+         * Based on Stall's ID
+         * Limited based on pagination items
+         * WHERE Status = Collection Confirmed
+         */
         Order.findAll({
-            where: { status: 'Collection Confirmed' },
+            where: { status: 'Collection Confirmed', stallId: stallID },
             offset,
             limit,
             order: Sequelize.col('orderTiming'),
@@ -67,10 +91,9 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
                 model: MenuItem
             }]
         }).then(allOrders => {
-            // res.send(allOrders)
 
             currentPage = parseInt(currentPage)
-            res.render('stallOwner\\allOrders',{
+            res.render('stallOwner/allOrders',{
                  pages, allOrders, currentPage,
                  helpers: {
                     getPrevious(currentPg){
@@ -94,6 +117,8 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 
 router.get('/monthlySummary/:month/:year', (req, res, next) => {
 
+    const stallID = getStallID(req.user.id)
+
     const inputMonthYear = `${req.params.month}/01/${req.params.year}`
     const title = `Monthly Summary (${moment(inputMonthYear).format("MMM-YYYY")})`
 
@@ -109,7 +134,7 @@ router.get('/monthlySummary/:month/:year', (req, res, next) => {
                     status: {
                         [Sequelize.Op.or]: ['Collection Confirmed']
                     },
-                    // stallId: req.user.id
+                    stallId: stallID
                 }
             ],
             order: Sequelize.col('orderTiming'),
