@@ -37,7 +37,11 @@ router.get('/review/:id', (req, res)=> {
             orderId: req.params.id
         }
     })
-    res.render('customer/review',{})
+    .then((orderItem) => {
+        res.render('customer/review', {
+            orderItem
+        });
+    })
 });
 
 router.get('/pastOrders', (req, res) => {
@@ -97,7 +101,7 @@ router.get('/trackOrder', (req, res) => {
 router.post('/checkOrder', (req, res) =>{
     //trying to retrieve the ordernumber via the handbar
     let number = req.body.number;
-    console.log(number)
+    //console.log(number)
 
     Order.findOne({
         where:{
