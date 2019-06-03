@@ -2,6 +2,12 @@
 const express = require('express');
 const router = express.Router();
 
+// Uploads for menu item
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./upload');
+const upload = multer({storage : storage })
+
 //MomentJS
 const moment = require('moment')
 
@@ -11,10 +17,16 @@ const globalHandle = require('../../libs/global/global')
 const Order = globalHandle.get('order');
 const MenuItem = globalHandle.get('menuItem');
 const Stall = globalHandle.get('stall');
+const User = globalHandle.get('user')
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
+
+
+/**
+ * ALSON ROUTES 
+ */
 
 //Get StallID based on logged in Stall Owner ID
 function getStallID(userID) {
@@ -34,7 +46,7 @@ function getStallID(userID) {
 }
 
 //Current Orders
-router.get('/currentOrders', (req, res, next) => {
+router.get('/', (req, res, next) => {
     
     //Get Stall ID
     getStallID(req.user.id).then((stallID) => {
@@ -222,8 +234,4 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
-
-router.get('/monthlySumary', (req, res, next) => {
-
-})
 module.exports = router;

@@ -79,8 +79,8 @@ const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 const stallOwnerandAdminRoute = require('./server/routes/stallowner/stallownerRoute')
 app.use(mainRoutes)
 app.use(customerRoutes)
-app.use(stallOwnerRoutes)
-app.use('/stallOwner', stallOwnerandAdminRoute)
+app.use('/stallOwner', stallOwnerRoutes)
+// app.use('/stallOwner', stallOwnerandAdminRoute)
 
 
 
