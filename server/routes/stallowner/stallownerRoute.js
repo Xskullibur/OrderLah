@@ -43,7 +43,7 @@ router.get('/showMenu', (req, res) => {
                 })
             })      
         }else{
-            res.send('unauthorized')
+            res.render('error')
         }      
       })
     
