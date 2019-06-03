@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-1 offset-md-11">
 
-        <button id="toggle_bottom_list_btn" type="button" class="btn btn-danger btn-circle mr-3 mb-3" onclick="toggleBottomList()">
+        <button id="toggle_bottom_list_btn" type="button" class="btn mdc-fab btn-circle mr-3 mb-3" onclick="toggleBottomList()">
             <div class="icons">
                 <i class="fas fa-angle-double-up icon-default"></i>
                 <i class="fas fa-angle-double-down icon-second"></i>
@@ -44,19 +44,10 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <div class="container-fluid container-scoll">
-                            <div class="row">
-                                <div class="col">
-                                    {{#each size}}
-                                        {{> menu_items/menu_item_bottom_list index=@index}}
-                                    {{/each}}
-                                </div>
-                            </div>
-                        </div>
-
+                            {{> list_menu_items}}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+</div>
 </div>

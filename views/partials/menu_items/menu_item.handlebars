@@ -1,23 +1,24 @@
-<div class="menu-item d-inline-block m-4">
-  <div class="card" id="{{index}}" style="width: 18rem;">
+<div class="menu-item {{#unless doNotLoad}}load-animation{{/unless}} d-inline-block m-2">
+  <div class="card" id="menu-item-{{index}}" style="width: 14rem;">
   <img class="card-img-top menu-item-img" alt="Card image cap" hidden>
   <photo class="card-img-top menu-item-img shine"></photo>
-  <div class="text-right"><button type="button" class="btn btn-danger btn-circle menu-item-btn mr-3"><i class="fas fa-plus"></i></button></div>
-  <div class="card-body menu-item-body">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <lines class="card-title text-center shine"></lines>
-          <h5 class="card-title text-center" hidden>Card title</h5>
+  <div class="text-right" style="font-size: 0.5rem;"><button type="button" class="btn mdc-fab btn-circle menu-item-btn mr-3"><i class="fas fa-plus fa-xs translate-center"></i></button></div>
+      <div class="card-body menu-item-body py-1 px-3">
+        <div>
+          <lines class="card-title my-1 shine"></lines>
+          <h5 class="card-title" hidden>Card title</h5>
+        </div>
+        <div>
+          <lines class="card-text shine"></lines>
+          <h5 class="card-text menu-item-price" hidden>$4.55</h5>
+        </div>
+        <div  style="position: absolute; bottom: -20px;">
+          <lines class="shine" style="width: 140px;"></lines>
+          <div class="rating" hidden>
+              
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12">
-            <lines class="card-text text-center shine"></lines>
-            <h5 class="card-title text-center" hidden>$4.55</h5>
-        </div>
-      </div>
-    </div>
+
   </div>
-</div>
 </div>

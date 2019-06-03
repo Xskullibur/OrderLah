@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>OrderLah</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic|Raleway:400,300,700" rel="stylesheet">
     <!-- Font Awesome -->
@@ -21,10 +21,8 @@
 
 </head>
 <body>
-    {{!-- Loading screen if first time login --}}
-    {{!-- {{#if firstLogin}} --}}
-      {{> loading}}
-    {{!-- {{/if}} --}}
+
+    {{> loading}}
     {{> nav}}
     {{{body}}}
   <input id="csrf-token" type="hidden" value="{{csrf-token}}"/>

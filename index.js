@@ -74,22 +74,12 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
+const customerRoutes = require('./server/routes/customer/customerRoutes')
 const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 app.use(mainRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 
-// //Locals middleware
-// app.use((req, res, next)=>{
-//     //Set first login if not
-//     if(req.user){
-//         if(req.session.firstLogin == undefined)req.session.firstLogin = true
-//         else{
-//             req.session.firstLogin = false
-//         }
-//         res.locals.firstlogin = req.session.firstLogin
-//     }
-//     next()
-// })
+
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);

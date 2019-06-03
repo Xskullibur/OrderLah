@@ -20,10 +20,11 @@
     </div>
   </div>
 <script type="text/javascript" src="js/nav.js"></script> --}}
-<nav class="navbar sticky-top navbar-expand-lg navbar-light" style="background-color: #fff;">
+<div class="sticky-top">
+<nav class="navbar sticky-top navbar-expand-lg navbar-light border-bottom rounded-bottom">
   <div class="nav navbar-nav">
     
-  <a class="navbar-brand" href="#"><img class="logo-fixed grow-scroll"  src="/img/logo.png"></a>
+  <a class="navbar-brand" href="/"><img class="logo-fixed grow-scroll"  src="/img/logo.png"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -31,9 +32,9 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
+          {{!-- <li class="nav-item">
             <a class="nav-link" href="#">Link</a>
           </li>
           <li class="nav-item dropdown">
@@ -54,11 +55,20 @@
         <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+        </form> --}}
+        {{!-- Profile navbar for sm --}}
+        <div class="nav navbar-nav pull-right d-inline-block d-md-none">
+            {{> profile_nav}}
+        </div>
       </div>
-
   </div>
+  {{!-- Profile navbar for md --}}
+  <div class="nav navbar-nav pull-right d-none d-md-inline-block">
+      {{> profile_nav}}
   </div>
-  
 </nav>
+{{!-- Popup --}}
+{{> alerts/top-popup}}
+</div>
 <script type="text/javascript" src="js/nav.js"></script>
+

@@ -1,47 +1,38 @@
 
 @import "./colors"
     
-@import "../node_modules/bootstrap/scss/bootstrap"
+@import "bootstrap/scss/bootstrap"
+
+@import "@material/fab/mdc-fab"
 
 @import "./utils"
 
-/* Logo */
-.logo-fixed 
-    +fixed-size(50px)
-    transition: all .4s ease-in
+@import "./nav"
 
+/* Font */
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap')
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap')
+body
+    // font-family: 'Roboto', sans-serif
+    font-family: 'Montserrat', sans-serif
 
-.logo-fixed.grow-scroll-growed 
-    +fixed-size(100px)
-
-
-
-/* NavBar */
-
-
-@include for-md-only
-    .navbar 
-        .navbar-nav 
-            margin: auto
-
-
-.nav-fixed 
-    transition: all .4s ease-in
-
-
-.nav-fixed.grow-scroll-growed 
-    min-height: 130px !important
-
+/* Translated center */
+.translate-center
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
 
 /* Circle Btn */
 .btn-circle
-    position: relative
-    +fixed-size(60px)
-    padding: 0
-    border-radius: 35px
-    text-align: center
-    font-size: 20px
-    line-height: 1.42857
+    +mdc-fab-accessible($coral-1)
+    // position: relative
+    // +fixed-size(60px)
+    // padding: 0
+    // border-radius: 35px
+    // text-align: center
+    // font-size: 20px
+    // line-height: 1.42857
 
 
 /*Fixed bottom container*/

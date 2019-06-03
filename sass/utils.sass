@@ -4,10 +4,23 @@
   width: $size
   height: $size
 
+=max-size($size)
+  max-width: $size
+  max-height: $size
+
+=min-size($size)
+  min-width: $size
+  min-height: $size
+
+
 =for-md-only
-  @media (min-width: 599px)  
+  @media (min-width: 576px)  
     @content 
   
 =for-sm-only
-  @media (max-width: 599px)  
+  @media (max-width: 576px)
     @content 
+
+=for-min-height-only($height)
+  @media (max-height: $height)
+    @content
