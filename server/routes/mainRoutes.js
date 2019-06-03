@@ -38,6 +38,14 @@ app.use((req, res, next) => {
     next()
 })
 
+//Nav Middleware
+app.use((req, res, next) => {
+    if (req.user != undefined) {
+        res.locals.isCustomer = (req.user.role == 'Customer')        
+    }
+    next()
+})
+
 app.use((req, res, next)=>{
     //Set first login if not
     if(req.user){
