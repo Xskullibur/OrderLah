@@ -161,9 +161,15 @@ router.get('/login', (req, res) => {
  */
 router.post('/login', 
     passport.authenticate('local', { 
-            successRedirect: '/',
-            failureRedirect: '/login' 
-    }))
+        failureRedirect: '/login' 
+    }), (req, res) => {
+        if (req.user.role === "Customer") {
+            res.redirect('/')
+        }
+        else {
+            res.redirect('/stallOwner/')
+        }
+    })
 
 /**
  * Logout GET '/logout' path, logout from session
