@@ -30,9 +30,23 @@ const moment = require('moment')
 app.use(passport.initialize())
 app.use(passport.session())
 
+
+//Locals middleware
 app.use((req, res, next) => {
     //Set the user to local for handlebars to access
     if(req.user != undefined)res.locals.user = req.user
+    next()
+})
+
+app.use((req, res, next)=>{
+    //Set first login if not
+    if(req.user){
+        if(req.session.firstLogin == undefined)req.session.firstLogin = true
+        else{
+            req.session.firstLogin = false
+        }
+        res.locals.firstLogin = req.session.firstLogin
+    }
     next()
 })
 
@@ -148,6 +162,8 @@ router.post('/login',
  */
 router.get('/logout', (req, res) => {
     req.logout()
+    //Destroy firstLogin
+    req.session.firstLogin = undefined
     res.redirect('/login')
 })
 

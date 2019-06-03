@@ -8,3 +8,11 @@ function generateMenuCardItem(){
         });
     });
 }
+/**
+ * This function will be call when loading animation is done
+ * if there is no loading animation, this function will be called immediately
+ */
+function loadingDone(){
+    //Do staggering animations for the items
+    doStaggerAnimation();
+}

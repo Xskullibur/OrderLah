@@ -80,18 +80,7 @@ app.use(mainRoutes)
 app.use(customerRoutes)
 app.use(stallOwnerRoutes)
 
-// //Locals middleware
-// app.use((req, res, next)=>{
-//     //Set first login if not
-//     if(req.user){
-//         if(req.session.firstLogin == undefined)req.session.firstLogin = true
-//         else{
-//             req.session.firstLogin = false
-//         }
-//         res.locals.firstlogin = req.session.firstLogin
-//     }
-//     next()
-// })
+
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);
