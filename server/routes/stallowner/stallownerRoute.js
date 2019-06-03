@@ -43,7 +43,7 @@ router.get('/showMenu', (req, res) => {
                 })
             })      
         }else{
-            res.send('unauthorized access')
+            res.send('unauthorized')
         }      
       })
     
@@ -63,10 +63,11 @@ router.get('/adminPanel', (req, res) =>{
                 })
             })
         }else{
-            res.send('not admin')           
+            res.render('error')          
         }   
       })
 })
+
 
 
 router.post('/submitItem', upload.single("itemImage"), (req, res) =>{

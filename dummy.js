@@ -195,7 +195,7 @@ module.exports = () => {
                 birthday: new Date('2000/09/16'),
                 password: 'test',
                 phone: '91234567',
-                role: 'Admin',
+                role: 'stallOwner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Nosla\'s Chicken Rice',
