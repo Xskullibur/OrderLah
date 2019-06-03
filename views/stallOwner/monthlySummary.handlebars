@@ -15,7 +15,7 @@
 
                         <div class="dropdown-menu">
                             {{#each month}}
-                                <a class="dropdown-item" href="../{{formatDate month.uniqueDate 'MM'}}/{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
+                                <a class="dropdown-item" href="{{#if monthYearSelected}}..{{else}}. {{/if}}/{{formatDate month.uniqueDate 'MM'}}/{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
                             {{/each}}
                         </div>
                     </div>
@@ -109,11 +109,21 @@
                         </div>
                     </div>
                 {{else}}
-                    <div class="alert alert-danger" role="alert">
-                      <h4 class="alert-heading">No Monthly Summary Found!</h4>
-                      <p>If there is supposd to be a monthly summary available please contact the Administrator immediately</p>
-                      <p class="mb-0"></p>
-                    </div>
+
+                    {{#if monthYearSelected}}
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading">Please select a month to continue</h4>
+                            <p>If there are no months available please contact the adinistrator immediateley</p>
+                            <p class="mb-0"></p>
+                        </div>
+                    {{else}}
+                        <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">No Monthly Summary Found!</h4>
+                        <p>If there is supposd to be a monthly summary available please contact the Administrator immediately</p>
+                        <p class="mb-0"></p>
+                        </div>
+                    {{/if}}
+
                 {{/if}}
 
 
