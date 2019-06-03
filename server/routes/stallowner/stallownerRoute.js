@@ -85,8 +85,8 @@ router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
 
     MenuItem.create({ itemName, price, itemDesc, owner, active}).then(function() {
         // alert("Item successfully added")
-        res.send('Good')
-        //res.render('stallowner-menu')
+        //res.send('Good')
+        res.render('createSuccess')
     }).catch(err => console.log(err))
 })
 
