@@ -1,6 +1,5 @@
 
 $(document).ready(function() {
-    $('#register_carousel').carousel('pause');
 });
 
 
