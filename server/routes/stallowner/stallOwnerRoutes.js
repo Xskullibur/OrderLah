@@ -48,8 +48,7 @@ router.get('/currentOrders', (req, res, next) => {
 
     }).then((currentOrders) => {
 
-        //Render CurrentOrders2 Handlebars and pass currentOrders
-        res.render('../views/stallOwner/currentOrders2', {
+        res.render('stallOwner/currentOrders2', {
             currentOrders
         });
 
