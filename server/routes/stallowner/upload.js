@@ -6,7 +6,7 @@ var storage = multer.diskStorage({
         cb(null, process.cwd() + '/public/uploads')
     },
     filename: function(req, file, cb){
-        cb(null, req.user.id + ".jpeg")
+        cb(null, req.user.id + req.body.itemName + ".jpeg")
     }
 })
 

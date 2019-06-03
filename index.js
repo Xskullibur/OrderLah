@@ -76,9 +76,11 @@ app.use(express.static('public'))
 const mainRoutes = require('./server/routes/mainRoutes')
 const customerRoutes = require('./server/routes/customer/customerRoutes')
 const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
+const stallOwnerandAdminRoute = require('./server/routes/stallowner/stallownerRoute')
 app.use(mainRoutes)
 app.use(customerRoutes)
 app.use(stallOwnerRoutes)
+app.use('/stallOwner', stallOwnerandAdminRoute)
 
 
 
