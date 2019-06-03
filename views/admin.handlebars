@@ -1,6 +1,23 @@
 <link rel="stylesheet" href="/css/admin.css">
 <br>
-<center><button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Stallowner</button></center>
+
+<center>
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Search Menu"
+                style="width: 200px;">
+            <br>
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Stall</button>
+        </div>
+        <div class="col-sm-5">
+        </div>
+    </div>
+</center>
+
 <br><br>
 <div class="row" style="padding-left: 5em">
     {{#if displayStallowner}}
