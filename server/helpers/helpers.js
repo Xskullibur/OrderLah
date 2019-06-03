@@ -19,6 +19,10 @@ module.exports = {
         return accum;
     },
     
+    ifEquals(input1, input2, trueOutput, falseOutput){
+        return (input1 === input2) ? trueOutput : falseOutput;
+    },
+
     calcItemPrice(items){
         return (items.price * items.orderItem.quantity).toFixed(2)
     },
