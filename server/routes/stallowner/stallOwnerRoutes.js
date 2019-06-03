@@ -9,155 +9,218 @@ const moment = require('moment')
 //Models
 const globalHandle = require('../../libs/global/global')
 const Order = globalHandle.get('order');
-const OrderItem = globalHandle.get('orderItem');
 const MenuItem = globalHandle.get('menuItem');
-const User = globalHandle.get('user');
+const Stall = globalHandle.get('stall');
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+//Get StallID based on logged in Stall Owner ID
+function getStallID(userID) {
+    let promise = new Promise((resolve, reject)=>{
+        Stall.findOne({
+            attributes: [ 'id' ],
+            where: {
+                userId: userID
+            }
+        }).then(stall => {
+            resolve(stall.id)
+        }).catch((err) => {
+            reject(err);
+        })
+    })
+    return promise
+}
+
+//Current Orders
 router.get('/currentOrders', (req, res, next) => {
+    
+    //Get Stall ID
+    getStallID(req.user.id).then((stallID) => {
 
-    Order.findAll({
-        where: {
-            status: {
-                [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
-            },
-            // stallId: req.user.id
-        },
-        order: Sequelize.col('orderTiming'),
-        include: [{
-            model: MenuItem
-        }]
-
-    }).then((currentOrders) => {
-        // res.send(currentOrders);
-
-        const testImg = process.cwd() + '/public/img/no-image'
-        res.render('stallOwner/currentOrders2', {
-            currentOrders
-        });
-
-    }).catch((err) => console.error(err));
-
-});
-
-router.get('/allOrders/:pageNo', (req, res, next) => {
-
-    Order.count().then(orderCount => {
-        let currentPage = req.params.pageNo;
-        let offset = 0;
-        let limit = 5;
-
-        if (currentPage === 1) {
-            offset = 0;
-        } else {
-            offset = (currentPage - 1) * 5
-        }
-
-        const pages = Math.floor(orderCount / limit);
-
+        /**
+        * Get Current Orders
+        * Based on Stall ID received by function
+        * WHERE Status != Collection Completed
+        */
         Order.findAll({
-            where: { status: 'Collection Confirmed' },
-            offset,
-            limit,
+            where: {
+                status: {
+                    [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
+                },
+                stallId: stallID
+            },
             order: Sequelize.col('orderTiming'),
             include: [{
                 model: MenuItem
             }]
-        }).then(allOrders => {
-            // res.send(allOrders)
 
-            currentPage = parseInt(currentPage)
-            res.render('stallOwner/allOrders',{
-                 pages, allOrders, currentPage,
-                 helpers: {
-                    getPrevious(currentPg){
-                        if (currentPg > 1) {
-                            return currentPg - 1
-                        }
-                     },
-                     getNext(currentPg){
-                         if (currentPg < pages) {
-                             return currentPg + 1
-                         }
-                     }, 
-                }
-            })
-        })
+        }).then((currentOrders) => {
 
+            res.render('stallOwner/currentOrders2', {
+                currentOrders
+            });
+
+        }).catch((err) => console.error(err));
 
     })
 
 });
 
-router.get('/monthlySummary/:month/:year', (req, res, next) => {
+//All Orders
+router.get('/allOrders/:pageNo', (req, res, next) => {
 
-    const inputMonthYear = `${req.params.month}/01/${req.params.year}`
-    const title = `Monthly Summary (${moment(inputMonthYear).format("MMM-YYYY")})`
-
-    //Fill Months
-    db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders`, { raw: true }).then(([month, metadata]) => {
-
-        //Other Info
-        Order.findAll({
-            where: [
-                db.where(db.fn('MONTH', Sequelize.col('orderTiming')), req.params.month),
-                db.where(db.fn('YEAR', Sequelize.col('orderTiming')), req.params.year),
-                {
-                    status: {
-                        [Sequelize.Op.or]: ['Collection Confirmed']
-                    },
-                    // stallId: req.user.id
-                }
-            ],
-            order: Sequelize.col('orderTiming'),
-            include: [{
-                model: MenuItem
-            }]
-        }).then(monthlyOrder => {
-
-            let formatedOrder = []
-
-            for (const i in monthlyOrder) {
-                if (monthlyOrder.hasOwnProperty(i)) {
-
-                    const order = monthlyOrder[i];
-                    const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY") 
-
-                    if (formatedOrder.length == 0) {
-                        formatedOrder.push({orderDate: orderDate, orders: []})
+    getStallID(req.user.id).then(stallID => {
+        //Get number of orders for pagination 
+        Order.count({ where: { stallId: stallID } }).then(orderCount => {
+            let currentPage = req.params.pageNo;
+            let offset = 0;
+            let limit = 5;
+    
+            if (currentPage === 1) {
+                offset = 0;
+            } else {
+                offset = (currentPage - 1) * 5
+            }
+    
+            const pages = Math.floor(orderCount / limit);
+    
+            /**
+             * Get all Stall's Orders
+             * Based on Stall's ID
+             * Limited based on pagination items
+             * WHERE Status = Collection Confirmed
+             */
+            Order.findAll({
+                where: { status: 'Collection Confirmed', stallId: stallID },
+                offset,
+                limit,
+                order: Sequelize.col('orderTiming'),
+                include: [{
+                    model: MenuItem
+                }]
+            }).then(allOrders => {
+    
+                currentPage = parseInt(currentPage)
+    
+                res.render('stallOwner/allOrders',{
+                     pages, allOrders, currentPage,
+                     helpers: {
+    
+                        //Pagination previous button Helper
+                        getPrevious(currentPg){
+                            if (currentPg > 1) {
+                                return currentPg - 1
+                            }
+                         },
+    
+                         //Pagination next button Helper
+                         getNext(currentPg){
+                             if (currentPg < pages) {
+                                 return currentPg + 1
+                             }
+                         }, 
                     }
+                })
+            })
+    
+    
+        })
+    })
 
-                    let dateNotFound = true;
+});
 
-                    formatedOrder.forEach(object => {
+//Monthly Summary
+router.get('/monthlySummary/:month?/:year?/', (req, res, next) => {
 
-                        if (object.orderDate == orderDate) {
-                            object.orders.push(order)
-                            dateNotFound = false
-                            return
+    getStallID(req.user.id).then(stallID => {
+        //Paramaters
+        const inputMonthYear = `${req.params.month}/01/${req.params.year}`
+        let title = `Monthly Summary`
+    
+        //Get all months of stall where there are orders => month
+        db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders WHERE orderlah_db.orders.stallId = ${stallID}`, { raw: true }).then(([month, metadata]) => {
+
+            let monthYearSelected = false
+
+            if (req.params.month == undefined || req.params.month == undefined) {
+                monthYearSelected = true;
+                res.render('../views/stallOwner/monthlySummary',{
+                    month, monthYearSelected, title
+               })
+            }
+            else{
+
+                title += ` (${moment(inputMonthYear).format("MMM-YYYY")})`
+
+                /**
+                 * Get all orders
+                 * BASED on provided Month and Year
+                 */
+                Order.findAll({
+                    where: [
+                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), req.params.month),
+                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), req.params.year),
+                        {
+                            status: {
+                                [Sequelize.Op.or]: ['Collection Confirmed']
+                            },
+                            stallId: stallID
                         }
-
-                    });
-
-                    if (dateNotFound) {
-                        formatedOrder.push({orderDate: orderDate, orders: [order]})
+                    ],
+                    order: Sequelize.col('orderTiming'),
+                    include: [{
+                        model: MenuItem
+                    }]
+                }).then(monthlyOrder => {
+        
+                    let formatedOrder = []
+        
+                    //Format JSON into a usable format
+                    for (const i in monthlyOrder) {
+                        if (monthlyOrder.hasOwnProperty(i)) {
+        
+                            const order = monthlyOrder[i];
+                            const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY") 
+        
+                            if (formatedOrder.length == 0) {
+                                formatedOrder.push({orderDate: orderDate, orders: []})
+                            }
+        
+                            let dateNotFound = true;
+        
+                            formatedOrder.forEach(object => {
+        
+                                if (object.orderDate == orderDate) {
+                                    object.orders.push(order)
+                                    dateNotFound = false
+                                    return
+                                }
+        
+                            });
+        
+                            if (dateNotFound) {
+                                formatedOrder.push({orderDate: orderDate, orders: [order]})
+                            }
+                            
+                        }
                     }
                     
-                }
+                    res.render('../views/stallOwner/monthlySummary',{
+                        month, formatedOrder, title
+                   })
+                })
             }
             
-            res.render('../views/stallOwner/monthlySummary',{
-                month, formatedOrder, title
-           })
-
-            // res.send(formatedOrder)
+    
         })
-
     })
 
 })
 
+
+router.get('/monthlySumary', (req, res, next) => {
+
+})
 module.exports = router;
