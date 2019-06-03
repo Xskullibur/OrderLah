@@ -25,9 +25,9 @@ const app = globalHandle.get('app')
 
 const MenuItem = globalHandle.get('menuItem')
 
-router.use(auth_login.auth)
+router.use(auth_login.authStallOwner)
 
-router.get('/showMenu', auth_login.authStallOwner, (req, res) => {
+router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
         if (user.role === 'Admin') {
@@ -53,7 +53,7 @@ router.get('/showMenu', auth_login.authStallOwner, (req, res) => {
     //res.render('stallowner-menu')
 })
 
-router.get('/adminPanel', auth_login.authStallOwner, (req, res) =>{
+router.get('/adminPanel', (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
         res.render('admin', {
             displayStallowner: stallowner
@@ -63,7 +63,7 @@ router.get('/adminPanel', auth_login.authStallOwner, (req, res) =>{
 
 
 
-router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+router.post('/submitItem', upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
@@ -83,7 +83,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     }).catch(err => console.log(err))
 })
 
-router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/deleteItem', (req, res) =>{
     const active = false
     const id = req.user.id
     MenuItem.update({active}, {where: id}).then(
