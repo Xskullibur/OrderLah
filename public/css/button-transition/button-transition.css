@@ -1,0 +1,32 @@
+.btn .icons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 2.3rem 0 0;
+  width: 1.25rem;
+  height: 2.6rem;
+}
+.btn .icons i {
+  position: absolute;
+  display: block;
+}
+.btn .icons .icon-default {
+  transition: opacity 0.3s, transform 0.3s;
+}
+.btn .icons .icon-second {
+  transition: opacity 0.3s, transform 0.3s;
+  transform: rotate(-180deg) scale(0.5);
+  opacity: 0;
+}
+.btn.done .icon-second {
+  transform: rotate(0deg) scale(1);
+  opacity: 1;
+}
+.btn.done .icon-default {
+  transform: rotate(180deg) scale(0.5);
+  opacity: 0;
+}

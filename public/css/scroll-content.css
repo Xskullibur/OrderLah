@@ -1,0 +1,9 @@
+/* Enables horzontial scrolls */
+.container-scoll {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.container-scoll .row .col .scroll-content {
+  display: inline-block;
+  float: none;
+}
