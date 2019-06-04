@@ -199,7 +199,7 @@ module.exports = () => {
                 birthday: new Date('2000/09/16'),
                 password: 'test',
                 phone: '91234567',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Nosla\'s Chicken Rice',
@@ -347,7 +347,7 @@ module.exports = () => {
                 birthday: new Date('1833/12/31'),
                 password: 'test',
                 phone: '91234567',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Eldoon\'s Noodle House',
@@ -481,7 +481,7 @@ module.exports = () => {
                 birthday: new Date('1998/08/21'),
                 password: 'test',
                 phone: '91234567',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner =>{
                 //Japanese
                 Stall.create({
@@ -565,7 +565,7 @@ module.exports = () => {
                 birthday: new Date('1833/12/31'),
                 password: 'test',
                 phone: '91234567',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Genh Ihz\'s Refereshments',

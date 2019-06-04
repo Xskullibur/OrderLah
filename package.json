@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/mocha --timeout 5000",
     "compile-sass": "sass -I node_modules --no-source-map sass:public/css",
-    "start": "node index.js",
+    "start": "npm run compile-sass && node index.js",
     "start:dev": "nodemon --watch sass --watch server --watch ./index.js --watch ./dummy.js -e js,sass,css"
   },
   "keywords": [
