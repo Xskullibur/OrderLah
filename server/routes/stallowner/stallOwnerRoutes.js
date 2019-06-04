@@ -45,7 +45,7 @@ function getStallID(userID) {
         }).then(stall => {
             resolve(stall.id)
         }).catch((err) => {
-            reject(err);
+            console.log('ERROR')
         })
     })
     return promise
