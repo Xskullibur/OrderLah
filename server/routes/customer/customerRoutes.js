@@ -6,12 +6,7 @@ const moment = require('moment')
 
 //Global
 const globalHandle = require('../../libs/global/global')
-const Order = globalHandle.get('order');
-const OrderItem = globalHandle.get('orderItem');
-const MenuItem = globalHandle.get('menuItem');
 
-//Sequelize
-const Sequelize = require('sequelize')
 
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../../libs/uuid_middleware')
@@ -19,15 +14,79 @@ const uuid_middleware = require('../../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
 
-//Get User model
+//Get Models
+const MenuItem = globalHandle.get('menuItem')
+const OrderItem = globalHandle.get('orderItem');
 const User = globalHandle.get('user')
+const Order = globalHandle.get('order')
+
+//Sequelize
+const Sequelize = require('sequelize')
 
 //Get App
 const app = globalHandle.get('app')
 
 
 
-//Define main 'customer' path
+//Define main 'customer' paths
+
+//Payment PAYPAL
+const paypal = require('paypal-rest-sdk')
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU',
+    'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
+  });
+
+/**
+ * GET '/payment' 
+ * Payment stage for ordering items
+ */
+router.get('/payment', auth_login.auth, (req, res) => {
+
+    var create_payment_json = {
+        "intent": "order",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:3000/payment-redirect",
+            "cancel_url": "http://localhost:3000/payment-void"
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": "item",
+                    "sku": "item",
+                    "price": "1.00",
+                    "currency": "USD",
+                    "quantity": 1
+                }]
+            },
+            "payee": {"email": "payee@gmail.com"},
+            "amount": {
+                "currency": "USD",
+                "total": "1.00"
+            },
+            "description": "This is the payment description."
+        }]
+    };
+    
+    
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            throw error;
+        } else {
+            console.log("Create Payment Response");
+            console.log(payment);
+        }
+    });
+
+    res.render('payment', {size: MenuItem.count()})
+})
+
+
+
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 
@@ -102,7 +161,7 @@ router.post('/checkOrder', (req, res) =>{
     //trying to retrieve the ordernumber via the handbar
     let number = req.body.number;
     //console.log(number)
-
+    
     Order.findOne({
         where:{
             id: number //matches the order number input with the id in "order" table (just to test)
