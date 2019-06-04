@@ -10,10 +10,45 @@ const Cusine = globalHandle.get('cusine')
 module.exports = () => {
     
     function createCustomers() {
+
+        User.create({
+            username: 'administrator',
+            firstName: 'lee',
+            lastName: 'hsienxiang',
+            email: 'admin@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Admin',
+        })
+
+        User.create({
+            username: 'Yummy Steak',
+            firstName: 'Anna',
+            lastName: 'Tan',
+            email: 'ys@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
+        User.create({
+            username: 'Tasty Noodle',
+            firstName: 'Ben',
+            lastName: 'Lim',
+            email: 'tn@orderlah',
+            birthday: new Date('2000/09/16'),
+            password: 'password',
+            phone: '91234567',
+            role: 'Stallowner',
+        })
+
         //Customers
         User.create({
             username: 'John',
             firstName: 'John',
+            lastName: 'Tan',
             email: 'john@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -24,6 +59,7 @@ module.exports = () => {
         User.create({
             username: 'Lama',
             firstName: 'lama',
+            lastName: 'Tan',
             email: 'lama@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -34,6 +70,7 @@ module.exports = () => {
         User.create({
             username: 'Tom',
             firstName: 'tom',
+            lastName: 'Tan',
             email: 'tom@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -44,6 +81,7 @@ module.exports = () => {
         User.create({
             username: 'Dick',
             firstName: 'dick',
+            lastName: 'Tan',
             email: 'dick@customer',
             birthday: new Date('2000/09/16'),
             password: 'test',
@@ -53,6 +91,9 @@ module.exports = () => {
     }
     
     function createStalls() {
+
+        const previousDate = new Date()
+        previousDate.setDate(previousDate.getDate() - 1)
 
         //Western (1 Stall Owner, 3 Food Item, 3 Orders)
         Cusine.create({
@@ -65,7 +106,7 @@ module.exports = () => {
                 birthday: new Date('2001/01/19'),
                 password: 'test',
                 phone: '945612378',
-                role: 'Admin',
+                role: 'Stallowner',
             }).then(stallOwner => {
                 Stall.create({
                     stallName: 'Nayrb\'s Western',
@@ -184,7 +225,7 @@ module.exports = () => {
                         }).then(customer => {
                             Order.create({
                                 status: 'Order Pending',
-                                orderTiming: new Date,
+                                orderTiming: previousDate,
                                 userId: customer.id,
                                 stallId: stall.id
                             }).then(order => {
@@ -195,10 +236,62 @@ module.exports = () => {
                                 })
                             })
             
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: previousDate,
+                                userId: 1,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 2,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 3,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
+                            Order.create({
+                                status: 'Order Pending',
+                                orderTiming: new Date,
+                                userId: 4,
+                                stallId: stall.id
+                            }).then(order => {
+                                OrderItem.create({
+                                    quantity: 2,
+                                    orderId: order.id,
+                                    menuItemId: item.id
+                                })
+                            })
+
                             //Completed Order
                             Order.create({
                                 status: 'Collection Confirmed',
-                                orderTiming: new Date,
+                                orderTiming: previousDate,
                                 userId: customer.id,
                                 stallId: stall.id
                             }).then(order => {
@@ -208,6 +301,13 @@ module.exports = () => {
                                     comments: "The chicken rice was FANTASTIC!!!",
                                     orderId: order.id,
                                     menuItemId: item.id
+                                })
+                                OrderItem.create({
+                                    quantity: 5,
+                                    rating: "5",
+                                    comments: "The chicken rice was FANTASTIC!!!",
+                                    orderId: order.id,
+                                    menuItemId: item.id + 1
                                 })
                             })
                         })
@@ -262,6 +362,25 @@ module.exports = () => {
                         active: true,
                         stallId: stall.id
                     }).then(item => {
+
+                        Order.create({
+                            status: 'Order Pending',
+                            orderTiming: new Date,
+                            userId: 5,
+                            stallId: stall.id
+                        }).then(order => {
+                            OrderItem.create({
+                                quantity: 2,
+                                orderId: order.id,
+                                menuItemId: item.id
+                            })
+                            OrderItem.create({
+                                quantity: 2,
+                                orderId: order.id,
+                                menuItemId: item.id + 1
+                            })
+                        })
+
                         Order.create({
                             status: 'Collection Confirmed',
                             orderTiming: new Date,
@@ -380,7 +499,7 @@ module.exports = () => {
                     }).then(item => {
                         Order.create({
                             status: 'Collection Confirmed',
-                            orderTiming: new Date,
+                            orderTiming: previousDate,
                             userId: 2,
                             stallId: stall.id
                         }).then(order => {
@@ -395,7 +514,7 @@ module.exports = () => {
 
                         Order.create({
                             status: 'Collection Confirmed',
-                            orderTiming: new Date,
+                            orderTiming: previousDate,
                             userId: 5,
                             stallId: stall.id
                         }).then(order => {
@@ -418,7 +537,7 @@ module.exports = () => {
                     }).then(item => {
                         Order.create({
                             status: 'Collection Confirmed',
-                            orderTiming: new Date,
+                            orderTiming: new Date(),
                             userId: 1,
                             stallId: stall.id
                         }).then(order => {

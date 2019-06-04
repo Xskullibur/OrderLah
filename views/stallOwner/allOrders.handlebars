@@ -1,99 +1,145 @@
+{{> fixed_scroll_btn}}
+
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card p-3" style="width: 100%;">
-                <div class="card-body">
+            <div class="px-md-5 pb-md-5 px-sm-3 pb-sm-3" style="width: 100%;">
 
-                    <div class="container-fluid">
+                {{!-- Title --}}
+                <div class="row mb-3">
+                    <div class="col text-center">
+                        <h1>Current Orders</h1> 
+                    </div>
+                </div>
 
-                        {{!-- Filter --}}
-                        <div class="row mb-3">
-                            <div class="card col">
-                                <div class="card-body">
-                                    <form action="">
-                                        
-                                        <div class="form-row">
-                                            <div class="col-3">
-                                                <div class="row">
-                                                    <label for="orderNo">Order No.</label> 
-                                                </div>
-                                                <div class="row">
-                                                    <input type="search" name="orderNo" id="orderNo" placeholder="Order No.">
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="row">
-                                                    <label for="orderDate">Date</label>
-                                                </div>
-                                                <div class="row">
-                                                    <input type="date" name="orderDate" id="orderDate">
-                                                </div>
-                                            </div>
+                {{#if allOrders}}                    
+                    {{!-- Filter --}}
+                    <div class="container">
+                        <div class="card row mb-3 bg-light">
+                            <div class="col">
+                                <form action="" class="p-3">
+
+                                    {{!-- Inputs --}}
+                                    <div class="form-row">
+                                        <div class="form-group col">
+                                            <label for="orderNo">Order No.</label>
+                                            <input type="number" name="orderNo" id="orderNo" class="form-control" placeholder="eg. 1" aria-describedby="Order Number">
                                         </div>
 
-                                        <div class="form-row float-right">
-                                            <input type="submit" value="Submit">
+                                        <div class="form-group col">
+                                            <label for="date">Order Date</label>
+                                            <input type="date" name="date" id="date" class="form-control" placeholder="01/06/2019" aria-describedby="Order Date">
                                         </div>
+                                    </div>
 
-                                    </form>
-                                </div>
+                                    {{!-- Submit Btn --}}
+                                    <div class="form-row">
+                                        <div class="form-group col text-right">
+                                            <input class="btn btn-outline-danger" type="submit" value="Submit">
+                                        </div>
+                                    </div>
+
+
+                                </form>
                             </div>
                         </div>
+                    </div>
+
+                    {{!-- Body --}}
+                    <div class="card container p-5">
 
                         {{!-- Pagination Start --}}
-                        <div class="row">
-                            <div class="col">
-                                <nav aria-label="Order Page">
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                        <div class="row mb-3">
+                            <div class="col p-0">
+                                {{> allOrders_pagination}}
                             </div>
                         </div>
 
-                        Order Items
+                        {{!-- Order Details --}}
+                        {{#each allOrders as |order|}}                            
+                        <div class="row mb-3">
+                            <div class="card col p-0 shadow">
+
+                                {{!-- Card Header --}}
+                                <div class="card-header bg-danger text-white">
+                                    <div class="row">
+                                        <div class="col">
+                                            Order ID: {{order.id}}
+                                        </div>
+                                        <div class="col text-right">
+                                            {{formatDate order.orderTiming "DD/MM/YYYY, HH:MM:SS"}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{!-- Card Body --}}
+                                <div class="card-body px-5">
+
+                                    {{!-- Inner Card / Individual Orders --}}
+                                    {{#each order.menuItems as |item|}}
+                                    <div class="card mb-3 row bg-light">
+                                        <div class="col p-3">
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}/img/no-image.jpg{{/if}}" alt"">
+                                                </div>
+                                                <div class="col">
+                                                    <div class="row font-weight-bold mb-3">
+                                                        <div class="col">
+                                                            {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                                                        </div>
+                                                        <div class="col" style="text-align: right;">
+                                                            ${{calcItemPrice item}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            Rating:
+                                                            {{#for item.orderItem.rating}}
+                                                            <i class="fas fa-star text-danger"></i>
+                                                            {{/for}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">Comments: 
+                                                            <p class="font-weight-light">{{item.orderItem.comments}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+
+                                    {{!-- Total Amount --}}
+                                    <div class="row text-right">
+                                        <div class="col">
+                                            <b>Total Amount: ${{calcOrderTotal order}}</b>   
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        {{/each}}
 
                         {{!-- Pagination End --}}
                         <div class="row">
                             <div class="col">
-                                <nav aria-label="Order Page">
-                                    <ul class="pagination justify-content-end">
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+                                {{> allOrders_pagination}}
                             </div>
                         </div>
 
                     </div>
-                </div>
+                {{else}}
+                    {{!-- No Data Found --}}
+                    <div class="alert alert-danger" role="alert">
+                      <h4 class="alert-heading">No Orders Found!</h4>
+                      <p>If there are supposed to be orders please contact the Administrator immediately.</p>
+                      <p class="mb-0"></p>
+                    </div>
+                {{/if}}
+
             </div>
         </div>
     </div>

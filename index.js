@@ -14,13 +14,15 @@ const session = require('express-session')
 
 const exphbs = require('express-handlebars')
 
+const helpers = require('./server/helpers/helpers')
+
 //Setup express
 const app = express()
 //Put app inside global
 globalHandle.put('app', app)
 
 //Setup handlebars
-app.engine('handlebars', exphbs({defaultLayout: 'main_layout'}))
+app.engine('handlebars', exphbs({defaultLayout: 'main_layout', helpers}))
 app.set('view engine', 'handlebars')
 
 //Parsers
@@ -72,11 +74,11 @@ app.use(express.static('public'))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
-const stallOwnerRoutes = require('./server/routes/stallOwnerRoutes');
-const customerRoutes = require('./server/routes/customer/customerRoutes'); //when the '/customer is added, it fails to load the bootstrap'
+const customerRoutes = require('./server/routes/customer/customerRoutes')
+const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 app.use(mainRoutes)
-app.use(stallOwnerRoutes)
 app.use(customerRoutes)
+app.use('/stallOwner', stallOwnerRoutes)
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);

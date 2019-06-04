@@ -1,41 +1,80 @@
-<link rel="stylesheet" href="css/menu_item.css"/>
-<div style="min-height: 1000px; width: 100vw;">
+<link rel="stylesheet" type="text/css" href="css/index.css"/>
+{{!-- Styling for menu_item.handlebars --}}
+<link rel="stylesheet" type="text/css" href="css/menu_item.css"/>
+<div style="min-height: 1000px; width: 100vw; max-width: 100%;">
     <div class="container-fluid p-5">
         <div class="row d-md-none">
             <div class="col">
                 <ul class="menu-list list-group list-group-horizontal text-center" >
-                    <li class="list-group-item">Item 1</li>
-                    <li class="list-group-item">Item 2</li>
-                    <li class="list-group-item">Item 3</li>
-                    <li class="list-group-item">Item 4</li>
-                    <li class="list-group-item">Item 5</li>
+                    <li class="category-list-item list-group-item"><div>Item 1</div></li>
+                    <li class="category-list-item list-group-item"><div>Item 2</div></li>
+                    <li class="category-list-item list-group-item"><div>Item 3</div></li>
+                    <li class="category-list-item list-group-item"><div>Item 4</div></li>
+                    <li class="category-list-item list-group-item"><div>Item 5</div></li>
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col-3 d-none d-md-block">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-4 offset-8">
-                                <div class="position-fixed">
+                    <div class="row mt-5 justify-content-center">
+                        <div class="col-md-7 w-100 align-self-center">
+                            <form class="form-inline">
+                                <div class="form-group w-100 mr-sm-3 mb-2">
+                                    <input type="text" class="form-control" id="input-search" placeholder="Item name">
+                                </div>
+                                <button class="btn btn-outline-success mb-2" type="submit">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row my-5 justify-content-center">
+                        <div class="col-7 align-self-center">
+                                <div>
                                 <ul class="menu-list list-group list-group-flush text-center" >
-                                    <li class="list-group-item">Item 1</li>
-                                    <li class="list-group-item">Item 2</li>
-                                    <li class="list-group-item">Item 3</li>
-                                    <li class="list-group-item">Item 4</li>
-                                    <li class="list-group-item">Item 5</li>
+                                    <li class="category-list-item list-group-item"><div>Item 1</div></li>
+                                    <li class="category-list-item list-group-item"><div>Item 2</div></li>
+                                    <li class="category-list-item list-group-item"><div>Item 3</div></li>
+                                    <li class="category-list-item list-group-item"><div>Item 4</div></li>
+                                    <li class="category-list-item list-group-item"><div>Item 5</div></li>
                                 </ul>
                                 </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row my-5 justify-content-center">
+                        <div class="col-6 mt-5 text-center">
+                                <button type="button" class="btn btn-outline-primary" onclick="location.href = '/payment'">Pay Now</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-7"> 
-                {{#each size}}
-                    {{> menu_item index=@index}}
-                {{/each}}
+            <div class="col"> 
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Recommended</h2>
+                            <br>
+                            {{!-- {{#each size}}
+                                {{> menu_items/menu_item index=@index}}
+                            {{/each}} --}}
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h2>All Menus</h2>
+                            <br>
+                            {{#each size}}
+                                {{> menu_items/menu_item index=@index}}
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    {{!-- Bottom Order items --}}
+    {{> bottom_list}}
 </div>
 <script src="js/menu_item.js" type="text/javascript"></script>
+<script src="js/load_menu_item.js" type="text/javascript"></script>

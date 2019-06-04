@@ -24,8 +24,39 @@ const app = globalHandle.get('app')
 //Passport.js
 const passport = require('passport')
 
+//moment
+const moment = require('moment')
+
 app.use(passport.initialize())
 app.use(passport.session())
+
+
+//Locals middleware
+app.use((req, res, next) => {
+    //Set the user to local for handlebars to access
+    if(req.user != undefined)res.locals.user = req.user
+    next()
+})
+
+//Nav Middleware
+app.use((req, res, next) => {
+    if (req.user != undefined) {
+        res.locals.isCustomer = (req.user.role == 'Customer')        
+    }
+    next()
+})
+
+app.use((req, res, next)=>{
+    //Set first login if not
+    if(req.user){
+        if(req.session.firstLogin == undefined)req.session.firstLogin = true
+        else{
+            req.session.firstLogin = false
+        }
+        res.locals.firstLogin = req.session.firstLogin
+    }
+    next()
+})
 
 var bcrypt = require('bcrypt');
 
@@ -56,18 +87,27 @@ passport.deserializeUser(function(id, done) {
  * Default GET '/' path
  */
 router.get('/', auth_login.auth, (req, res) => {
-    res.render('index', {size: MenuItem.count()})
+    res.render('index', {size: [1,2,2,3,55,5,6,6,67,7,7]})
+})
+
+/**
+ * GET '/profile' path
+ * Get Profile page
+ */
+router.get('/profile', auth_login.auth, (req, res) => {
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
 })
 
 /**
  * Get all menu items inside the database as JSON
  */
-router.get('/menuItem', auth_login.auth, (req, res) => {
+router.get('/menuItems', auth_login.auth, (req, res) => {
    MenuItem.findAll({}).then( menuItems => {
        res.send(JSON.stringify(menuItems))
    })
 })
 
+const profile_gen = require('../libs/profile_img_generator')
 /**
  * Register GET '/register' path
  * Register page
@@ -78,7 +118,7 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
 
 /**
  * Register POST '/register' path
- * Params: email, password
+ * Params: email, password, fname, lname, dob, phone
  */
 router.post('/register', uuid_middleware.verify, (req, res) => {
     
@@ -92,7 +132,12 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
         phone: req.body.phone,
         password: req.body.password
     }).then(user => {
-        console.log("User's auto-generated ID:", user.id);
+        console.log("User's auto-generated ID:", user.id)
+        //Create profile pic
+        profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
+            img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
+            console.log('Generated image for user:' + user.id)
+        })
         res.send('Success')
     }).catch(err => {
         console.log(err)
@@ -116,15 +161,23 @@ router.get('/login', (req, res) => {
  */
 router.post('/login', 
     passport.authenticate('local', { 
-            successRedirect: '/',
-            failureRedirect: '/login' 
-    }))
+        failureRedirect: '/login' 
+    }), (req, res) => {
+        if (req.user.role === "Customer") {
+            res.redirect('/')
+        }
+        else {
+            res.redirect('/stallOwner/')
+        }
+    })
 
 /**
  * Logout GET '/logout' path, logout from session
  */
 router.get('/logout', (req, res) => {
     req.logout()
+    //Destroy firstLogin
+    req.session.firstLogin = undefined
     res.redirect('/login')
 })
 

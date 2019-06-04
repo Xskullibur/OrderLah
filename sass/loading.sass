@@ -1,0 +1,23 @@
+
+@import "./colors"
+@import "./utils"
+
+.loading-bg
+    position: fixed
+    z-index: 1030
+    min-width: 100vw
+    min-height: 100vh
+    background-color: white
+
+.loading-img-center
+    @include for-md-only
+        max-width: 400px
+        max-height: 400px
+    @include for-sm-only
+        max-width: 100px
+        max-height: 100px
+    @include for-min-height-only(500px)
+        max-width: 330px
+        max-height: 330px
+    
+

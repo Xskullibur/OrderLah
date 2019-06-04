@@ -1,50 +1,49 @@
 
 @import "./colors"
     
-@import "../node_modules/bootstrap/scss/bootstrap"
+@import "bootstrap/scss/bootstrap"
+
+@import "@material/fab/mdc-fab"
 
 @import "./utils"
 
-/* Logo */
-.logo-fixed 
-    +fixed-size(50px)
-    transition: all .4s ease-in
+@import "./nav"
 
+@import "./card-fullcontent"
+@import "./css/card.css"
+@import "./css/admin.css"
+@import "./css/success.css"
 
-.logo-fixed.grow-scroll-growed 
-    +fixed-size(100px)
+/* Font */
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap')
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap')
+body
+    // font-family: 'Roboto', sans-serif
+    font-family: 'Montserrat', sans-serif
 
-
-
-/* NavBar */
-
-=for-desktop-only
-  @media (min-width: 599px)  
-      @content 
-
-
-@include for-desktop-only
-    .navbar 
-        .navbar-nav 
-            margin: auto
-
-
-.nav-fixed 
-    transition: all .4s ease-in
-
-
-.nav-fixed.grow-scroll-growed 
-    min-height: 130px !important
-
+/* Translated center */
+.translate-center
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
 
 /* Circle Btn */
-.btn-circle 
-    width: 30px
-    height: 30px
-    padding: 6px 0px
-    border-radius: 15px
-    text-align: center
-    font-size: 12px
-    line-height: 1.42857
+.btn-circle
+    +mdc-fab-accessible($coral-1)
+    // position: relative
+    // +fixed-size(60px)
+    // padding: 0
+    // border-radius: 35px
+    // text-align: center
+    // font-size: 20px
+    // line-height: 1.42857
 
+
+/*Fixed bottom container*/
+.bottom-container
+    position: fixed
+    min-width: 100vw
+    max-width:100%
+    bottom: 0
 

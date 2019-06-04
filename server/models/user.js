@@ -13,8 +13,6 @@
  *  
  */
 const bcrypt = require('bcrypt')
-//Salt for my key derivation function
-const salt = require('../hashes').bcrypt_salt
 
 const salt_rounds = 10
 
@@ -31,7 +29,7 @@ module.exports = {
                 birthday:  {type: Sequelize.DATE, allowNull: false},
                 password:  {type: Sequelize.STRING, allowNull: false},
                 phone:  {type: Sequelize.STRING(10), allowNull: false},
-                role: {type: Sequelize.ENUM('Customer', 'Admin'), allowNull: false, defaultValue:'Customer'},
+                role: {type: Sequelize.ENUM('Customer', 'Admin', 'Stallowner'), allowNull: false, defaultValue:'Customer'},
             })
     
             //Hash the password using bcrypt
