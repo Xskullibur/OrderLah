@@ -16,6 +16,7 @@ const auth_login = require('../../libs/auth_login')
 
 //Get Models
 const MenuItem = globalHandle.get('menuItem')
+const OrderItem = globalHandle.get('orderItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
 
