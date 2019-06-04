@@ -170,6 +170,7 @@ router.get('/logout', (req, res) => {
 router.get('/getRatingData', async (req, res) =>{
 
     const db = globalHandle.get('db');
+
     let rating_matrix = [];
 
     let menuArray = [];
@@ -187,19 +188,19 @@ router.get('/getRatingData', async (req, res) =>{
 
             for(let menuItemId of menuArray){
                 //Get the rating of the menuItem provided by user
-                let {result, metadata} = await db.query(`
-                SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
-                FROM orderlah_db.orderItems
-                INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
-                INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
-                WHERE orderlah_db.orders.status = 'Collection Confirmed'
-                AND orderlah_db.orders.userId = ${user.id}
-                AND orderlah_db.orderItems.menuItemId = ${menuItemId}
-                ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
+                let [result, metadata] = await db.query(`
+                    SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
+                    FROM orderlah_db.orderItems
+                    INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
+                    INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+                    WHERE orderlah_db.orders.status = 'Collection Confirmed'
+                    AND orderlah_db.orders.userId = ${user.id}
+                    AND orderItems.menuItemId = ${menuItemId}
+                    ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
                 `)
                 let rating = 0;
-                if (result != undefined) {
-                    rating = result.rating
+                if (result[0] != undefined) {
+                    rating = parseInt(result[0].rating)
                 }
 
                 userRating.push(rating)
