@@ -167,63 +167,48 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
-router.get('/getRatingData', (req, res) =>{
+router.get('/getRatingData', async (req, res) =>{
 
     const db = globalHandle.get('db');
     let rating_matrix = [];
 
     let menuArray = [];
 
-    MenuItem.findAll({attribute: 'id'}).then(items => {
+    MenuItem.findAll({attribute: 'id'}).then( async items => {
         items.forEach(item => {
             menuArray.push(item.id)
         });
 
-        User.findAll().then(users => {
+        let users = await User.findAll()
 
-            users.forEach(user => {
-                
-                rating_matrix[user.id] = []
-                let userRating = []
+        for(let user of users){
+            rating_matrix[user.id] = []
+            let userRating = []
 
-                menuArray.forEach(menuItemId => {
+            for(let menuItemId of menuArray){
+                //Get the rating of the menuItem provided by user
+                let {result, metadata} = await db.query(`
+                SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
+                FROM orderlah_db.orderItems
+                INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
+                INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+                WHERE orderlah_db.orders.status = 'Collection Confirmed'
+                AND orderlah_db.orders.userId = ${user.id}
+                AND orderlah_db.orderItems.menuItemId = ${menuItemId}
+                ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
+                `)
+                let rating = 0;
+                if (result != undefined) {
+                    rating = result.rating
+                }
 
-                    let promise = new Promise((resolve, reject) => {
-                        //Get the rating of the menuItem provided by user
-                        db.query(`
-                        SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
-                        FROM orderlah_db.orderItems
-                        INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
-                        INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
-                        WHERE orderlah_db.orders.status = 'Collection Confirmed'
-                        AND orderlah_db.orders.userId = ${user.id}
-                        AND orderlah_db.orderItems.menuItemId = ${menuItemId}
-                        ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
-                        `).then(result => {
-    
-                            let rating = 0;
-                            if (result.rating != undefined) {
-                                rating = result.rating
-                            }
-    
-                            userRating.push(rating)
-                            resolve()
-                            
-                        });
-                    })
-
-                })
-
-                promise.then(() => {
-                    rating_matrix[user.id].push(userRating)
-                })
-
-            });
-
-            res.send(rating_matrix)
-
-        })
-
+                userRating.push(rating)
+                rating_matrix[user.id].push(userRating)
+            }
+            
+        }
+        res.send(rating_matrix)
+            
     })
 })
 
