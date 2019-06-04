@@ -26,7 +26,7 @@ const Sequelize = require('sequelize')
 //Get App
 const app = globalHandle.get('app')
 
-
+//validation
 
 //Define main 'customer' paths
 
@@ -38,11 +38,13 @@ paypal.configure({
     'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
   });
 
+router.use(auth_login.auth)
+
 /**
  * GET '/payment' 
  * Payment stage for ordering items
  */
-router.get('/payment', auth_login.auth, (req, res) => {
+router.get('/payment', (req, res) => {
 
     var create_payment_json = {
         "intent": "order",
@@ -105,12 +107,6 @@ router.get('/review/:id', (req, res)=> {
 
 router.get('/pastOrders', (req, res) => {
     Order.findAll({
-        where: {
-            status: {
-                [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
-            },
-            // stallId: req.user.id
-        },
         order: Sequelize.col('orderTiming'),
         include: [{
             model: MenuItem
