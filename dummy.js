@@ -204,8 +204,7 @@ async function createTestData() {
     }, {
         stallName: 'Nosla\'s Chicken Rice',
         cusineId: asianCusine.id,
-        description: 'Enjoy the best Chicken Rice here at Nosla\'s Chicken Rice Stall Today!',
-        userId: stallOwner.id,
+        description: 'Enjoy the best Chicken Rice here at Nosla\'s Chicken Rice Stall Today!'
     }, async (stallowner, stall) => {
         //MenuItems
         let chickenItem = await create_order.createMenuItem({
@@ -343,7 +342,6 @@ async function createTestData() {
         stallName: 'Eldoon\'s Noodle House',
         cusineId: asianCusine.id,
         description: 'Enjoy the best handmade noodles here today!',
-        userId: stallOwner.id,
     }, async (stallowner, stall) => {
         //MenuItems
         let fishballNoodle = await create_order.createMenuItem({
@@ -462,214 +460,196 @@ async function createTestData() {
 
     
     //Japanese (1 Stall Owner, 2 Food Item, 3 Orders)
-    Cusine.create({
-        cusineType: 'Japanese',
-    }).then(japCusine => {
-        User.create({
-            username: 'Mayushi',
-            firstName: 'mayushi',
-            email: 'mayushi@stallowner',
-            birthday: new Date('1998/08/21'),
-            password: 'test',
-            phone: '91234567',
-            role: 'Admin',
-        }).then(stallOwner =>{
-            //Japanese
-            Stall.create({
-                stallName: 'Tuturu\'s Donburi',
-                cusineId: japCusine.id,
-                description: 'Tuturu\'s Donburi e yokoso~',
-                userId: stallOwner.id,
-            }).then(stall => {
-                MenuItem.create({
-                    itemName: 'Katsu Don',
-                    itemDesc: 'A bowl of rice topped with a deep-fried pork cutlet, egg, vegetables, and condiments.',
-                    price: 3.80,
-                    active: true,
-                    stallId: stall.id
-                }).then(item => {
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: previousDate,
-                        userId: 2,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "4",
-                            comments: "Delicious",
-                        })
-                    })
-
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: previousDate,
-                        userId: 5,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "5",
-                            comments: "WOWWWWWW",
-                        })
-                    })
-                })
-
-                MenuItem.create({
-                    itemName: 'Miso Nikomi Udon',
-                    itemDesc: 'A hearty and comforting noodle soup where chicken, fish cake, and udon noodles are simmered in a miso-flavored dashi broth.',
-                    price: 3.80,
-                    active: true,
-                    stallId: stall.id
-                }).then(item => {
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date(),
-                        userId: 1,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "3",
-                            comments: "Standard Taste",
-                        })
-                    })
-                })
-            })
+    let japCusine = await cusine.createCusine('Japanese')
+    createStallOwnerAndStall({
+        username: 'Mayushi',
+        firstName: 'mayushi',
+        email: 'mayushi@stallowner',
+        birthday: new Date('1998/08/21'),
+        password: 'test',
+        phone: '91234567',
+        role: 'Admin',
+    },{
+        stallName: 'Tuturu\'s Donburi',
+        cusineId: japCusine.id,
+        description: 'Tuturu\'s Donburi e yokoso~',
+    }, async (stallowner, stall) => {
+        //MenuItems
+        let katsuItem = await create_order.createMenuItem({
+            itemName: 'Katsu Don',
+            itemDesc: 'A bowl of rice topped with a deep-fried pork cutlet, egg, vegetables, and condiments.',
+            price: 3.80,
+            active: true,
+            stallId: stall.id
         })
-    }).catch(err => console.error("Japanese: \n" + err))
+        let misoItem = await create_order.createMenuItem({
+            itemName: 'Miso Nikomi Udon',
+            itemDesc: 'A hearty and comforting noodle soup where chicken, fish cake, and udon noodles are simmered in a miso-flavored dashi broth.',
+            price: 3.80,
+            active: true,
+            stallId: stall.id
+        })
+
+        //Orders
+        let order = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: 2,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order.id,
+            menuItemId: katsuItem.id,
+            rating: "4",
+            comments: "Delicious",
+        })
+
+        let order2 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: 5,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order2.id,
+            menuItemId: katsuItem.id,
+            rating: "5",
+            comments: "WOWWWWWW",
+        })
+
+        let order3 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date(),
+            userId: 1,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order3.id,
+            menuItemId: misoItem.id,
+            rating: "3",
+            comments: "Standard Taste",
+        })
+    })
 
     //Drink (1 Stall Owner, 2 Item, 6 Orders)
-    Cusine.create({
-        cusineType: 'Drinks',
-    }).then(drinkCusine => {
-        User.create({
-            username: 'Knird',
-            firstName: 'Knird',
-            email: 'Knird@stallowner',
-            birthday: new Date('1833/12/31'),
-            password: 'test',
-            phone: '91234567',
-            role: 'Admin',
-        }).then(stallOwner => {
-            Stall.create({
-                stallName: 'Genh Ihz\'s Refereshments',
-                cusineId: drinkCusine.id,
-                description: 'Thirsty? Here you go...',
-                userId: stallOwner.id,
-            }).then(stall => {
-                MenuItem.create({
-                    itemName: 'Barley',
-                    itemDesc: 'Freshly homemade barley',
-                    price: 1.50,
-                    active: true,
-                    stallId: stall.id
-                }).then(item => {
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 2,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "5",
-                            comments: "Really Homemade!",
-                        })
-                    })
+    let drinkCusine = await cusine.createCusine('Drinks')
+    createStallOwnerAndStall({
+        username: 'Knird',
+        firstName: 'Knird',
+        email: 'Knird@stallowner',
+        birthday: new Date('1833/12/31'),
+        password: 'test',
+        phone: '91234567',
+        role: 'Admin',
+    },{
+        stallName: 'Genh Ihz\'s Refereshments',
+        cusineId: drinkCusine.id,
+        description: 'Thirsty? Here you go...',
+    }, async (stallowner, stall) => {
+        //MenuItems
+        let barleyItem = await create_order.createMenuItem({
+            itemName: 'Barley',
+            itemDesc: 'Freshly homemade barley',
+            price: 1.50,
+            active: true,
+            stallId: stall.id
+        })
+        let iceLemonTeaItem = await create_order.createMenuItem({
+            itemName: 'Ice Lemon Tea',
+            itemDesc: 'Freshly homemade Ice Lemon Tea',
+            price: 1.50,
+            active: true,
+            stallId: stall.id
+        })
 
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 3,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 5,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "3",
-                            comments: "",
-                        })
-                    })
+        //Orders
+        let order = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 2,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order.id,
+            menuItemId: barleyItem.id,
+            rating: "5",
+            comments: "Really Homemade!",
+        })
 
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 1,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "3",
-                            comments: "A real thirst quencher",
-                        })
-                    })
-                })
+        let order2 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 3,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 5,
+            orderId: order2.id,
+            menuItemId: barleyItem.id,
+            rating: "3",
+            comments: "",
+        })
 
-                MenuItem.create({
-                    itemName: 'Ice Lemon Tea',
-                    itemDesc: 'Freshly homemade Ice Lemon Tea',
-                    price: 1.50,
-                    active: true,
-                    stallId: stall.id
-                }).then(item => {
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 2,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "2",
-                            comments: "Really Sour!",
-                        })
-                    })
+        let order3 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 1,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order3.id,
+            menuItemId: barleyItem.id,
+            rating: "3",
+            comments: "A real thirst quencher",
+        })
 
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 3,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 5,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "4",
-                            comments: "",
-                        })
-                    })
+        let order4 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 2,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order4.id,
+            menuItemId: iceLemonTeaItem.id,
+            rating: "2",
+            comments: "Really Sour!",
+        })
 
-                    Order.create({
-                        status: 'Collection Confirmed',
-                        orderTiming: new Date,
-                        userId: 1,
-                        stallId: stall.id
-                    }).then(order => {
-                        OrderItem.create({
-                            quantity: 1,
-                            orderId: order.id,
-                            menuItemId: item.id,
-                            rating: "1",
-                            comments: "SOURRRRR",
-                        })
-                    })
-                })
-            })
-        }).catch(err => console.error("Drink: \n" + err))
-    }).catch(err => console.error("Drink: \n" + err))
+        let order5 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 3,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 5,
+            orderId: order5.id,
+            menuItemId: iceLemonTeaItem.id,
+            rating: "4",
+            comments: "",
+        })
+
+        let order6 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: new Date,
+            userId: 1,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            orderId: order6.id,
+            menuItemId: iceLemonTeaItem.id,
+            rating: "1",
+            comments: "SOURRRRR",
+        })
+
+
+    })
 }
