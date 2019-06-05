@@ -11,9 +11,11 @@ const uuid_middleware = require('../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
 
-const MenuItem = globalHandle.get('menuItem')
+//DB
+const db = globalHandle.get('db');
 
-//Get User model
+//Get models
+const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
@@ -167,50 +169,23 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+const getRatingMatrix = require('../ratings/ratings')
+const SVD_Optimizer = require('../libs/ml/svd_sgd')
+
+function argsort(arr){
+    return arr.map((item, index) => [item, index])
+    .sort((a,b) => b[0] - a[0])
+    .map(v => v[1])
+}
+
 router.get('/getRatingData', async (req, res) =>{
 
-    const db = globalHandle.get('db');
-
-    let rating_matrix = [];
-
-    let menuArray = [];
-
-    MenuItem.findAll({attribute: 'id'}).then( async items => {
-        items.forEach(item => {
-            menuArray.push(item.id)
-        });
-
-        let users = await User.findAll()
-
-        for(let user of users){
-            rating_matrix[user.id] = []
-            let userRating = []
-
-            for(let menuItemId of menuArray){
-                //Get the rating of the menuItem provided by user
-                let [result, metadata] = await db.query(`
-                    SELECT orderlah_db.orders.userId, orderlah_db.orderItems.orderId, orderlah_db.orderItems.menuItemId, orderlah_db.menuItems.itemName, orderlah_db.orderItems.rating
-                    FROM orderlah_db.orderItems
-                    INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orderlah_db.orders.id
-                    INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
-                    WHERE orderlah_db.orders.status = 'Collection Confirmed'
-                    AND orderlah_db.orders.userId = ${user.id}
-                    AND orderItems.menuItemId = ${menuItemId}
-                    ORDER BY orderlah_db.orders.userId, orderlah_db.orderItems.menuItemId
-                `)
-                let rating = 0;
-                if (result[0] != undefined) {
-                    rating = parseInt(result[0].rating)
-                }
-
-                userRating.push(rating)
-                rating_matrix[user.id].push(userRating)
-            }
-            
-        }
-        res.send(rating_matrix)
-            
-    })
+    let ratings = await getRatingMatrix(db, MenuItem, User)
+    let optimizer = new SVD_Optimizer(ratings, 20, 0.001, 100)
+    optimizer.train()
+    let pMatrix = optimizer.getRatingMatrix()
+    console.log(ratings);
+    res.send(pMatrix)
 })
 
 module.exports = router
