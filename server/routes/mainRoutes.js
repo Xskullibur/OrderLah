@@ -11,9 +11,11 @@ const uuid_middleware = require('../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
 
-const MenuItem = globalHandle.get('menuItem')
+//DB
+const db = globalHandle.get('db');
 
-//Get User model
+//Get models
+const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
@@ -184,17 +186,23 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
-router.get('/getRatingData', (req, res) =>{
+const getRatingMatrix = require('../ratings/ratings')
+const SVD_Optimizer = require('../libs/ml/svd_sgd')
 
-    const db = globalHandle.get('db');
-    let rating_matrix = [];
+function argsort(arr){
+    return arr.map((item, index) => [item, index])
+    .sort((a,b) => b[0] - a[0])
+    .map(v => v[1])
+}
 
-    User.findAll().then(users=>{
-        users.forEach(user => {
-            rating_matrix[user.id] = []
-        });
-        res.send(rating_matrix)
-    })
+router.get('/getRatingData', async (req, res) =>{
+
+    let ratings = await getRatingMatrix(db, MenuItem, User)
+    let optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
+    optimizer.train()
+    let pMatrix = optimizer.getRatingMatrix()
+    console.log(ratings);
+    res.send(pMatrix)
 })
 
 module.exports = router
