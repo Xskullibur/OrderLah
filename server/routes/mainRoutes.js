@@ -181,7 +181,7 @@ function argsort(arr){
 router.get('/getRatingData', async (req, res) =>{
 
     let ratings = await getRatingMatrix(db, MenuItem, User)
-    let optimizer = new SVD_Optimizer(ratings, 20, 0.001, 100)
+    let optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
     optimizer.train()
     let pMatrix = optimizer.getRatingMatrix()
     console.log(ratings);
