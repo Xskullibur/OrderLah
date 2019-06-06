@@ -29,6 +29,7 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+router.use(auth_login.auth)
 
 /**
  * ALSON ROUTES 
@@ -245,8 +246,6 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 /**
  * HSIEN XIANG ROUTES
  */
-
-router.use(auth_login.auth)
 
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
