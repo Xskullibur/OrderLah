@@ -200,7 +200,7 @@ async function createTestData() {
         birthday: new Date('2000/09/16'),
         password: 'test',
         phone: '91234567',
-        role: 'Admin',
+        role: 'Stallowner',
     }, {
         stallName: 'Nosla\'s Chicken Rice',
         cusineId: asianCusine.id,
@@ -235,7 +235,7 @@ async function createTestData() {
             active: false,
             stallId: stall.id
         })
-        user.createUserWithLastName({
+        let customer = await user.createUserWithLastName({
             username: 'Customer',
             firstName: 'customer',
             email: 'customer@test',
@@ -337,7 +337,7 @@ async function createTestData() {
         birthday: new Date('1833/12/31'),
         password: 'test',
         phone: '91234567',
-        role: 'Admin',
+        role: 'Stallowner',
     },{
         stallName: 'Eldoon\'s Noodle House',
         cusineId: asianCusine.id,
@@ -468,7 +468,7 @@ async function createTestData() {
         birthday: new Date('1998/08/21'),
         password: 'test',
         phone: '91234567',
-        role: 'Admin',
+        role: 'Stallowner',
     },{
         stallName: 'Tuturu\'s Donburi',
         cusineId: japCusine.id,
@@ -543,7 +543,7 @@ async function createTestData() {
         birthday: new Date('1833/12/31'),
         password: 'test',
         phone: '91234567',
-        role: 'Admin',
+        role: 'Stallowner',
     },{
         stallName: 'Genh Ihz\'s Refereshments',
         cusineId: drinkCusine.id,

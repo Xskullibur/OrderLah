@@ -80,6 +80,11 @@ app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 
+//Websocket setup
+require('./server/libs/orderlah_websocket/orderlah_websocket')
+
+
+
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);
 })
