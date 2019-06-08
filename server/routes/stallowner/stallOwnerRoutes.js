@@ -274,6 +274,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     const itemDesc = req.body.itemDescription
     const owner = req.user.id
     const active = true
+    const stallId = req.user.id
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
@@ -282,27 +283,19 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     
 
     MenuItem.create({ itemName, price, itemDesc, owner, active}).then(function() {
-        // alert("Item successfully added")
-        //res.send('Good')
+
         res.render('createSuccess')
+
     }).catch(err => console.log(err))
 })
 
 router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     const active = false
-    const id = req.user.id
-    MenuItem.update({active}, {where: id}).then(
-    function(){res.send('item removed')}).catch(err => console.log(err))
-    
+    const id = req.body.itemID
+    MenuItem.update({active}, {where:{id}}).then(function(){
+        res.send('item removed')
+    }).catch(err => console.log(err)) 
 })
-
-// router.post('/updateItem', upload.single("itemImage"), (req, res) =>{
-//     const itemName = req.body.itemName
-//     const price = req.body.itemPrice
-//     const itemDesc = req.body.itemDescription
-
-//     MenuItem.update({itemName, price, itemDesc},{where:{id: req.body.id}})
-// })
 
 
 module.exports = router;
