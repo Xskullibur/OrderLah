@@ -40,7 +40,7 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
-         if(user.role === 'admin'){
+         if(user.role === 'Admin'){
             MenuItem.findAll({where: {active: true}}).then((item) =>{
                 res.render('stallowner-menu', {
                     item:item
