@@ -169,7 +169,7 @@ router.post('/login',
             res.redirect('/')
         }
         else if (req.user.role == 'Admin') {
-            res.redirect('/stallOwner/adminPanel')
+            res.redirect('/admin/adminPanel')
         }
         else {
             res.redirect('/stallOwner/')

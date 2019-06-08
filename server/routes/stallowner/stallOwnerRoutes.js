@@ -251,13 +251,7 @@ router.use(auth_login.auth)
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
-        if (user.role === 'Admin') {
-            MenuItem.findAll({where: { active: true}}).then((item) =>{
-                res.render('stallowner-menu', {
-                    item:item
-                })
-            })
-        }else if(user.role === 'Stallowner'){
+         if(user.role === 'Stallowner'){
             MenuItem.findAll({where: {owner: req.user.id, active: true}}).then((item) =>{
                 res.render('stallowner-menu', {
                     item:item
@@ -273,32 +267,6 @@ router.get('/showMenu', (req, res) => {
 
     //res.render('stallowner-menu')
 })
-
-router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
-    User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
-        res.render('admin', {
-            displayStallowner: stallowner
-        })
-    })
-})
-
-// router.post('/submitStall',  (req, res) =>{
-//     const username = req.body.username
-//     const firstName = req.body.firstName
-//     const lastName = req.body.lastName
-//     const email = req.body.email
-//     const birthday = req.body.birthday
-//     const password = req.body.password
-//     const phone = req.body.phone
-//     const role = 'Stallowner'
-
-//     User.create({
-//         username, firstName, lastName, email, birthday, password, phone, role
-//     }).then(function(){
-//         res.send('good')
-//     }).catch(err => console.log(err))
-
-// })
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
     const itemName = req.body.itemName
