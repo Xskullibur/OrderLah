@@ -1,0 +1,18 @@
+body{
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: inline-block;
+    background-color: white;
+    min-width: 350px;
+    padding: 30px;
+    border-radius: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: relative;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    top: 40px;
+}
+
+

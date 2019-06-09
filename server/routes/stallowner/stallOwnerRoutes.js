@@ -297,5 +297,8 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     }).catch(err => console.log(err)) 
 })
 
+router.post('/updateMenu', (req, res) =>{
+    
+})
 
 module.exports = router;
