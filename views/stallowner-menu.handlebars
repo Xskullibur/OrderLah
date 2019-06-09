@@ -37,15 +37,12 @@
                                             <svg width="24" height="24" viewBox="0 0 24 24">
                                                 <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
                                             </svg>
-                                        </button>
-                                            <form method="POST" action="/stallOwner/deleteItem">
-                                                <input type="hidden" id="itemID" name="itemID" value="{{this.id}}">                                                                                             
-                                                <button type="submit" class="red-btn">
-                                                    <svg width="24" height="24" viewBox="0 0 24 24">
-                                                        <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/>
-                                                    </svg>
-                                                </button>
-                                            </form>          
+                                        </button>                                                                                            
+                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#deleteForm{{this.id}}">
+                                            <svg width="24" height="24" viewBox="0 0 24 24">
+                                                <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/>
+                                            </svg>
+                                        </button>                                             
                                     </center>
                                 </div>
                             </div>
@@ -120,22 +117,23 @@
                     </div>
                     <form method="POST" action="" enctype="">
                         <br>
+                        <div class="modal-body">
                         <div class="form-group row">        
                             <label for="itemName" class="col-sm-2 col-form-label">Name</label> 
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="itemName" id="itemName" style="width: 80%;" value="{{this.itemName}}" required>
+                                <input type="text" class="form-control" name="itemName" id="itemName" value="{{this.itemName}}" required>
                             </div>
                         </div>
                         <div class="form-group row">                               
                             <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                             <div class="col-sm-10">                     
-                                <input type="number" class="form-control" name="itemPrice" id="itemPrice" style="width: 80%;" value="{{this.price}}" required>
+                                <input type="number" class="form-control" name="itemPrice" id="itemPrice" value="{{this.price}}" required>
                             </div>
                         </div>
                         <div class="form-group row">                      
                             <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label> 
                             <div class="col-sm-10">                      
-                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" style="width: 80%;" value="{{this.itemDesc}}" required>  
+                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" value="{{this.itemDesc}}" required>  
                             </div>
                         </div>
                         <div class="custom-file">                  
@@ -144,7 +142,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button submit" class="red-btn">Update</button>  
-                        </div>             
+                        </div> 
+                        </div>            
                     </form>
                 </div>
             </div>
@@ -152,4 +151,29 @@
     {{/each}}
 {{/if}}
 
-
+{{#if item}}
+    {{#each item}}
+        <div class="modal fade" id="deleteForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Are you sure to delete?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/stallOwner/deleteItem">
+                        <br>
+                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <div class="modal-footer">
+                                <button type="submit" class="red-btn">Yes</button>
+                                <button data-dismiss="modal" class="red-btn">No</button>  
+                            </div> 
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
