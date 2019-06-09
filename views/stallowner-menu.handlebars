@@ -115,7 +115,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form method="POST" action="" enctype="">
+                    <form method="POST" action="/stallOwner/updateItem" enctype="multipart/form-data">
                         <br>
                         <div class="modal-body">
                         <div class="form-group row">        
@@ -137,11 +137,12 @@
                             </div>
                         </div>
                         <div class="custom-file">                  
-                            <input type="file" class="custom-file-input" name="" id="" accept="image/png,image/jpeg,image/jpg">
+                            <input type="file" class="custom-file-input" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
                             <label class="custom-file-label" for="">Choose image</label>
                         </div>
+                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
                         <div class="modal-footer">
-                            <button type="button submit" class="red-btn">Update</button>  
+                            <button type="submit" class="red-btn">Update</button>  
                         </div> 
                         </div>            
                     </form>

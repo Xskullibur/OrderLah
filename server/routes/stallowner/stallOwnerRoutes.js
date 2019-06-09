@@ -261,11 +261,6 @@ router.get('/showMenu', (req, res) => {
             res.render('error')
         }      
       })
-    
-
-
-
-    //res.render('stallowner-menu')
 })
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
@@ -295,6 +290,21 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     MenuItem.update({active}, {where:{id}}).then(function(){
         res.render('removeSuccess')
     }).catch(err => console.log(err)) 
+})
+
+router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+    const itemName = req.body.itemName
+    const price = req.body.itemPrice
+    const itemDesc = req.body.itemDescription
+    const id = req.body.itemID
+
+    if (!fs.existsSync('./public/uploads')){
+        fs.mkdirSync('./public/uploads');
+    }
+
+    MenuItem.update({ itemName, price, itemDesc}, {where:{id}}).then(function() {
+        res.render('updateSuccess')
+    }).catch(err => console.log(err))
 })
 
 
