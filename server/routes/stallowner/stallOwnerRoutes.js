@@ -293,7 +293,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     const active = false
     const id = req.body.itemID
     MenuItem.update({active}, {where:{id}}).then(function(){
-        res.send('item removed')
+        res.render('removeSuccess')
     }).catch(err => console.log(err)) 
 })
 
