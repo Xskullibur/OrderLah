@@ -33,7 +33,7 @@
                                     <center>
                                          <h6 class="card__title">{{this.itemName}}</h6>
                                          <h6 class="card__title">${{this.price}}</h6>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm" style="margin:5px;">
+                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm{{this.id}}" style="margin:5px;">
                                             <svg width="24" height="24" viewBox="0 0 24 24">
                                                 <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
                                             </svg>
@@ -107,75 +107,34 @@
     </div>
 </div>
 
-<div class="modal fade" id="updateForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+{{#if item}}
+    {{#each item}}
+        <div class="modal fade" id="updateForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="" enctype="">
+                        <div class="form-horizontal">        
+                            <label for="itemName" >Name</label> 
+                            <input type="text" class="form-control" name="itemName" id="itemName" style="width: 50%;" value="{{this.itemName}}" required>
+                        </div>                       
+                            <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>                       
+                            <input type="number" class="form-control" name="itemPrice" id="itemPrice" value="{{this.price}}" required>                       
+                            <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>                       
+                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" value="{{this.itemDesc}}" required>                      
+                            <input type="file" class="custom-file-input" name="" id="" accept="image/png,image/jpeg,image/jpg">
+                            <label class="custom-file-label" for="">Choose image</label>
+                            <button type="button submit" class="red-btn">Update</button>              
+                    </form>
+                </div>
             </div>
-            <form method="POST" action="" enctype="">
-                <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="itemName" class="col-sm-2 col-form-label">Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" name="itemPrice" id="itemPrice" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" required>
-                        </div>
-                    </div>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="" id="" accept="image/png,image/jpeg,image/jpg">
-                        <label class="custom-file-label" for="">Choose image</label>
-                        <div class="invalid-feedback">Invalid file</div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button submit" class="red-btn">Update</button>
-                    </div>
-            </form>
         </div>
-    </div>
-</div>
-    
+    {{/each}}
+{{/if}}
 
-{{!-- <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
-<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>    
-<script>
-    $(".imgAdd").click(function () {
-            $(this).closest(".row").find('.imgAdd').before('<div class="col-sm-2 imgUp"><div class="imagePreview"></div><label class="btn btn-primary">Upload<input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg" style="width:0px;height:0px;overflow:hidden;"></label><i class="fa fa-times del"></i></div>');
-        });
-        $(document).on("click", "i.del", function () {
-            $(this).parent().remove();
-        });
-        $(function () {
-            $(document).on("change", ".uploadFile", function () {
-                var uploadFile = $(this);
-                var files = !!this.files ? this.files : [];
-                if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
 
-                if (/^image/.test(files[0].type)) { // only image file
-                    var reader = new FileReader(); // instance of the FileReader
-                    reader.readAsDataURL(files[0]); // read the local file
-
-                    reader.onloadend = function () { // set image data as background of div
-                        //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
-                        uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
-                    }
-                }
-            });
-        });
-</script> --}}
