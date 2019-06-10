@@ -28,6 +28,17 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+var generator = require('generate-password')
+
+var nodemailer = require('nodemailer')
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'acelearninghx@gmail.com',
+      pass: 'feifi@85@#*#vjslrfieefe'
+    }
+  });
 
 router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
@@ -52,21 +63,43 @@ router.get('/showMenu', (req, res) => {
       })
 })
 
-router.post('/submitStall',  (req, res) =>{
+router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
+    var passGen = generator.generate({
+        length: 10,
+        numbers: true
+    })
+
     const username = req.body.username
     const firstName = req.body.firstName
     const lastName = req.body.lastName
     const email = req.body.email
     const birthday = req.body.birthday
-    const password = req.body.password
+    const password = passGen
     const phone = req.body.phone
     const role = 'Stallowner'
-
+    console.log(username)
+    console.log(password)
     User.create({
         username, firstName, lastName, email, birthday, password, phone, role
     }).then(function(){
         res.send('good')
+
+        var mailOptions = {
+            from: 'Orderlah',
+            to: email,
+            subject: 'Account creation notice',
+            text: 'Hi your username is ' + email + ' and password is ' + password
+        }
+    
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        })
     }).catch(err => console.log(err))
+
 
 })
 

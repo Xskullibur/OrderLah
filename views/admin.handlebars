@@ -34,7 +34,7 @@
                                 <div class="card__content">
                                     <center><h4 class="card__title">{{this.username}}</h4></center>
                                     <center>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
+                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm" style="margin:5px;">
                                             <svg width="24" height="24" viewBox="0 0 24 24">
                                                 <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
                                             </svg>                                                                
@@ -55,8 +55,7 @@
 </div>
 
 
-<div class="modal fade" id="createStall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="createStall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -65,7 +64,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/stallOwner/submitStall" enctype="multipart/form-data">
+            <form method="POST" action="/admin/submitStall">
                 <div class="modal-body">
                     <br>
                     {{!-- <div class="form-group row">
@@ -75,25 +74,25 @@
                                 </div>
                     </div> --}}
                     <div class="form-group row">
-                        <label for="itemName" class="col-sm-2 col-form-label">username</label>
+                        <label for="username" class="col-sm-2 col-form-label">username</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="username" id="username" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="itemName" class="col-sm-2 col-form-label">firstname</label>
+                        <label for="firstName" class="col-sm-2 col-form-label">firstname</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="firstName" id="firstName" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="itemName" class="col-sm-2 col-form-label">lastname</label>
+                        <label for="lastName" class="col-sm-2 col-form-label">lastname</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="lastName" id="lastName" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="itemPrice" class="col-sm-2 col-form-label">email</label>
+                        <label for="email" class="col-sm-2 col-form-label">email</label>
                         <div class="col-sm-10">
                             <input type="email" class="form-control" name="email" id="email" required>
                         </div>
@@ -105,13 +104,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="itemPrice" class="col-sm-2 col-form-label">password</label>
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" name="password" id="password" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="itemPrice" class="col-sm-2 col-form-label">phone</label>
+                        <label for="phone" class="col-sm-2 col-form-label">phone</label>
                         <div class="col-sm-10">
                             <input type="number" class="form-control" name="phone" id="phone" required>
                         </div>
@@ -124,12 +117,12 @@
                     </div>
                     <input type="hidden" id="holder" name="holder"  value="">
                     <div class="modal-footer">
-                        <button type="button submit" class="red-btn">Create</button>
+                        <button type="submit" class="red-btn">Create</button>
                     </div>
             </form>
         </div>
     </div>
 </div>
-</div>
+
 
 
