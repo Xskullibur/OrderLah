@@ -29,6 +29,7 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+router.use(auth_login.authStallOwner)
 
 /**
  * ALSON ROUTES 
@@ -87,7 +88,7 @@ router.get('/', (req, res, next) => {
 });
 
 //All Orders
-router.get('/allOrders/:pageNo', (req, res, next) => {
+router.get('/allOrders/:pageNo/', (req, res, next) => {
 
     getStallID(req.user.id).then(stallID => {
         //Get number of orders for pagination 
@@ -241,12 +242,61 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 
+/**
+ * ALSON LOGIC ROUTES
+ */
+const STATUS = {
+    OrderPending: 'Order Pending',
+    PreparingOrder: 'Preparing Order',
+    ReadyForCollection: 'Ready for Collection',
+    CollectionConfirmed: 'Collection Confirmed'
+}
+
+function getUpdateStatus(status) {
+    switch (status) {
+
+        case STATUS.OrderPending:
+            return STATUS.PreparingOrder
+
+        case STATUS.PreparingOrder:
+            return STATUS.ReadyForCollection
+
+        case STATUS.ReadyForCollection:
+            return STATUS.CollectionConfirmed
+
+    }
+}
+
+router.post('/updateStatus/:orderID', (req, res) => {
+    
+    const orderID =  req.params.orderID
+
+    //Get Order
+    Order.findOne({
+        where: {
+            id: orderID
+        }
+    }).then(order => {
+
+        let status = getUpdateStatus(order.status)
+
+        Order.update({
+            status
+        }, 
+        { 
+            where: { id: orderID } 
+        }).then(() => {
+            res.redirect('/stallOwner/')
+        })
+
+    })
+
+})
+
 
 /**
  * HSIEN XIANG ROUTES
  */
-
-router.use(auth_login.auth)
 
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
