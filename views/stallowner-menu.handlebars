@@ -136,10 +136,16 @@
                                 <input type="text" class="form-control" name="itemDescription" id="itemDescription" value="{{this.itemDesc}}" required>  
                             </div>
                         </div>
-                        <div class="custom-file">                  
+                        <div class="form-group row">
+                            <div class="col-sm-2 imgUp">
+                                <div class="imagePreview" style="background: url(/uploads/{{this.owner}}{{this.itemName}}.jpeg)"></div>                            
+                                    <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
+                                </div>
+                    </div>
+                        {{!-- <div class="custom-file">                  
                             <input type="file" class="custom-file-input" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
                             <label class="custom-file-label" for="">Choose image</label>
-                        </div>
+                        </div> --}}
                         <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
                         <div class="modal-footer">
                             <button type="submit" class="red-btn">Update</button>  
