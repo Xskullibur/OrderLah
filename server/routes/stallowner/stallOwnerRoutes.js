@@ -52,7 +52,7 @@ function getStallID(userID) {
     return promise
 }
 
-//Current Orders
+//Current Orders Route
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
@@ -87,53 +87,63 @@ router.get('/', (req, res, next) => {
 
 });
 
-//All Orders
-router.get('/allOrders/:pageNo/:filter1?/:filter2?/', (req, res, next) => {
+//All Orders Route
+router.get('/allOrders/:pageNo/', (req, res, next) => {
 
 
-    //Get logged in Stall ID
+    //Check for filters
+    let orderNo = req.query.orderNo
+    let orderDate = req.query.orderDate
+    let filter = false
+
+    if (orderNo && orderDate) {
+        error = "Please fill one filter only..."
+    }
+    else if (orderNo){
+        if (isNaN(orderNo)) {
+            error = "Please input a valid Order Number"
+        }
+        filterCondition = { id: orderNo }
+        filter = true
+    }
+    else if (orderDate) {
+        if (!Date.parse(orderDate)) {
+            error = "Please input a valid Order Date"
+        }
+        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), orderDate)
+        filter = true
+    }
+
+    //Get StallID of logged in stallowner
     getStallID(req.user.id).then(stallID => {
 
-        filter1 = req.params.filter1
-        filter2 = req.params.filter2
+        whereCondition = [{stallId: stallID, status: 'Collection Confirmed'}]
 
-        whereStatement = {}
-
-        if (filter1 != undefined) {
-            
-            if (filter2 != undefined) {
-                
-            }
-
+        if (filter) {
+            whereCondition.push(filterCondition)
         }
 
-        //Get number of orders for pagination
-        Order.count({ 
-            where: { 
-                stallId: stallID 
-            } 
+        //Get total number of orders for the Stall
+        Order.count({ where: whereCondition }).then(orderCount => {
 
-        }).then(orderCount => {
-            let currentPage = req.params.pageNo;
-            let offset = 0;
-            let limit = 5;
-    
-            if (currentPage === 1) {
-                offset = 0;
-            } else {
-                offset = (currentPage - 1) * 5
-            }
-    
-            const pages = Math.floor(orderCount / limit);
+            let currentPage = req.params.pageNo;                // Current page user is on
+            let offset = 0;                                     // Starting index of items
+            let limit = 5;                                      // Number of items per page
+            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
+
     
             /**
-             * Get all Stall's Orders
-             * Based on Stall's ID
-             * Limited based on pagination items
-             * WHERE Status = Collection Confirmed
+             * If user is not on 1st page,
+             * calculate offset based on
+             * currentPage * limit (number of items per page)
              */
+            if (currentPage !== 1) {
+                offset = (currentPage - 1) * limit
+            }
+
+            // Get paginated orders
             Order.findAll({
-                where: { status: 'Collection Confirmed', stallId: stallID },
+                where: whereCondition,                          // Filtered based on Status and Stall
                 offset,
                 limit,
                 order: Sequelize.col('orderTiming'),
