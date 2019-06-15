@@ -252,11 +252,13 @@ router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
-            MenuItem.findAll({where: {owner: req.user.id, active: true}}).then((item) =>{
-                res.render('stallowner-menu', {
-                    item:item
-                })
-            })      
+            Stall.findOne({where: {userId: id}}).then(myStall => {
+                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                    res.render('stallowner-menu', {
+                        item:item
+                    })
+                })    
+            })
         }else{
             res.render('error')
         }      
@@ -265,7 +267,7 @@ router.get('/showMenu', (req, res) => {
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
     const currentUser = req.user.id
-    
+
     Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
         const itemName = req.body.itemName
         const price = req.body.itemPrice
@@ -274,14 +276,11 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
         const active = true
         const stallId = theStall.id
 
-
         if (!fs.existsSync('./public/uploads')){
             fs.mkdirSync('./public/uploads');
         }
 
-        
-
-        MenuItem.create({ itemName, price, itemDesc, owner, active, stallId}).then(function() {
+        MenuItem.create({ itemName, price, itemDesc, owner, active, stallId}).then(function(){
             res.render('createSuccess')
 
         }).catch(err => console.log(err))
