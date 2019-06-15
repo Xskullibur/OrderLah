@@ -68,7 +68,6 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
         length: 10,
         numbers: true
     })
-
     const username = req.body.username
     const firstName = req.body.firstName
     const lastName = req.body.lastName
@@ -77,27 +76,41 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
     const password = passGen
     const phone = req.body.phone
     const role = 'Stallowner'
-    console.log(username)
-    console.log(password)
+
+    const stallName = req.body.stallName
+    const description = req.body.description
+
     User.create({
         username, firstName, lastName, email, birthday, password, phone, role
     }).then(function(){
-        res.send('good')
+        const emailcheck = req.body.email
+        User.findOne({ where: {email: emailcheck}}).then(user => {
 
-        var mailOptions = {
-            from: 'Orderlah',
-            to: email,
-            subject: 'Account creation notice',
-            text: 'Hi your username is ' + email + ' and password is ' + password
-        }
-    
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
-            }
-        })
+            userId = user.id
+
+            Stall.create({
+                userId, stallName, description
+            }).then(function(){  
+                var mailOptions = {
+                    from: 'Orderlah',
+                    to: email,
+                    subject: 'Account creation notice',
+                    text: 'Hi your username is ' + email + ' and password is ' + password
+                }
+            
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                })   
+            })
+
+            res.render('createStallSuccess')
+
+        }).catch(err => console.log(err))
+
     }).catch(err => console.log(err))
 
 
