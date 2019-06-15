@@ -264,24 +264,28 @@ router.get('/showMenu', (req, res) => {
 })
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
-    const itemName = req.body.itemName
-    const price = req.body.itemPrice
-    const itemDesc = req.body.itemDescription
-    const owner = req.user.id
-    const active = true
-    const stallId = req.user.id
-
-    if (!fs.existsSync('./public/uploads')){
-        fs.mkdirSync('./public/uploads');
-    }
-
+    const currentUser = req.user.id
     
+    Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+        const itemName = req.body.itemName
+        const price = req.body.itemPrice
+        const itemDesc = req.body.itemDescription
+        const owner = req.user.id
+        const active = true
+        const stallId = theStall.id
 
-    MenuItem.create({ itemName, price, itemDesc, owner, active}).then(function() {
 
-        res.render('createSuccess')
+        if (!fs.existsSync('./public/uploads')){
+            fs.mkdirSync('./public/uploads');
+        }
 
-    }).catch(err => console.log(err))
+        
+
+        MenuItem.create({ itemName, price, itemDesc, owner, active, stallId}).then(function() {
+            res.render('createSuccess')
+
+        }).catch(err => console.log(err))
+    })
 })
 
 router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
