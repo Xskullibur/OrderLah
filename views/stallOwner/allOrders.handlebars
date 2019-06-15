@@ -48,12 +48,14 @@
                     {{!-- Body --}}
                     <div class="card container p-5">
 
-                        {{!-- Pagination Start --}}
-                        <div class="row mb-3">
-                            <div class="col p-0">
-                                {{> allOrders_pagination}}
+                        {{#ifCondition pages ">" 1}}
+                            {{!-- Pagination Start --}}
+                            <div class="row mb-3">
+                                <div class="col p-0">
+                                    {{> allOrders_pagination}}
+                                </div>
                             </div>
-                        </div>
+                        {{/ifCondition}}
 
                         {{!-- Order Details --}}
                         {{#each allOrders as |order|}}                            
@@ -123,19 +125,21 @@
                         </div>
                         {{/each}}
 
-                        {{!-- Pagination End --}}
-                        <div class="row">
-                            <div class="col">
-                                {{> allOrders_pagination}}
+                        {{#ifCondition pages ">" 1}}
+                            {{!-- Pagination End --}}
+                            <div class="row">
+                                <div class="col">
+                                    {{> allOrders_pagination}}
+                                </div>
                             </div>
-                        </div>
+                        {{/ifCondition}}
 
                     </div>
                 {{else}}
                     {{!-- No Data Found --}}
                     <div class="alert alert-danger" role="alert">
                       <h4 class="alert-heading">No Orders Found!</h4>
-                      <p>If there are supposed to be orders please contact the Administrator immediately.</p>
+                      <p>If there are supposed to be orders please contact the Administrator.</p>
                       <p class="mb-0"></p>
                     </div>
                 {{/if}}

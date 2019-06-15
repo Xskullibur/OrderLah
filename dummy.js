@@ -111,6 +111,9 @@ async function createTestData() {
     const previousDate = new Date()
     previousDate.setDate(previousDate.getDate() - 1)
 
+    const previousMonth = new Date()
+    previousMonth.setMonth(previousMonth.getMonth() - 1)
+
     //Western (1 Stall Owner, 3 Food Item, 3 Orders)
     let westernCusine = await cusine.createCusine('Western')
     createStallOwnerAndStall({
@@ -221,14 +224,14 @@ async function createTestData() {
             active: true,
             stallId: stall.id
         })
-        create_order.createMenuItem({
+        let porkRiceItem = await create_order.createMenuItem({
             itemName: 'Roasted Pork Rice',
             itemDesc: 'The chunks of lightly crispy, springy, and well-seasoned roast pork with rice',
             price: 3.30,
             active: true,
             stallId: stall.id
         })
-        create_order.createMenuItem({
+        let deletedRiceItem = await create_order.createMenuItem({
             itemName: 'Deleted Rice',
             itemDesc: 'Used to test deleted menu items',
             price: 99.99,
@@ -244,7 +247,7 @@ async function createTestData() {
             phone: '1231231',
             role: 'Customer',
         })
-        //Orders
+        //Orders (Pending Status)
         let order = await create_order.createOrder({
             status: 'Order Pending',
             orderTiming: previousDate,
@@ -305,7 +308,7 @@ async function createTestData() {
             menuItemId: chickenItem.id
         })
 
-        //Completed Order
+        //Orders (Completed)
         let order6 = await create_order.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
@@ -324,6 +327,125 @@ async function createTestData() {
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
             orderId: order6.id,
+            menuItemId: duckRiceitem.id
+        })
+
+        let order7 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousMonth,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 2,
+            rating: "5",
+            comments: "Very crispy skin",
+            orderId: order7.id,
+            menuItemId: porkRiceItem.id
+        })
+
+        
+        let order8 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousMonth,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            rating: "3",
+            comments: "Chicken a little dry...",
+            orderId: order8.id,
+            menuItemId: chickenItem.id
+        })
+
+        
+        let order9 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousMonth,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 2,
+            rating: "4",
+            comments: "Sauce it really delicious",
+            orderId: order9.id,
+            menuItemId: duckRiceitem.id
+        })
+
+        
+        let order10 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousMonth,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 2,
+            rating: "1",
+            comments: "Too dry, disgusting",
+            orderId: order10.id,
+            menuItemId: deletedRiceItem.id
+        })
+
+        
+        let order11 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 3,
+            rating: "5",
+            comments: "As delicious as before, keep up the good work!",
+            orderId: order11.id,
+            menuItemId: porkRiceItem.id
+        })
+
+        
+        let order12 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 1,
+            rating: "5",
+            comments: "Very tender",
+            orderId: order12.id,
+            menuItemId: duckRiceitem.id
+        })
+
+        
+        let order13 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 2,
+            rating: "5",
+            comments: "Best chicken rice around here!",
+            orderId: order13.id,
+            menuItemId: chickenItem.id
+        })
+
+        
+        let order14 = await create_order.createOrder({
+            status: 'Collection Confirmed',
+            orderTiming: previousDate,
+            userId: customer.id,
+            stallId: stall.id
+        })
+        create_order.createOrderItem({
+            quantity: 2,
+            rating: "5",
+            comments: "Irresistible!",
+            orderId: order14.id,
             menuItemId: duckRiceitem.id
         })
 
@@ -457,7 +579,6 @@ async function createTestData() {
         })
 
     })
-
     
     //Japanese (1 Stall Owner, 2 Food Item, 3 Orders)
     let japCusine = await cusine.createCusine('Japanese')

@@ -88,11 +88,32 @@ router.get('/', (req, res, next) => {
 });
 
 //All Orders
-router.get('/allOrders/:pageNo/', (req, res, next) => {
+router.get('/allOrders/:pageNo/:filter1?/:filter2?/', (req, res, next) => {
 
+
+    //Get logged in Stall ID
     getStallID(req.user.id).then(stallID => {
-        //Get number of orders for pagination 
-        Order.count({ where: { stallId: stallID } }).then(orderCount => {
+
+        filter1 = req.params.filter1
+        filter2 = req.params.filter2
+
+        whereStatement = {}
+
+        if (filter1 != undefined) {
+            
+            if (filter2 != undefined) {
+                
+            }
+
+        }
+
+        //Get number of orders for pagination
+        Order.count({ 
+            where: { 
+                stallId: stallID 
+            } 
+
+        }).then(orderCount => {
             let currentPage = req.params.pageNo;
             let offset = 0;
             let limit = 5;
