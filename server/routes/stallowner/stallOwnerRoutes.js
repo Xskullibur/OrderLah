@@ -21,6 +21,7 @@ const Order = globalHandle.get('order');
 const MenuItem = globalHandle.get('menuItem');
 const Stall = globalHandle.get('stall');
 const User = globalHandle.get('user')
+const OrderItem = globalHandle.get('orderItem')
 
 //Get App
 const app = globalHandle.get('app')
@@ -310,5 +311,21 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     }).catch(err => console.log(err))
 })
 
+router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
+    const itemID = req.body.itemID
+    console.log(itemID)
+    const id = req.user.id
+    User.findOne({ where: id }).then(user => {
+         if(user.role === 'Stallowner'){
+            OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
+                res.render('stallmenu-comment', {
+                    items: items
+                })
+            })
+        }else{
+            res.render('error')
+        }      
+      })
+})
 
 module.exports = router;
