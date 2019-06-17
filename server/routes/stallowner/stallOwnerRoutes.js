@@ -92,25 +92,25 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 
 
     //Check for filters
-    let orderNo = req.query.orderNo
-    let orderDate = req.query.orderDate
+    let orderFilter = req.query.orderNo
+    let dateFilter = req.query.orderDate
     let filter = false
 
-    if (orderNo && orderDate) {
+    if (orderFilter && dateFilter) {
         error = "Please fill one filter only..."
     }
-    else if (orderNo){
-        if (isNaN(orderNo)) {
+    else if (orderFilter){
+        if (isNaN(orderFilter)) {
             error = "Please input a valid Order Number"
         }
-        filterCondition = { id: orderNo }
+        filterCondition = { id: orderFilter }
         filter = true
     }
-    else if (orderDate) {
-        if (!Date.parse(orderDate)) {
+    else if (dateFilter) {
+        if (!Date.parse(dateFilter)) {
             error = "Please input a valid Order Date"
         }
-        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), orderDate)
+        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
         filter = true
     }
 
@@ -155,7 +155,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
                 currentPage = parseInt(currentPage)
     
                 res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage,
+                     pages, allOrders, currentPage, orderFilter, dateFilter,
                      helpers: {
     
                         //Pagination previous button Helper
@@ -184,70 +184,89 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 //Monthly Summary
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
+    //Get StallID based onlogged in user
     getStallID(req.user.id).then(stallID => {
-        //Paramaters
-        const inputMonthYear = `${req.params.monthYear}`
-        let title = `Monthly Summary`
+
+        const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
+        let title = `Monthly Summary`                                   // Default Title
     
-        //Get all months of stall where there are orders => month
+        // Get date (Month-Year) where the stall has received orders
         db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders WHERE orderlah_db.orders.stallId = ${stallID}`, { raw: true }).then(([month, metadata]) => {
 
-            let monthYearSelected = false
+            let dateNotSelected = false                                 // Bool to indicate if a date(Month-Year) is selected
 
-            if (req.params.monthYear == undefined) {
-                monthYearSelected = true;
-                res.render('../views/stallOwner/monthlySummary',{
-                    month, monthYearSelected, title
+            if (req.params.monthYear == undefined) {                    // Check if date(Month-Year) is selected
+                dateNotSelected = true;                                 // Indicate that a date(Month-Year) is selected
+                res.render('../views/stallOwner/monthlySummary',{       // Render page w/o pulling data
+                    month, dateNotSelected, title
                })
             }
-            else{
+            else{                                                               // date(Month-Year) indicated
 
-                title += ` (${moment(inputMonthYear).format("MMM-YYYY")})`
+                let selectedDate = moment(inputMonthYear).format("MMMM-YYYY")
+                title += ` (${selectedDate})`      // Update title to include date(Month-Year)
 
-                const selectedMonth = moment(inputMonthYear).format('MM')
-                const selectedYear = moment(inputMonthYear).format('YYYY')
+                const selectedMonth = moment(inputMonthYear).format('MM')       // Get Month from received date(Month-Year)
+                const selectedYear = moment(inputMonthYear).format('YYYY')      // Get Year from received date(Month-Year)
 
                 /**
                  * Get all orders
-                 * BASED on provided Month and Year
+                 * BASED on provided date(Month-Year)
                  */
                 Order.findAll({
                     where: [
-                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), selectedMonth),
-                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),
+                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), selectedMonth),      // Extract Month from orderTiming for Querying with selectedMonth
+                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),        // Extract Year from orderTiming for Querying with selectedYear
                         {
-                            status: {
-                                [Sequelize.Op.or]: ['Collection Confirmed']
-                            },
-                            stallId: stallID
+                            status: 'Collection Confirmed',             // Get Orders where its status is 'Collection Confirmed'
+                            stallId: stallID                            // Orders that belongs to the logged in Stall Owner
                         }
                     ],
-                    order: Sequelize.col('orderTiming'),
+                    order: Sequelize.col('orderTiming'),                // Sort the orders according to the orderTiming
                     include: [{
-                        model: MenuItem
+                        model: MenuItem                                 // Join the MenuItem Table (Including OrderItems)
                     }]
                 }).then(monthlyOrder => {
         
                     let formatedOrder = []
         
-                    //Format JSON into a usable format
-                    for (const i in monthlyOrder) {
-                        if (monthlyOrder.hasOwnProperty(i)) {
+                    /**
+                     * Format JSON into a usable format
+                     * {
+                     *      orderDate: someDate,
+                     *      orders: [
+                     *          {
+                     *              order Info,
+                     *              menuItems: [
+                     *                  menuItem Info
+                     *              ]
+                     *          },
+                     *          {
+                     *              order Info,
+                     *              menuItems: [
+                     *                  menuItem Info
+                     *              ]
+                     *          },
+                     *      ]
+                     * }
+                     */
+                    for (const i in monthlyOrder) {                     // Loop through each orders
+                        if (monthlyOrder.hasOwnProperty(i)) {           // Check if orders exist
         
-                            const order = monthlyOrder[i];
-                            const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY") 
+                            const order = monthlyOrder[i];              
+                            const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY")       // Extract date from orderTiming(datetime)
         
-                            if (formatedOrder.length == 0) {
+                            if (formatedOrder.length == 0) {                                        // Push the first object if formatedOrder is empty
                                 formatedOrder.push({orderDate: orderDate, orders: []})
                             }
         
-                            let dateNotFound = true;
+                        let dateNotFound = true;                            // Variable to check if date is found in formatedOrder
         
                             formatedOrder.forEach(object => {
         
-                                if (object.orderDate == orderDate) {
+                                if (object.orderDate == orderDate) {        // Push order info into the added date if the date already exist
                                     object.orders.push(order)
-                                    dateNotFound = false
+                                    dateNotFound = false                    // Update variable for the next condition
                                     return
                                 }
         
@@ -259,9 +278,9 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                             
                         }
                     }
-                    
+
                     res.render('../views/stallOwner/monthlySummary',{
-                        month, formatedOrder, title
+                        month, formatedOrder, title, selectedDate
                    })
                 })
             }
