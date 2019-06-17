@@ -95,9 +95,10 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
     let orderFilter = req.query.orderNo
     let dateFilter = req.query.orderDate
     let filter = false
+    let error
 
     if (orderFilter && dateFilter) {
-        error = "Please fill one filter only..."
+        error = "Only one filter is allowed to be applied..."
     }
     else if (orderFilter){
         if (isNaN(orderFilter)) {
@@ -155,7 +156,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
                 currentPage = parseInt(currentPage)
     
                 res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter,
+                     pages, allOrders, currentPage, orderFilter, dateFilter, error,
                      helpers: {
     
                         //Pagination previous button Helper

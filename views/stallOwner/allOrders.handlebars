@@ -173,6 +173,10 @@
         }
     }
 
-    window.onload = showAlert("testing")
-
 </script>
+
+{{#if error}}
+    <script>
+        showAlert("{{error}}", 3000, "alert-danger")
+    </script>
+{{/if}}
