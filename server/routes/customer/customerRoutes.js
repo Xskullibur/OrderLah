@@ -92,10 +92,11 @@ router.get('/payment', (req, res) => {
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 
-router.get('/review/:id', (req, res)=> {
+router.get('/review/:id/:orderid', (req, res)=> {
     OrderItem.findOne({
         where: {
-            orderId: req.params.id
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
         }
     })
     .then((orderItem) => {
