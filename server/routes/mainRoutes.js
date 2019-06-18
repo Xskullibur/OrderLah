@@ -131,6 +131,7 @@ router.get('/menuItems/:cusine', auth_login.auth, async (req, res) => {
 const getRatingMatrix = require('../ratings/ratings')
 const SVD_Optimizer = require('../libs/ml/svd_sgd')
 
+let optimizer;
 
 
 /**
@@ -140,28 +141,43 @@ const SVD_Optimizer = require('../libs/ml/svd_sgd')
 router.get('/recommendedMenuItems', auth_login.auth, (req, res) => {
     //let userId = req.user.id
 
-    //
-    let optimizer;
-    getRatingMatrix(db, MenuItem, User).then((ratings) => {
-        optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
-        optimizer.train()
-
+    trainIfNotTrained(() => {
         let menuItemsIds = optimizer.getRatingMatrix()[1]
-        menuItemsIds = argsort(menuItemsIds)
-
+        menuItemsIds = argsort(menuItemsIds).slice(0, 5)
+    
         menuItemsIds = menuItemsIds.map(v => menu_item_util.getMenuItemByID(v))
-
+    
         Promise.all(menuItemsIds).then(menuItems => {
+            menuItems = menuItems.filter((e) => e != null)
             res.type('json')
             res.send(JSON.stringify(menuItems))
         })
-
-
     })
+
+
+
     
 })
 
-
+function trainIfNotTrained(cb){
+    if(optimizer == undefined || optimizer == null){
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
+            optimizer.reset()
+            optimizer.train()
+            cb()
+        })
+    }else{
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            //Retrain
+            optimizer.updateRatingsMatrix(ratings)
+            optimizer.iterations = 100
+            optimizer.train()
+            cb()
+        })
+        
+    }
+}
 
 
 function argsort(arr){
