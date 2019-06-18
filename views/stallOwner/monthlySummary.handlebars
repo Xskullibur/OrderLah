@@ -1,3 +1,7 @@
+<script src="/js/PDFmake.js"></script>
+<script src='build/pdfmake.min.js'></script>
+<script src='build/vfs_fonts.js'></script>
+
 {{> fixed_scroll_btn}}
 
 <div class="container" style="position: relative; top: 5vh; width:">
@@ -36,7 +40,7 @@
                             {{!-- Options --}}
                             <div class="row pb-3">
                                 <div class="col">
-                                    <button class="btn btn-block md-btn-lg btn-primary">
+                                    <button onclick="showPDF()"class="btn btn-block md-btn-lg btn-primary">
                                         <i class="fa fa-file-pdf"></i>
                                         Export to PDF
                                     </button>
