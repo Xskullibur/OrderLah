@@ -276,14 +276,15 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
         const itemDesc = req.body.itemDescription
         const owner = req.user.id
         const active = true
+        const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
         const stallId = theStall.id
 
         if (!fs.existsSync('./public/uploads')){
             fs.mkdirSync('./public/uploads');
         }
 
-        MenuItem.create({ itemName, price, itemDesc, owner, active, stallId}).then(function(){
-            res.render('createSuccess')
+        MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
+            res.render('./successErrorPages/createSuccess')
 
         }).catch(err => console.log(err))
     })
@@ -293,22 +294,24 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     const active = false
     const id = req.body.itemID
     MenuItem.update({active}, {where:{id}}).then(function(){
-        res.render('removeSuccess')
+        res.render('./successErrorPages/removeSuccess')
     }).catch(err => console.log(err)) 
 })
 
 router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+    const currentUser = req.user.id
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
+    const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
     }
 
-    MenuItem.update({ itemName, price, itemDesc}, {where:{id}}).then(function() {
-        res.render('updateSuccess')
+    MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+        res.render('./successErrorPages/updateSuccess')
     }).catch(err => console.log(err))
 })
 
@@ -326,7 +329,7 @@ router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
                    })
                })
            }else{
-               res.render('error')
+               res.render('./successErrorPages/error')
            }      
          })
     })   

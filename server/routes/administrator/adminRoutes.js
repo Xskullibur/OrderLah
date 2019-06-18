@@ -58,7 +58,7 @@ router.get('/showMenu', (req, res) => {
                 })
             })      
         }else{
-            res.render('error')
+            res.render('./successErrorPages/error')
         }      
       })
 })
@@ -107,7 +107,7 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
                 })   
             })
 
-            res.render('createStallSuccess')
+            res.render('./successErrorPages/createStallSuccess')
 
         }).catch(err => console.log(err))
 
