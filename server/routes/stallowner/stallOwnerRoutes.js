@@ -256,7 +256,8 @@ router.get('/showMenu', (req, res) => {
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
                     res.render('stallowner-menu', {
-                        item:item
+                        item:item,
+                        stall: myStall
                     })
                 })    
             })
