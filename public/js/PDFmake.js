@@ -1,5 +1,5 @@
-let pdfMake = require('pdfmake/build/pdfmake.js');
-let pdfFonts = require('pdfmake/build/vfs_fonts.js');
+var pdfMake = require('pdfmake/build/pdfmake.js');
+var pdfFonts = require('pdfmake/build/vfs_fonts.js');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function showPDF() {
@@ -13,8 +13,6 @@ function showPDF() {
         },
         content:  'This is an sample PDF printed with pdfMake'
     }
-
-    console.log(docDefinition)
-
-    pdfMake.createPdf(docDefinition).open({}, window);
+    
+    pdfMake.createPdf(docDefinition).open({}, window.open('', '_blank') );
 }
