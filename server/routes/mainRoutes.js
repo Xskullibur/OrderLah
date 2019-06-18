@@ -43,7 +43,8 @@ app.use((req, res, next) => {
 //Nav Middleware
 app.use((req, res, next) => {
     if (req.user != undefined) {
-        res.locals.isCustomer = (req.user.role == 'Customer')        
+        res.locals.isCustomer = (req.user.role == 'Customer')
+        res.locals.isAdmin = (req.user.role == 'Admin')        
     }
     next()
 })
