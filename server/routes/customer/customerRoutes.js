@@ -106,6 +106,20 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
 });
 
+router.post('/saveReview/:id/:orderid', (req, res) => {
+    let comments = req.body.comments;
+
+    OrderItem.update({
+        comments
+    }, {
+        where: {
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
+        }
+    }).then(() => {
+        res.redirect('/pastOrders');
+    }).catch((err) => console.error(err));
+});
 //Current Orders
 router.get('/pastOrders', (req, res, next) => {
     

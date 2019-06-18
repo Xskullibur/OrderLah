@@ -2,7 +2,7 @@
     <div class="card card-body">
         <h4>Review Page</h4>
         <br>
-        <form action="" method="post">
+        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}?_method=POSTT" method="post">
 			<input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
@@ -19,7 +19,7 @@
                     <row>
                         <div class="form-group">
                             <label class="font-italic" for="">Comments</label>
-                            <textarea class="form-control" id="" rows="8">{{orderItem.comments}}</textarea>
+                            <textarea class="form-control" id="" name="comments" rows="8">{{orderItem.comments}}</textarea>
                         </div>
                     </row>
                     <button id="butAddVideo" type="submit" class="btn btn-primary" style="float:right;">Save
