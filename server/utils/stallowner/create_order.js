@@ -2,7 +2,6 @@
 const globalHandle = require('../../libs/global/global')
 
 //Get models
-const MenuItem = globalHandle.get('menuItem')
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
 
@@ -21,15 +20,7 @@ const Order = globalHandle.get('order')
  * @property {number} menuItemId 
  * @property {number} quantity - quantity of the specific item (default 1)
  */
-/**
- * MenuItem
- * @typedef {Object} MenuItem
- * @param {string} itemName - name of the menu item
- * @param {string} itemDesc - menu item description
- * @param {number} price - price of the menu item
- * @param {number} stallId - stall which owns or created the menu item
- * @param {boolean} active - wheather the menu item can be still ordered (default true)
- */
+
 
 module.exports = {
 
@@ -62,19 +53,5 @@ module.exports = {
         })
     },
 
-    /**
-     * Create a new menu item for a stall inside database
-     * @param {MenuItem} menuItem - to be created inside database
-     * @return {Promise} 
-     */
-    createMenuItem: function({itemName, itemDesc, price, stallId, active = true}){
-        return MenuItem.create({
-            itemName: itemName,
-            itemDesc: itemDesc,
-            price: price,
-            active: active,
-            stallId: stallId
-        })
-    },
 
 }

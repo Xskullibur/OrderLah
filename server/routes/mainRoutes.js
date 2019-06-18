@@ -85,11 +85,16 @@ passport.deserializeUser(function(id, done) {
 
 //Define main 'route' path
 
+const cusine_util = require('../utils/stallowner/cusine')
+const menu_item_util = require('../utils/main/menu_item')
+
 /**
  * Default GET '/' path
  */
 router.get('/', auth_login.auth, (req, res) => {
-    res.render('index', {size: [1,2,2,3,55,5,6,6,67,7,7]})
+    cusine_util.getAllCusine().then(cusines => {
+        res.render('index', {cusines: cusines})
+    })
 })
 
 /**
@@ -99,14 +104,96 @@ router.get('/', auth_login.auth, (req, res) => {
 router.get('/profile', auth_login.auth, (req, res) => {
     res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
 })
+/**
+ * Get '/menuItem' all menu items inside the database as JSON
+ */
+router.get('/menuItems/', auth_login.auth, (req, res) => {
+    res.type('json')
+    menu_item_util.getAllMenuItem().then( menuItems => {
+        res.type('json')
+        res.send(JSON.stringify(menuItems))
+    })
+
+})
+/**
+ * Get '/menuItem/:cusine' all menu items where cusine is {Asian, Japanese, Western} inside the database as JSON
+ */
+router.get('/menuItems/:cusine', auth_login.auth, async (req, res) => {
+    let cusine = req.params.cusine
+    cusine = await cusine_util.getCusineByCusineType(cusine)
+    res.type('json')
+    menu_item_util.getMenuItemByCusine(cusine.id).then( menuItems => {
+            res.send(JSON.stringify(menuItems))
+    })
+
+})
+
+const getRatingMatrix = require('../ratings/ratings')
+const SVD_Optimizer = require('../libs/ml/svd_sgd')
+
+let optimizer;
+
 
 /**
- * Get all menu items inside the database as JSON
+ * GET '/recommendedMenuItems'
+ * Return user perferences menu items
  */
-router.get('/menuItems', auth_login.auth, (req, res) => {
-   MenuItem.findAll({}).then( menuItems => {
-       res.send(JSON.stringify(menuItems))
-   })
+router.get('/recommendedMenuItems', auth_login.auth, (req, res) => {
+    //let userId = req.user.id
+
+    trainIfNotTrained(() => {
+        let menuItemsIds = optimizer.getRatingMatrix()[1]
+        menuItemsIds = argsort(menuItemsIds).slice(0, 5)
+    
+        menuItemsIds = menuItemsIds.map(v => menu_item_util.getMenuItemByID(v))
+    
+        Promise.all(menuItemsIds).then(menuItems => {
+            menuItems = menuItems.filter((e) => e != null)
+            res.type('json')
+            res.send(JSON.stringify(menuItems))
+        })
+    })
+
+
+
+    
+})
+
+function trainIfNotTrained(cb){
+    if(optimizer == undefined || optimizer == null){
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
+            optimizer.reset()
+            optimizer.train()
+            cb()
+        })
+    }else{
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            //Retrain
+            optimizer.updateRatingsMatrix(ratings)
+            optimizer.iterations = 100
+            optimizer.train()
+            cb()
+        })
+        
+    }
+}
+
+
+function argsort(arr){
+    return arr.map((item, index) => [item, index])
+    .sort((a,b) => b[0] - a[0])
+    .map(v => v[1])
+}
+
+router.get('/getRatingData', async (req, res) =>{
+
+    
+    let optimizer = new SVD_Optimizer()
+    
+    let pMatrix = optimizer.getRatingMatrix()
+    console.log(ratings);
+    res.send(pMatrix)
 })
 
 const profile_gen = require('../libs/profile_img_generator')
@@ -186,23 +273,5 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
-const getRatingMatrix = require('../ratings/ratings')
-const SVD_Optimizer = require('../libs/ml/svd_sgd')
-
-function argsort(arr){
-    return arr.map((item, index) => [item, index])
-    .sort((a,b) => b[0] - a[0])
-    .map(v => v[1])
-}
-
-router.get('/getRatingData', async (req, res) =>{
-
-    let ratings = await getRatingMatrix(db, MenuItem, User)
-    let optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
-    optimizer.train()
-    let pMatrix = optimizer.getRatingMatrix()
-    console.log(ratings);
-    res.send(pMatrix)
-})
 
 module.exports = router
