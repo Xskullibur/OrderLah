@@ -315,17 +315,20 @@ router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
     const itemID = req.body.itemID
     console.log(itemID)
     const id = req.user.id
-    User.findOne({ where: id }).then(user => {
-         if(user.role === 'Stallowner'){
-            OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
-                res.render('stallmenu-comment', {
-                    items: items
-                })
-            })
-        }else{
-            res.render('error')
-        }      
-      })
+    MenuItem.findOne({where : {id: itemID}}).then(menu =>{
+        User.findOne({ where: id }).then(user => {
+            if(user.role === 'Stallowner'){
+               OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
+                   res.render('stallmenu-comment', {
+                       items: items,
+                       menu: menu
+                   })
+               })
+           }else{
+               res.render('error')
+           }      
+         })
+    })   
 })
 
 module.exports = router;
