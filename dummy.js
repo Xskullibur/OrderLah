@@ -2,6 +2,7 @@
 const user = require('./server/utils/main/user')
 
 //Stall
+const menu_item = require('./server/utils/main/menu_item')
 const create_order = require('./server/utils/stallowner/create_order')
 const cusine = require('./server/utils/stallowner/cusine')
 const stall = require('./server/utils/stallowner/stall')
@@ -127,21 +128,21 @@ async function createTestData() {
         description: 'Most delicious western food at NYP!',
     }, async (stallowner, stall) => {
         //MenuItems
-        let chickenCutletItem = await create_order.createMenuItem({
+        let chickenCutletItem = await menu_item.createMenuItem({
             itemName: 'Chicken Cutlet',
             itemDesc: 'Juicy Chicken dredge in the seasoned breadcrumbs.',
             price: 4.50,
             active: true,
             stallId: stall.id
         })
-        let spaghettiItem = await create_order.createMenuItem({
+        let spaghettiItem = await menu_item.createMenuItem({
             itemName: 'SPAGHETTI BOLOGNESE',
             itemDesc: 'PASTA COOKED WITH MINCE MEAT AND BOLOGNESE SAUCE',
             price: 3.30,
             active: true,
             stallId: stall.id
         })
-        let fishAndChipItem = await create_order.createMenuItem({
+        let fishAndChipItem = await menu_item.createMenuItem({
             itemName: 'Fish and Chips',
             itemDesc: 'Tender ocean fresh fish fillet fried perfectly for that crisp exterior but moist and delicate flesh, served with our signature house tartar sauce, U.S. fries and tangy coleslaw. Our most famous dish will hit the spot, every time…',
             price: 5.20,
@@ -207,28 +208,28 @@ async function createTestData() {
         description: 'Enjoy the best Chicken Rice here at Nosla\'s Chicken Rice Stall Today!'
     }, async (stallowner, stall) => {
         //MenuItems
-        let chickenItem = await create_order.createMenuItem({
+        let chickenItem = await menu_item.createMenuItem({
             itemName: 'Chicken Rice',
             itemDesc: 'A dish of poached chicken and seasoned rice, served with chili sauce and cucumber garnishes',
             price: 2.50,
             active: true,
             stallId: stall.id
         })
-        let duckRiceitem = await create_order.createMenuItem({
+        let duckRiceItem = await menu_item.createMenuItem({
             itemName: 'Duck Rice',
             itemDesc: 'Braised Duck with plain rice',
             price: 3.50,
             active: true,
             stallId: stall.id
         })
-        create_order.createMenuItem({
+        menu_item.createMenuItem({
             itemName: 'Roasted Pork Rice',
             itemDesc: 'The chunks of lightly crispy, springy, and well-seasoned roast pork with rice',
             price: 3.30,
             active: true,
             stallId: stall.id
         })
-        create_order.createMenuItem({
+        menu_item.createMenuItem({
             itemName: 'Deleted Rice',
             itemDesc: 'Used to test deleted menu items',
             price: 99.99,
@@ -324,7 +325,7 @@ async function createTestData() {
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
             orderId: order6.id,
-            menuItemId: duckRiceitem.id
+            menuItemId: duckRiceItem.id
         })
 
     })
@@ -344,14 +345,14 @@ async function createTestData() {
         description: 'Enjoy the best handmade noodles here today!',
     }, async (stallowner, stall) => {
         //MenuItems
-        let fishballNoodle = await create_order.createMenuItem({
+        let fishballNoodle = await menu_item.createMenuItem({
             itemName: 'Fishball Noodle',
             itemDesc: 'Served dry or in soup, and with a variety of noodles from mee pok to kway teow.',
             price: 2.50,
             active: true,
             stallId: stall.id
         })
-        let wantonNoodleItem = await create_order.createMenuItem({
+        let wantonNoodleItem = await menu_item.createMenuItem({
             itemName: 'Wanton Noodle',
             itemDesc: 'Served in a hot broth, accompanied by leafy greens and shrimp or meat wanton dumplings',
             price: 3,
@@ -475,14 +476,14 @@ async function createTestData() {
         description: 'Tuturu\'s Donburi e yokoso~',
     }, async (stallowner, stall) => {
         //MenuItems
-        let katsuItem = await create_order.createMenuItem({
+        let katsuItem = await menu_item.createMenuItem({
             itemName: 'Katsu Don',
             itemDesc: 'A bowl of rice topped with a deep-fried pork cutlet, egg, vegetables, and condiments.',
             price: 3.80,
             active: true,
             stallId: stall.id
         })
-        let misoItem = await create_order.createMenuItem({
+        let misoItem = await menu_item.createMenuItem({
             itemName: 'Miso Nikomi Udon',
             itemDesc: 'A hearty and comforting noodle soup where chicken, fish cake, and udon noodles are simmered in a miso-flavored dashi broth.',
             price: 3.80,
@@ -550,14 +551,14 @@ async function createTestData() {
         description: 'Thirsty? Here you go...',
     }, async (stallowner, stall) => {
         //MenuItems
-        let barleyItem = await create_order.createMenuItem({
+        let barleyItem = await menu_item.createMenuItem({
             itemName: 'Barley',
             itemDesc: 'Freshly homemade barley',
             price: 1.50,
             active: true,
             stallId: stall.id
         })
-        let iceLemonTeaItem = await create_order.createMenuItem({
+        let iceLemonTeaItem = await menu_item.createMenuItem({
             itemName: 'Ice Lemon Tea',
             itemDesc: 'Freshly homemade Ice Lemon Tea',
             price: 1.50,

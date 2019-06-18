@@ -42,7 +42,7 @@ const Stall = require('./stall').model(Sequelize, db)
 const MenuItem = require('./menuItem').model(Sequelize, db)
 const Order = require('./order').model(Sequelize, db)
 const OrderItem = require('./orderItem').model(Sequelize, db)
-const Cusine = require('../models/cusine').model(Sequelize, db)
+const Cusine = require('./cusine').model(Sequelize, db)
 
 //Relations
 User.hasOne(Stall);

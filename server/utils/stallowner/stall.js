@@ -25,5 +25,17 @@ module.exports = {
             description: description,
             userId: userId,
         })
+    },
+    /**
+     * Return all the stalls that belong to that cusine
+     * @param {number} cusineId - cusine id of all the stall belong to that cusine
+     * @return {Promise}
+     */
+    getStallByCusine(cusineId){
+        return Stall.findAll({
+            where: {
+                cusineId
+            }
+        })
     }
 }

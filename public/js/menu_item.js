@@ -1,7 +1,4 @@
 
-$(document).ready(function() {
-    
-});
 
 function doStaggerAnimation(){
     var menu_items = $('.menu-item');
@@ -47,20 +44,30 @@ function loadContent(menuItemDoc, menuItem){
         rating.append("<i class=\"fas fa-star text-danger\"></i>");
     }
 
-    //Once the img finished loading we show the element
-    img.on('load', function(){
-        //Hide all shine
-        menuItemDoc.find('.shine').each(function(index) {
-            $(this).attr('hidden', '');
-        });
-
+    if(img != null){
+        //Once the img finished loading we show the element
+        img.on('load', function(){
+            //Hide all shine
+            menuItemDoc.find('.shine').each(function(index) {
+                $(this).attr('hidden', '');
+            });
+    
+            //Show all elements
+            img.removeAttr('hidden');
+            title.removeAttr('hidden');
+            price.removeAttr('hidden');
+            rating.removeAttr('hidden');
+    
+        });        
+    }else{
+        //If img is not available for loading
         //Show all elements
         img.removeAttr('hidden');
         title.removeAttr('hidden');
         price.removeAttr('hidden');
         rating.removeAttr('hidden');
+    }
 
-    });
 
     
 
