@@ -1,17 +1,39 @@
 <link rel="stylesheet" href="/css/stallowner.css">
 
 <br><br>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th scope="col"><center>Quantity</center></th>
-            <th scope="col"><center>Rating</center></th>
-            <th scope="col"><center>Comment</center></th>
-            <th scope="col"><center>Order ID</center></th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#if items}}
+<div class="row" style="padding-left: 5em">
+    {{#if items}}
+            {{#each items}}
+                <div class="col-xs-6">
+                    <div class="column">
+                        <div class="container">
+                            <div class="card">                            
+                                <div class="card__content">
+                                    <br>
+                                    <center>
+                                         <h6 class="card__title">Order ID: {{this.orderId}}</h6>
+                                         <h6 class="card__title">Rating: {{this.rating}}</h6>
+                                         <h6 class="card__title">Quantity: {{this.quantity}}</h6>
+                                         <h6 class="card__title">{{this.comments}}</h6>                                                                            
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>  
+        {{/each}}
+    {{/if}}
+</div>
+
+{{!-- <br>
+<center>
+    <form method="GET" action="/stallowner/showMenu">
+        <button type="submit" class="green-btn">Return</button>
+    </form>
+<center>
+
+{{#if items}}
             {{#each items}}
                 <tr>
                     <th>{{this.quantity}}</th>
@@ -20,13 +42,4 @@
                     <td>{{this.orderId}}</td>
                 </tr>
             {{/each}}
-        {{/if}}
-    </tbody>
-</table>
-
-<br>
-<center>
-    <form method="GET" action="/stallowner/showMenu">
-        <button type="submit" class="green-btn">Return</button>
-    </form>
-<center>
+{{/if}} --}}
