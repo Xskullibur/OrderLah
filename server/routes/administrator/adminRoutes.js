@@ -112,8 +112,14 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
         }).catch(err => console.log(err))
 
     }).catch(err => console.log(err))
+})
 
-
+router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
+    const userID = req.body.userID
+    const role = 'Inactive'
+    User.update({role}, {where: {id:userID}}).then(function(){
+        res.render('./successErrorPages/lockSuccess')
+    })
 })
 
 module.exports = router;

@@ -4,6 +4,7 @@
 <center>
     <form method="GET" action="/stallowner/showMenu">
         <h1>Showing reviews for {{menu.itemName}}</h1>
+        <br>
         <button type="submit" class="green-btn">Return</button>
     </form>
 <center>
@@ -34,20 +35,3 @@
     {{/if}}
 </div>
 
-{{!-- <br>
-<center>
-    <form method="GET" action="/stallowner/showMenu">
-        <button type="submit" class="green-btn">Return</button>
-    </form>
-<center>
-
-{{#if items}}
-            {{#each items}}
-                <tr>
-                    <th>{{this.quantity}}</th>
-                    <td>{{this.rating}}</td>
-                    <td>{{this.comments}}</td>
-                    <td>{{this.orderId}}</td>
-                </tr>
-            {{/each}}
-{{/if}} --}}
