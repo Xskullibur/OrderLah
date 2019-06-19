@@ -34,7 +34,7 @@ var nodemailer = require('nodemailer')
 
 const bcrypt = require('bcrypt')
 
-const salt_rounds = 10
+const saltRounds = 10
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -69,7 +69,7 @@ router.get('/showMenu', (req, res) => {
 
 router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
     var passGen = generator.generate({
-        length: 10,
+        length: 15,
         numbers: true
     })
     const username = req.body.username
@@ -121,42 +121,13 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
 router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
     const userID = req.body.userID
     const role = 'Inactive'
-    User.update({role}, {where: {id:userID}}).then(function(){
-
-        var mailOptions = {
-            from: 'Orderlah',
-            to: email,
-            subject: 'Account lockdown notice',
-            text: 'Hi your stall account have been locked'
-        }
-    
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
-            }
-        })   
-
-        res.render('./successErrorPages/lockSuccess')
-    })
-})
-
-router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
-    var passGen = generator.generate({
-        length: 10,
-        numbers: true
-    })
-    const userID = req.body.userID
-
     User.findOne({where: {id: userID}}).then((stallowner) =>{
-        User.update({password: bcrypt.hash(passGen, salt_rounds)}, {where:{id: userID}}).then(function(){
-            const email = stallowner.email
+        User.update({role}, {where: {id:userID}}).then(function(){
             var mailOptions = {
                 from: 'Orderlah',
-                to: email,
-                subject: 'Account password reset',
-                text: 'Hi your account password have been reset new password is ' + passGen
+                to: stallowner.email,
+                subject: 'Account lockdown notice',
+                text: 'Hi your stall account have been locked'
             }
         
             transporter.sendMail(mailOptions, function (error, info) {
@@ -166,10 +137,46 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
                     console.log('Email sent: ' + info.response);
                 }
             })   
-        })
     
-        res.render('./successErrorPages/resetSuccess')
+            res.render('./successErrorPages/lockSuccess')
+        })
     })
+    
+})
+
+router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
+    var passGen = generator.generate({
+        length: 15,
+        numbers: true
+    })
+    const userID = req.body.userID
+    
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+        bcrypt.hash(passGen, salt).then(hash =>{
+            User.findOne({where: {id: userID}}).then((stallowner) =>{
+                User.update({password: hash}, {where:{id: userID}}).then(function(){
+                    const email = stallowner.email
+                    var mailOptions = {
+                        from: 'Orderlah',
+                        to: email,
+                        subject: 'Account password reset',
+                        text: 'Hi your account password have been reset new password is ' + passGen
+                    }
+                
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    })   
+                })
+            
+                res.render('./successErrorPages/resetSuccess')
+            })          
+        })
+    })
+    
     
 })
 
