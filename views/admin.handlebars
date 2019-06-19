@@ -40,7 +40,7 @@
                                         <button type="button" class="red-btn" data-toggle="modal" data-target="#freeze{{this.id}}">
                                             <font size="1">Lock</font>
                                         </button> 
-                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#" title="comments and rating">
+                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#reset{{this.id}}" title="comments and rating">
                                             <font size="1">Reset</font>
                                         </button>                                        
                                     </center>
@@ -81,6 +81,32 @@
     {{/each}}
 {{/if}}
 
+{{#if displayStallowner}}
+    {{#each displayStallowner}}
+        <div class="modal fade" id="reset{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">reset password for {{this.username}}?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/admin/resetPassword">
+                        <br>
+                        <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <center>
+                                <button type="submit" class="red-btn">Yes</button>
+                                <button data-dismiss="modal" class="red-btn">No</button>  
+                            </center>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
 
 <div class="modal fade" id="createStall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
