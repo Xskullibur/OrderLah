@@ -32,6 +32,10 @@ var generator = require('generate-password')
 
 var nodemailer = require('nodemailer')
 
+const bcrypt = require('bcrypt')
+
+const salt_rounds = 10
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -144,8 +148,9 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
         numbers: true
     })
     const userID = req.body.userID
+
     User.findOne({where: {id: userID}}).then((stallowner) =>{
-        User.update({password: passGen}, {where:{id: userID}}).then(function(){
+        User.update({password: bcrypt.hash(passGen, salt_rounds)}, {where:{id: userID}}).then(function(){
             const email = stallowner.email
             var mailOptions = {
                 from: 'Orderlah',
