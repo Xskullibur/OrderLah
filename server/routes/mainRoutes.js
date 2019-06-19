@@ -27,6 +27,11 @@ const passport = require('passport')
 //moment
 const moment = require('moment')
 
+// Create a token generator with the default settings:
+var randtoken = require('rand-token');
+//nodemailer
+const nodemailer = require('nodemailer');
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -120,6 +125,32 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
  * Register POST '/register' path
  * Params: email, password, fname, lname, dob, phone
  */
+router.post('/requesttoken',(req, res) => {
+    var token = randtoken.generate(16);
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user:'orderlah54@gmail.com',
+            pass: 'orderlahpassword'
+        }
+    });
+
+    let mailOptions = {
+        from:'Orderlah Team',
+        to: req.body.email,
+        subject: 'testing',
+        text: token
+    };
+
+    transporter.sendMail(mailOptions, function(err, data){
+        if (err) {
+            console.log('error occured: ', err)
+        } else {
+            console.log('email sent!!')
+        }
+    })
+})
+
 router.post('/register', uuid_middleware.verify, (req, res) => {
     
     //Create the user account

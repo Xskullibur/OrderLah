@@ -31,4 +31,10 @@ function submitForm(){
         registerMessage.text('Failed to create user account!');
         stepToSlide(3);
       });
+
+    $.ajax({
+      method: "POST",
+      url: "requesttoken",
+      data: {email: "182869N@mymail.nyp.edu.sg"} //to be replaced by the email user submits in the form
+    })
 }
