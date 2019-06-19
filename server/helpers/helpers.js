@@ -19,6 +19,10 @@ module.exports = {
         return accum;
     },
     
+    jsonStringfy(context){
+        return JSON.stringify(context)
+    },
+
     ifEquals(input1, input2, trueOutput, falseOutput){
         return (input1 === input2) ? trueOutput : falseOutput;
     },

@@ -43,7 +43,7 @@
                             {{!-- Options --}}
                             <div class="row pb-3">
                                 <div class="col">
-                                    <button onclick="showPDF()"class="btn btn-block md-btn-lg btn-primary">
+                                    <button onclick="showPDF({{jsonStringfy formatedOrder}}, '{{selectedDate}}')"class="btn btn-block md-btn-lg btn-primary">
                                         <i class="fa fa-file-pdf"></i>
                                         Export to PDF
                                     </button>

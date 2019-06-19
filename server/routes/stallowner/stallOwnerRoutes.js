@@ -280,6 +280,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                         }
                     }
 
+                    // res.send(formatedOrder)
+
                     res.render('../views/stallOwner/monthlySummary',{
                         month, formatedOrder, title, selectedDate
                    })
