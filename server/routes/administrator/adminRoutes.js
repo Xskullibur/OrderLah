@@ -121,24 +121,29 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
 router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
     const userID = req.body.userID
     const role = 'Inactive'
+    const active = false
     User.findOne({where: {id: userID}}).then((stallowner) =>{
-        User.update({role}, {where: {id:userID}}).then(function(){
-            var mailOptions = {
-                from: 'Orderlah',
-                to: stallowner.email,
-                subject: 'Account lockdown notice',
-                text: 'Hi your stall account have been locked'
-            }
-        
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Email sent: ' + info.response);
-                }
-            })   
-    
-            res.render('./successErrorPages/lockSuccess')
+        User.update({role}, {where: {id:req.body.userID}}).then(function(){
+            Stall.findOne({where: {userId: userID}}).then(theStall =>{
+                MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
+                    var mailOptions = {
+                        from: 'Orderlah',
+                        to: stallowner.email,
+                        subject: 'Account lockdown notice',
+                        text: 'Hi your stall account have been locked'
+                    }
+                
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    })   
+            
+                    res.render('./successErrorPages/lockSuccess')
+                })
+            })            
         })
     })
     
