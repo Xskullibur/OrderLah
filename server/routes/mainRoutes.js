@@ -273,5 +273,8 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+router.get('/orderStatus', (req, res) => {
+    res.render('order-status')
+})
 
 module.exports = router

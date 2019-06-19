@@ -1,0 +1,49 @@
+<link href="/css/order-status.css" rel="stylesheet" type="text/css">
+<script>
+    function setCircleProgress(val){
+
+        //Clamp val 0 - 100
+        if(val < 0)val = 0;
+        else if(val > 100) val = 100
+
+        var circumference = Math.PI * 2 * 180
+
+        var arcLength = (100-val)/100 * circumference
+
+        //Set length to circle
+
+        $('.order-progress-circle').css({ strokeDashoffset: arcLength})
+
+        if(val == 100)$('.order-progress-circle').addClass('complete')
+        else $('.order-progress-circle').removeClass('complete')
+
+    }
+</script>
+<div class="container">
+    <div class="row justify-content-center pt-5">
+        <div class="col-5 col-lg-7 text-center">
+            <h2>Order Status: <span id="order-status">{order-status}</span></h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-5 text-center">
+             <svg height="450" width="450">
+                 <g class="order-circle">
+                    <circle class="order-pulsing-circle" cx="50%" cy="50%" r="180"  stroke-width="3"/>
+                    <circle cx="50%" cy="50%" r="180"  stroke-width="3"/>
+                    <circle class="order-progress-circle" cx="50%" cy="50%" r="180" stroke-dasharray="1130.973355" stroke-width="13"/>
+                 </g>
+                <text x="50%" y="50%" text-anchor="middle" dy=".3em">
+                    <tspan class="order-text">Estimated time:</tspan>
+                </text>
+                <text  x="50%" y="50%" text-anchor="middle" dy="2.5em">
+                    <tspan id="order-est-time" class="order-sub-text"><tspan class="plain">1</tspan> h <tspan class="plain">20</tspan> min</tspan>
+                </text>
+            </svg> 
+        </div>
+    </div>
+    <div class="row justify-content-center ">
+        <div class="col text-center">
+        </div>
+    </div>
+</div>
