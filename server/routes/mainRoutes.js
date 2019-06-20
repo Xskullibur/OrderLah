@@ -32,6 +32,8 @@ var randtoken = require('rand-token');
 //nodemailer
 const nodemailer = require('nodemailer');
 
+var token = '';
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -125,8 +127,10 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
  * Register POST '/register' path
  * Params: email, password, fname, lname, dob, phone
  */
+
+
 router.post('/requesttoken',(req, res) => {
-    var token = randtoken.generate(16);
+    token = randtoken.generate(16);
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -151,36 +155,41 @@ router.post('/requesttoken',(req, res) => {
     })
 })
 
-router.post('/checktoken',(req, res) =>{
-    //check if token input =  token generated
+router.post('/checktoken',(req, res) => {
+    if(token === req.body.code){
+        console.log('verification success!!')
+    } else {
+        console.log('error occured, verification failed!')
+    }    
 })
 
 router.post('/register', uuid_middleware.verify, (req, res) => {
-    
-    //Create the user account
-    User.create({
-        username: req.body.username,
-        email: req.body.email,
-        firstName: req.body.fname,
-        lastName: req.body.lname,
-        birthday: req.body.dob,
-        phone: req.body.phone,
-        password: req.body.password
-    }).then(user => {
-        console.log("User's auto-generated ID:", user.id)
-        //Create profile pic
-        profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
-            img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
-            console.log('Generated image for user:' + user.id)
+    //if(token === req.body.code){
+        //Create the user account
+        User.create({
+            username: req.body.username,
+            email: req.body.email,
+            firstName: req.body.fname,
+            lastName: req.body.lname,
+            birthday: req.body.dob,
+            phone: req.body.phone,
+            password: req.body.password
+        }).then(user => {
+            console.log("User's auto-generated ID:", user.id)
+            //Create profile pic
+            profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
+                img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
+                console.log('Generated image for user:' + user.id)
+            })
+            res.send('Success')
+        }).catch(err => {
+            console.log(err)
+            res.status(400)//Bad request
+            res.send('Failed')
         })
-        res.send('Success')
-    }).catch(err => {
-        console.log(err)
-        res.status(400)//Bad request
-        res.send('Failed')
-    })
-
-    
+    //} else {
+        //console.log('error occured, verification failed!')
+   // }    
 })
 
 /**

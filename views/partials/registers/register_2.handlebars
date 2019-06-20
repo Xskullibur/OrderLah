@@ -1,11 +1,13 @@
 <h2 class="card-title text-center">Register</h2>
 <section>
+    <form id="registerForm2">
         <div class="form-group">
             <label for="code">Email verify</label>
             <input type="text" class="form-control" id="code" name="code" placeholder="verification code">
             <button type="button" class="btn btn-link">Resend</button>
         </div>
-        <button type="button" class="btn btn-secondary">Verify</button>
+        <button type="button" class="btn btn-secondary" onclick="checkToken()">Verify</button>
         
-        <button type="submit" class="btn btn-outline-success float-right" onclick="submitForm()">Next</button>
+        <button type="submit" class="btn btn-outline-success float-right" onclick="submitForm()" disabled>Next</button>
+    </form>
 </section>

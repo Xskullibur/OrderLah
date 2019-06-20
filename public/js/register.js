@@ -10,6 +10,16 @@ function submitToken(){
   })
 }
 
+function checkToken(){
+  var code = $('#registerForm2 input[name=code]').val();
+
+  $.ajax({
+    method: "POST",
+    url: "checktoken",
+    data: {code: code} 
+  })
+}
+
 /**
  * Submit form
  */
@@ -21,6 +31,14 @@ function submitForm(){
   });
 
   var registerMessage = $('#register-message');
+
+  /*var code = $('#registerForm2 input[name=code]').val();
+
+  $.ajax({
+    method: "POST",
+    url: "register",
+    data: {code: code} 
+  })*/
 
   $.ajax({
     method: "POST",
