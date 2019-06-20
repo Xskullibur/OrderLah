@@ -151,6 +151,10 @@ router.post('/requesttoken',(req, res) => {
     })
 })
 
+router.post('/checktoken',(req, res) =>{
+    //check if token input =  token generated
+})
+
 router.post('/register', uuid_middleware.verify, (req, res) => {
     
     //Create the user account
