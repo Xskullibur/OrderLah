@@ -86,13 +86,20 @@
         </form> --}}
         {{!-- Profile navbar for sm --}}
         <div class="nav navbar-nav pull-right d-inline-block d-md-none">
+            
             {{> profile_nav}}
         </div>
       </div>
   </div>
   {{!-- Profile navbar for md --}}
   <div class="nav navbar-nav pull-right d-none d-md-inline-block">
-      {{> profile_nav}}
+      <li class="nav-item dropdown">
+        <div class="d-inline-block coral-1 px-5">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+        </div>
+        <div class="d-inline-block">{{> profile_nav}}</div>
+        
+      </li>
   </div>
 </nav>
 {{!-- Popup --}}

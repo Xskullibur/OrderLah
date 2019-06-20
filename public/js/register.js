@@ -1,6 +1,7 @@
 
 function submitToken(){
     //TODO: Implement token submission
+    
 }
 
 /**
@@ -8,7 +9,7 @@ function submitToken(){
  */
 function submitForm(){
 
-    var form_data = {csrf: $('#csrf').val()};
+    var form_data = {csrf: $('#csrf-token').val()};
     //Get form data as array and convert it into a json object
     $('#registerForm').serializeArray().forEach(e => {
         form_data[e.name] = e.value;
@@ -31,4 +32,7 @@ function submitForm(){
         registerMessage.text('Failed to create user account!');
         stepToSlide(3);
       });
+
+
+
 }

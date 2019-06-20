@@ -28,7 +28,7 @@ let users_carts = {}
  * User cart object
  * @param {number} userId 
  */
-const cart = function(userId){
+function cart(userId){
     this.belongsToUserId = userId
     this.items = []
 
@@ -47,21 +47,27 @@ cart.prototype.removeOrderLine = function(orderLine){
 }
 
 
-const orderline = function(itemId, quantity = 1){
+function orderline(itemId, quantity = 1){
     this.itemId = itemId
     this.quantity = quantity
 }
 
 
 module.exports = {
-
+    
     register(req, res, next){
-        req
+        let tmp_cart = users_carts[req.user.id]
+        if(tmp_cart != null){
+            req.cart = tmp_cart
+        }else{
+            //Create new cart
+            users_carts[req.user.id] = new cart(req.user.id)
+            req.cart = tmp_cart
+        }
+        
         next()
     },
 
-    storeCart: function() {
-
-    }
+    orderline
 
 }

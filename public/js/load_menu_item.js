@@ -6,18 +6,28 @@ function generateRecommendedMenuCardItem(){
         insertContentToDivContainer($('#all-recommended-menu-container'), json)
         //Do staggering animations for the items
         doStaggerAnimation();
+        registerAllMenuItemsButtons();
     });
+    
 }
 
 function generateMenuCardItem(cusine = ''){
 
     var route = cusine == '' ? 'menuItems/' : 'menuItems/' + cusine;
+
+
+
     clearMenuItems($('#all-menu-container'));
     $.get(route, function( json ) {
         insertContentToDivContainer($('#all-menu-container'), json)
         //Do staggering animations for the items
         doStaggerAnimation();
+        registerAllMenuItemsButtons();
     });
+}
+
+function addFilterChip(cusine){
+  
 }
 
 /**
@@ -34,13 +44,13 @@ function clearMenuItems(container){
  */
 function insertContentToDivContainer(container, jsonMenuItems){
   $(jsonMenuItems).each(index => {
-
-    const menuItemHTML = `<div class="menu-item load-animation d-inline-block m-2" data-menu-item="${jsonMenuItems[index].id}"> 
+    //<button type="button" data-menu-item="${jsonMenuItems[index].id}" class="btn mdc-fab btn-circle menu-item-btn mr-3"><i class="fas fa-plus fa-xs translate-center"></i></button>
+    const menuItemHTML = `<div class="menu-item load-animation d-inline-block m-2" data-menu-item="${jsonMenuItems[index].id}" > 
     <div class="card" id="${container.attr('id')}-menu-item-${index}" style="width: 14rem;">
     <img class="card-img-top menu-item-img" alt="Card image cap" hidden>
     <photo class="card-img-top menu-item-img shine"></photo>
-    <div class="text-right" style="font-size: 0.5rem;"><button type="button" class="btn mdc-fab btn-circle menu-item-btn mr-3"><i class="fas fa-plus fa-xs translate-center"></i></button></div>
-        <div class="card-body menu-item-body py-1 px-3">
+    <div class="text-right" style="font-size: 0.5rem;"></div>
+        <div class="card-body menu-item-body py-3 px-3">
           <div>
             <lines class="card-title my-1 shine"></lines>
             <h5 class="card-title" hidden>Card title</h5>
@@ -49,7 +59,7 @@ function insertContentToDivContainer(container, jsonMenuItems){
             <lines class="card-text shine"></lines>
             <h5 class="card-text menu-item-price" hidden>$4.55</h5>
           </div>
-          <div  style="position: absolute; bottom: -20px;">
+          <div>
             <lines class="shine" style="width: 140px;"></lines>
             <div class="rating" hidden>
                 
@@ -79,8 +89,25 @@ function loadingDone(){
     generateRecommendedMenuCardItem();
     //First load will fill the div container with all menu items regardless of cusine
     generateMenuCardItem();
+    registerAllMenuItemsButtons();
 }
 
 function registerAllMenuItemsButtons(){
-  
+    $('.menu-item').off('click');
+    $('.menu-item').click(function() {
+      var btn = $(this);
+      var menuItemId = btn.data('menuItem');
+
+      var csrf = $('#csrf-token').val();
+      $.ajax({
+        method: "POST",
+        url: "addOrder",
+        data: {csrf, menuItemId}
+      }).done(function() {
+        console.log("Added order");
+        showAlert('Added order');
+      }).catch(err => {
+        showAlert('Error adding item', 3000, 'alert-danger');
+      });
+    });
 }
