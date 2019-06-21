@@ -229,6 +229,17 @@ router.get('/menuItems/:cusine', async (req, res) => {
 
 })
 
+/**
+ * GET '/menuItemId/:menuItemId'
+ * return the specific menu item as JSON
+ */
+router.get('/menuItemId/:menuItemId', (req, res) =>{
+    menu_item_util.getMenuItemByID(req.params.menuItemId).then((menuItem) => {
+        res.type('json')
+        res.send(JSON.stringify(menuItem))
+    })
+})
+
 const getRatingMatrix = require('../../ratings/ratings')
 const SVD_Optimizer = require('../../libs/ml/svd_sgd')
 
@@ -312,6 +323,11 @@ const order_track = require('../../libs/order_track')
 
 router.use(order_track.register)
 
+/**
+ * GET '/addOrder'
+ * add new order to user cart
+ * params: menuItemId - menu item id to be added to cart
+ */
 router.post('/addOrder', (req, res) => {
     //Add order
     if(req.cart != null){

@@ -44,7 +44,6 @@ function insertContentToDivContainer(container, jsonMenuItems){
     var menuItemJson = jsonMenuItems[index];
     
     const menuItemHTML = getMenuItemHTML(container.attr('id'), menuItemJson.id, index);
-    console.log(menuItemHTML);
     
     //Create menu item html dynamically
     container.append(menuItemHTML);
@@ -84,15 +83,21 @@ function registerAllMenuItemsButtons(){
         console.log("Added order");
         showAlert('Added order');
 
-        //Add to order list
-        cart_count++;
-        cart_index++;
-        setCartBadgeValue(cart_count);
-        //Bottom order list
-        var bottomList = $('div.container-fluid:nth-child(2) > div:nth-child(1) > div:nth-child(1)');
-        bottomList.append(menuItemHTML('all-bottom-menu-container', cart_index))
-        var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
-        loadContent($(`#all-bottom-menu-container-menu-item-${cart_index}`), menuItem);
+        $.ajax({
+          method: "GET",
+          url: "menuItemId/" + menuItemId
+        }).done((menuItemJson) => {
+          //Add to order list
+          cart_count++;
+          cart_index++;
+          setCartBadgeValue(cart_count);
+          //Bottom order list
+          var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
+          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, cart_index, true, true);
+          bottomList.append(menuItemHTML);
+          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
+          loadContent($(`#all-bottom-menu-container-menu-item-${cart_index}`), menuItem);
+        })
 
       }).catch(err => {
         showAlert('Error adding item', 3000, 'alert-danger');
@@ -106,8 +111,8 @@ function registerAllMenuItemsButtons(){
  * @param {number} menuItemId 
  * @param {number} index - id for index idenification of menu items when there is duplicates
  */
-function getMenuItemHTML(containerId, menuItemId, index=0){
-  return `<div class="menu-item load-animation d-inline-block m-2" data-menu-item="${menuItemId}" > 
+function getMenuItemHTML(containerId, menuItemId, index=0, no_animation=false, horizontialScrollable=false){
+  return `<div class="menu-item ${horizontialScrollable? 'scroll-content' : ''} ${no_animation? '' : 'load-animation'} d-inline-block m-2" data-menu-item="${menuItemId}" > 
     <div class="card" id="${containerId}-menu-item-${index}" style="width: 14rem;">
     <img class="card-img-top menu-item-img" alt="Card image cap" hidden>
     <photo class="card-img-top menu-item-img shine"></photo>
