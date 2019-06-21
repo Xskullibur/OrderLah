@@ -21,7 +21,7 @@ const Order = globalHandle.get('order')
 //Get App
 const app = globalHandle.get('app')
 
-//Passport.js
+//Passport.js   asdasdasdasd
 const passport = require('passport')
 
 //moment
@@ -32,7 +32,13 @@ var randtoken = require('rand-token');
 //nodemailer
 const nodemailer = require('nodemailer');
 
-var token = '';
+var session = require('express-session')
+
+//var token = '';
+app.use(session({
+    token : '',
+    cookie: { maxAge: 600000 }
+}));
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -130,7 +136,7 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
 
 
 router.post('/requesttoken',(req, res) => {
-    token = randtoken.generate(16);
+    session.token = randtoken.generate(16);
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -143,7 +149,7 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        text: token
+        text: session.token
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -156,7 +162,7 @@ router.post('/requesttoken',(req, res) => {
 })
 
 router.post('/checktoken',(req, res) => {
-    if(token === req.body.code){
+    if(session.token === req.body.code){
         console.log('verification success!!')
     } else {
         console.log('error occured, verification failed!')
@@ -164,8 +170,9 @@ router.post('/checktoken',(req, res) => {
 })
 
 router.post('/register', uuid_middleware.verify, (req, res) => {
-    //if(token === req.body.code){
+    if(session.token === req.body.code){
         //Create the user account
+        console.log('Verification success, account being created...')
         User.create({
             username: req.body.username,
             email: req.body.email,
@@ -187,9 +194,9 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
             res.status(400)//Bad request
             res.send('Failed')
         })
-    //} else {
-        //console.log('error occured, verification failed!')
-   // }    
+    } else {
+        console.log('error occured, verification failed!')
+   }    
 })
 
 /**
