@@ -5,12 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "firefox",
-            "request": "attach",
-            "name": "Attach"
-        },
-        
-        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
@@ -19,8 +13,9 @@
                 "NODE_ENV":"dev",
                 "DB_HOST":"192.168.99.100",
                 "DB_USERNAME":"orderlah_web_user",
-                "DB_PASSWORD":"mysecurepassword"
-
+                "DB_PASSWORD":"mysecurepassword",
+                "AUTO_LOGIN":"YES",
+                "LOGIN_AS":"john@customer"
             }
         },
         {

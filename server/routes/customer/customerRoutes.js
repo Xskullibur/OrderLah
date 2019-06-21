@@ -184,7 +184,7 @@ router.post('/checkOrder', (req, res) =>{
     console.log(number)
 })
 
-
+router.use(auth_login.auth)
 
 const cusine_util = require('../../utils/stallowner/cusine')
 const menu_item_util = require('../../utils/main/menu_item')
@@ -192,7 +192,7 @@ const menu_item_util = require('../../utils/main/menu_item')
 /**
  * Default GET '/' path
  */
-router.get('/', auth_login.auth, (req, res) => {
+router.get('/', (req, res) => {
     cusine_util.getAllCusine().then(cusines => {
         res.render('index', {cusines: cusines})
     })
@@ -202,13 +202,13 @@ router.get('/', auth_login.auth, (req, res) => {
  * GET '/profile' path
  * Get Profile page
  */
-router.get('/profile', auth_login.auth, (req, res) => {
+router.get('/profile', (req, res) => {
     res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
 })
 /**
  * Get '/menuItem' all menu items inside the database as JSON
  */
-router.get('/menuItems/', auth_login.auth, (req, res) => {
+router.get('/menuItems/', (req, res) => {
     res.type('json')
     menu_item_util.getAllMenuItem().then( menuItems => {
         res.type('json')
@@ -219,7 +219,7 @@ router.get('/menuItems/', auth_login.auth, (req, res) => {
 /**
  * Get '/menuItem/:cusine' all menu items where cusine is {Asian, Japanese, Western} inside the database as JSON
  */
-router.get('/menuItems/:cusine', auth_login.auth, async (req, res) => {
+router.get('/menuItems/:cusine', async (req, res) => {
     let cusine = req.params.cusine
     cusine = await cusine_util.getCusineByCusineType(cusine)
     res.type('json')
@@ -239,7 +239,7 @@ let optimizer;
  * GET '/recommendedMenuItems'
  * Return user perferences menu items
  */
-router.get('/recommendedMenuItems', auth_login.auth, (req, res) => {
+router.get('/recommendedMenuItems', (req, res) => {
     //let userId = req.user.id
 
     trainIfNotTrained(() => {
@@ -255,9 +255,16 @@ router.get('/recommendedMenuItems', auth_login.auth, (req, res) => {
         })
     })
 
+})
 
-
+/**
+ * GET '/cartMenuItems'
+ * Returns all current order cart items
+ */
+router.get('/cartMenuItems', (req, res) => {
     
+    res.type('json')
+    res.send(JSON.stringify(menuItems))
 })
 
 function trainIfNotTrained(cb){
@@ -297,7 +304,7 @@ router.get('/getRatingData', async (req, res) =>{
     res.send(pMatrix)
 })
 
-router.get('/orderStatus', auth_login.auth, (req, res) => {
+router.get('/orderStatus', (req, res) => {
     res.render('order-status')
 })
 
@@ -305,7 +312,7 @@ const order_track = require('../../libs/order_track')
 
 router.use(order_track.register)
 
-router.post('/addOrder', auth_login.auth, (req, res) => {
+router.post('/addOrder', (req, res) => {
     //Add order
     if(req.cart != null){
 

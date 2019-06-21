@@ -2,6 +2,10 @@
 
 @ECHO OFF
 
+:: Auto login
+set AUTO_LOGIN=YES
+set LOGIN_AS=john@customer
+
 :: SET 'orderlah' database environment
 
 :: set Development
