@@ -41,6 +41,7 @@
     "passport-local": "^1.0.0",
     "passport-remember-me": "^0.0.1",
     "paypal-rest-sdk": "^1.8.1",
+    "pdfmake": "^0.1.57",
     "sequelize": "^5.8.1",
     "socket.io": "^2.2.0",
     "supertest": "^4.0.2",

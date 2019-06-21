@@ -29,6 +29,7 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+router.use(auth_login.authStallOwner)
 
 /**
  * ALSON ROUTES 
@@ -51,7 +52,7 @@ function getStallID(userID) {
     return promise
 }
 
-//Current Orders
+//Current Orders Route
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
@@ -86,32 +87,64 @@ router.get('/', (req, res, next) => {
 
 });
 
-//All Orders
-router.get('/allOrders/:pageNo', (req, res, next) => {
+//All Orders Route
+router.get('/allOrders/:pageNo/', (req, res, next) => {
 
+
+    //Check for filters
+    let orderFilter = req.query.orderNo
+    let dateFilter = req.query.orderDate
+    let filter = false
+    let error
+
+    if (orderFilter && dateFilter) {
+        error = "Only one filter is allowed to be applied..."
+    }
+    else if (orderFilter){
+        if (isNaN(orderFilter)) {
+            error = "Please input a valid Order Number"
+        }
+        filterCondition = { id: orderFilter }
+        filter = true
+    }
+    else if (dateFilter) {
+        if (!Date.parse(dateFilter)) {
+            error = "Please input a valid Order Date"
+        }
+        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
+        filter = true
+    }
+
+    //Get StallID of logged in stallowner
     getStallID(req.user.id).then(stallID => {
-        //Get number of orders for pagination 
-        Order.count({ where: { stallId: stallID } }).then(orderCount => {
-            let currentPage = req.params.pageNo;
-            let offset = 0;
-            let limit = 5;
-    
-            if (currentPage === 1) {
-                offset = 0;
-            } else {
-                offset = (currentPage - 1) * 5
-            }
-    
-            const pages = Math.floor(orderCount / limit);
+
+        whereCondition = [{stallId: stallID, status: 'Collection Confirmed'}]
+
+        if (filter) {
+            whereCondition.push(filterCondition)
+        }
+
+        //Get total number of orders for the Stall
+        Order.count({ where: whereCondition }).then(orderCount => {
+
+            let currentPage = req.params.pageNo;                // Current page user is on
+            let offset = 0;                                     // Starting index of items
+            let limit = 5;                                      // Number of items per page
+            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
+
     
             /**
-             * Get all Stall's Orders
-             * Based on Stall's ID
-             * Limited based on pagination items
-             * WHERE Status = Collection Confirmed
+             * If user is not on 1st page,
+             * calculate offset based on
+             * currentPage * limit (number of items per page)
              */
+            if (currentPage !== 1) {
+                offset = (currentPage - 1) * limit
+            }
+
+            // Get paginated orders
             Order.findAll({
-                where: { status: 'Collection Confirmed', stallId: stallID },
+                where: whereCondition,                          // Filtered based on Status and Stall
                 offset,
                 limit,
                 order: Sequelize.col('orderTiming'),
@@ -123,7 +156,7 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
                 currentPage = parseInt(currentPage)
     
                 res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage,
+                     pages, allOrders, currentPage, orderFilter, dateFilter, error,
                      helpers: {
     
                         //Pagination previous button Helper
@@ -152,70 +185,89 @@ router.get('/allOrders/:pageNo', (req, res, next) => {
 //Monthly Summary
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
+    //Get StallID based onlogged in user
     getStallID(req.user.id).then(stallID => {
-        //Paramaters
-        const inputMonthYear = `${req.params.monthYear}`
-        let title = `Monthly Summary`
+
+        const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
+        let title = `Monthly Summary`                                   // Default Title
     
-        //Get all months of stall where there are orders => month
+        // Get date (Month-Year) where the stall has received orders
         db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders WHERE orderlah_db.orders.stallId = ${stallID}`, { raw: true }).then(([month, metadata]) => {
 
-            let monthYearSelected = false
+            let dateNotSelected = false                                 // Bool to indicate if a date(Month-Year) is selected
 
-            if (req.params.monthYear == undefined) {
-                monthYearSelected = true;
-                res.render('../views/stallOwner/monthlySummary',{
-                    month, monthYearSelected, title
+            if (req.params.monthYear == undefined) {                    // Check if date(Month-Year) is selected
+                dateNotSelected = true;                                 // Indicate that a date(Month-Year) is selected
+                res.render('../views/stallOwner/monthlySummary',{       // Render page w/o pulling data
+                    month, dateNotSelected, title
                })
             }
-            else{
+            else{                                                               // date(Month-Year) indicated
 
-                title += ` (${moment(inputMonthYear).format("MMM-YYYY")})`
+                let selectedDate = moment(inputMonthYear).format("MMMM-YYYY")
+                title += ` (${selectedDate})`      // Update title to include date(Month-Year)
 
-                const selectedMonth = moment(inputMonthYear).format('MM')
-                const selectedYear = moment(inputMonthYear).format('YYYY')
+                const selectedMonth = moment(inputMonthYear).format('MM')       // Get Month from received date(Month-Year)
+                const selectedYear = moment(inputMonthYear).format('YYYY')      // Get Year from received date(Month-Year)
 
                 /**
                  * Get all orders
-                 * BASED on provided Month and Year
+                 * BASED on provided date(Month-Year)
                  */
                 Order.findAll({
                     where: [
-                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), selectedMonth),
-                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),
+                        db.where(db.fn('MONTH', Sequelize.col('orderTiming')), selectedMonth),      // Extract Month from orderTiming for Querying with selectedMonth
+                        db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),        // Extract Year from orderTiming for Querying with selectedYear
                         {
-                            status: {
-                                [Sequelize.Op.or]: ['Collection Confirmed']
-                            },
-                            stallId: stallID
+                            status: 'Collection Confirmed',             // Get Orders where its status is 'Collection Confirmed'
+                            stallId: stallID                            // Orders that belongs to the logged in Stall Owner
                         }
                     ],
-                    order: Sequelize.col('orderTiming'),
+                    order: Sequelize.col('orderTiming'),                // Sort the orders according to the orderTiming
                     include: [{
-                        model: MenuItem
+                        model: MenuItem                                 // Join the MenuItem Table (Including OrderItems)
                     }]
                 }).then(monthlyOrder => {
         
                     let formatedOrder = []
         
-                    //Format JSON into a usable format
-                    for (const i in monthlyOrder) {
-                        if (monthlyOrder.hasOwnProperty(i)) {
+                    /**
+                     * Format JSON into a usable format
+                     * {
+                     *      orderDate: someDate,
+                     *      orders: [
+                     *          {
+                     *              order Info,
+                     *              menuItems: [
+                     *                  menuItem Info
+                     *              ]
+                     *          },
+                     *          {
+                     *              order Info,
+                     *              menuItems: [
+                     *                  menuItem Info
+                     *              ]
+                     *          },
+                     *      ]
+                     * }
+                     */
+                    for (const i in monthlyOrder) {                     // Loop through each orders
+                        if (monthlyOrder.hasOwnProperty(i)) {           // Check if orders exist
         
-                            const order = monthlyOrder[i];
-                            const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY") 
+                            const order = monthlyOrder[i];              
+                            const orderDate = moment(order.orderTiming).format("DD-MMM-YYYY")       // Extract date from orderTiming(datetime)
         
-                            if (formatedOrder.length == 0) {
+                            if (formatedOrder.length == 0) {                                        // Push the first object if formatedOrder is empty
                                 formatedOrder.push({orderDate: orderDate, orders: []})
                             }
         
-                            let dateNotFound = true;
+                        let dateNotFound = true;                            // Variable to check if date is found in formatedOrder
         
                             formatedOrder.forEach(object => {
         
-                                if (object.orderDate == orderDate) {
+                                if (object.orderDate == orderDate) {        // Push order info into the added date if the date already exist
                                     object.orders.push(order)
-                                    dateNotFound = false
+                                    dateNotFound = false                    // Update variable for the next condition
                                     return
                                 }
         
@@ -227,9 +279,9 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                             
                         }
                     }
-                    
+
                     res.render('../views/stallOwner/monthlySummary',{
-                        month, formatedOrder, title
+                        month, formatedOrder, title, selectedDate
                    })
                 })
             }
@@ -241,12 +293,61 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 
+/**
+ * ALSON LOGIC ROUTES
+ */
+const STATUS = {
+    OrderPending: 'Order Pending',
+    PreparingOrder: 'Preparing Order',
+    ReadyForCollection: 'Ready for Collection',
+    CollectionConfirmed: 'Collection Confirmed'
+}
+
+function getUpdateStatus(status) {
+    switch (status) {
+
+        case STATUS.OrderPending:
+            return STATUS.PreparingOrder
+
+        case STATUS.PreparingOrder:
+            return STATUS.ReadyForCollection
+
+        case STATUS.ReadyForCollection:
+            return STATUS.CollectionConfirmed
+
+    }
+}
+
+router.post('/updateStatus/:orderID', (req, res) => {
+    
+    const orderID =  req.params.orderID
+
+    //Get Order
+    Order.findOne({
+        where: {
+            id: orderID
+        }
+    }).then(order => {
+
+        let status = getUpdateStatus(order.status)
+
+        Order.update({
+            status
+        }, 
+        { 
+            where: { id: orderID } 
+        }).then(() => {
+            res.redirect('/stallOwner/')
+        })
+
+    })
+
+})
+
 
 /**
  * HSIEN XIANG ROUTES
  */
-
-router.use(auth_login.auth)
 
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
