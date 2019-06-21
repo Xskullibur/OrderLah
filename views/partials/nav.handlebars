@@ -93,11 +93,15 @@
   </div>
   {{!-- Profile navbar for md --}}
   <div class="nav navbar-nav pull-right d-none d-md-inline-block">
-      <li class="nav-item dropdown">
-        <div class="d-inline-block coral-1 px-5">
-          <i class="fas fa-shopping-cart fa-lg"></i>
+      
+        <div class="shake-effect d-inline-block px-5">
+          <a class="" href="#">
+            <i class="coral-1 fas fa-shopping-cart fa-lg"></i>
+            <span id="nav-cart-count" class="badge badge-pill badge-danger" style="position: relative; top: -15px;">0</span>
+          </a>
         </div>
-        <div class="d-inline-block">{{> profile_nav}}</div>
+        <div class="d-inline-block">
+          {{> profile_nav}}</div>
         
       </li>
   </div>

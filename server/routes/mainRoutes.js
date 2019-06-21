@@ -31,7 +31,7 @@ const moment = require('moment')
 
 app.use(passport.initialize())
 app.use(passport.session())
-
+app.use(passport.authenticate('remember-me'))
 
 //Locals middleware
 app.use((req, res, next) => {
@@ -72,6 +72,27 @@ passport.use(new LocalStrategy({usernameField: 'email',},
       }).catch(err => done(err))
     }
 ))
+
+const RememberMeStrategy = require('passport-remember-me').Strategy;
+const rememberme_utils = require('../utils/main/rememberme')
+
+
+passport.use(new RememberMeStrategy(
+    function(token, done) {
+        rememberme_utils.consumeToken(token, function (err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        return done(null, user);
+      })
+    },
+    function(user, done) {
+      var token = rememberme_utils.generateToken(64);
+      rememberme_utils.saveToken(token, user.id, function(err) {
+        if (err) { return done(err); }
+        return done(null, token);
+      })
+    }
+  ))
 
 passport.serializeUser(function(user, done) {   
     done(null, user.id)
@@ -142,7 +163,18 @@ router.get('/login', (req, res) => {
 router.post('/login', 
     passport.authenticate('local', { 
         failureRedirect: '/login' 
-    }), (req, res) => {
+    }),
+    (req, res, next) => {
+        // issue a remember me cookie if the option was checked
+        if (!req.body.remember_me) { return next(); }
+    
+        var token = rememberme_utils.generateToken(64);
+        rememberme_utils.saveToken(token, req.user.id, function(err) {
+          if (err) { return done(err); }
+          res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
+          return next();
+        });
+      }, (req, res) => {
         if (req.user.role === "Customer") {
             res.redirect('/')
         }
