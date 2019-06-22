@@ -26,10 +26,14 @@ module.exports = {
                     res.locals.isCustomer = true
                     next()
                 })
+                return
+            }else{
+                next()
+                return
             }
 
             
-            return
+            
         }
 
         if(req.user !== null && req.user !== undefined) {
@@ -64,8 +68,11 @@ module.exports = {
                     res.locals.isCustomer = false
                     next()
                 })
+                return
+            }else{
+                next()
+                return
             }
-            return
         }
 
         if(req.user !== null && req.user !== undefined && req.user.role === 'Stallowner') {
