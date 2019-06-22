@@ -241,6 +241,18 @@ router.get('/menuItemId/:menuItemId', (req, res) =>{
     })
 })
 
+/**
+ * GET '/menuItemSearch/:item_name'
+ * return all menu items specified by the item_name
+ * params: item_name
+ */
+router.get('/menuItemSearch/:item_name', (req, res) => {
+    menu_item_util.getMenuItemByName(req.params.item_name).then((menuItems) => {
+        res.type('json')
+        res.send(JSON.stringify(menuItems))
+    })
+})
+
 const getRatingMatrix = require('../../ratings/ratings')
 const SVD_Optimizer = require('../../libs/ml/svd_sgd')
 

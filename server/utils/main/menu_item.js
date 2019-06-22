@@ -5,6 +5,8 @@ const globalHandle = require('../../libs/global/global')
 const MenuItem = globalHandle.get('menuItem')
 const Stall = globalHandle.get('stall')
 
+const Op = require('sequelize').Sequelize.Op
+
 /**
  * MenuItem
  * @typedef {Object} MenuItem
@@ -33,23 +35,30 @@ module.exports = {
     },
     /**
      * Get all menu item from database
+     * @param {boolean} active - if return active menu items as well
      * @return {Promise} 
      */
-    getAllMenuItem: function(){
-        return MenuItem.findAll()
+    getAllMenuItem: function(active=false){
+        return MenuItem.findAll({where: {[Op.or]: [
+            {active: !active},{active: true}
+        ]}})
     },
     /**
      * Get all menu item by cusine id
      * @param {number} cusineId 
+     * @param {boolean} active - if return active menu items as well
      * @return {Promise}
      */
-    getMenuItemByCusine: function(cusineId){
+    getMenuItemByCusine: function(cusineId, active=false){
         return Stall.findAll({
             include: [{model: MenuItem, required: true, as: 'menuItems'
                 
             }],
             where: {
-                cusineId
+                cusineId,
+                [Op.or]: [
+                    {active: !active},{active: true}
+                ]
             }
         }).map((a) => a.menuItems).reduce((a, b) => a.concat(b))
     },
@@ -60,5 +69,19 @@ module.exports = {
      */
     getMenuItemByID: function(id){
         return MenuItem.findByPk(id)
+    },
+    /**
+     * Find menu items by item name
+     * @param {boolean} active - if return active menu items as well
+     */
+    getMenuItemByName: function(name, active=false){
+        return MenuItem.findAll({
+            where: {
+                itemName: { [Op.like]: '%' + name + '%'},
+                [Op.or]: [
+                    {active: !active},{active: true}
+                ]
+            }
+        })
     }
 }

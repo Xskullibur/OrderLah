@@ -1,3 +1,11 @@
+$(document).ready(function() {
+  //Register search field
+  $('#searchBtn').click(function() {
+    var query = $('#searchField').val();
+    generateSearchMenuCardItem(query);
+  });
+});
+
 
 function generateRecommendedMenuCardItem(){
   var route = 'recommendedMenuItems';
@@ -23,6 +31,17 @@ function generateMenuCardItem(cusine = ''){
     });
 }
 
+
+function generateSearchMenuCardItem(query){
+  var route = 'menuItemSearch/' + query;
+  clearMenuItems($('#all-menu-container'));
+  $.get(route, function( json ) {
+      insertContentToDivContainer($('#all-menu-container'), json)
+      //Do staggering animations for the items
+      doStaggerAnimation();
+      registerAllMenuItemsButtons();
+  });
+}
 
 var cart_count = 0;
 
