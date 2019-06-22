@@ -211,6 +211,18 @@ router.get('/getRatingData', async (req, res) =>{
 
 /* HsienXiang route */
 
-//router.get('/changePass', )
+router.post('/changePass', (req, res) =>{
+    console.log(req.body.password)
+    console.log(req.body.password2)
+    if(req.body.password != req.body.password2){
+        res.send('fail')
+    }else{
+        bcrypt.hash(req.body.password, 10).then(hash =>{
+            User.update({password: hash}, {where:{id: req.user.id}}).then(function(){
+                res.send('good')
+            })
+        })
+    }   
+})
 
 module.exports = router

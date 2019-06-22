@@ -111,8 +111,8 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
                 })   
             })
 
-            res.render('./successErrorPages/createStallSuccess')
-
+            //res.render('./successErrorPages/createStallSuccess')
+            res.redirect('/admin/adminPanel')
         }).catch(err => console.log(err))
 
     }).catch(err => console.log(err))

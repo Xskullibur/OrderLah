@@ -51,7 +51,7 @@
 
                                 <div id="collapse-password" class="collapse" aria-labelledby="heading-password" data-parent="#accordion">
                                 <div class="card-body">
-                                    <form action="/changePassword">
+                                    <form method="POST" action="/changePass">
                                             <div class="form-group form-row">
                                                 <div class="col">
                                                     <label for="password">New Password:</label>
@@ -59,7 +59,7 @@
                                                 </div>
                                                 <div class="col">
                                                     <label for="confirm_password">Confirm Password:</label>
-                                                    <input type="password" class="form-control" id="comfir,_password" placeholder="Confirm Password">
+                                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password">
                                                 </div>
                                             </div>
                                         <button type="submit" class="btn btn-outline-success">Apply</button>
