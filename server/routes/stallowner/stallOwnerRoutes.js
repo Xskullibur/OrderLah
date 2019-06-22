@@ -284,8 +284,8 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
         }
 
         MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
-            res.render('./successErrorPages/createSuccess')
-
+            //res.render('./successErrorPages/createSuccess')
+            res.redirect('/stallOwner/showMenu')
         }).catch(err => console.log(err))
     })
 })
@@ -294,7 +294,8 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     const active = false
     const id = req.body.itemID
     MenuItem.update({active}, {where:{id}}).then(function(){
-        res.render('./successErrorPages/removeSuccess')
+        //res.render('./successErrorPages/removeSuccess')
+        res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err)) 
 })
 
@@ -311,7 +312,8 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     }
 
     MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-        res.render('./successErrorPages/updateSuccess')
+        //res.render('./successErrorPages/updateSuccess')
+        res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err))
 })
 
