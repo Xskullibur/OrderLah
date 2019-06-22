@@ -189,6 +189,7 @@ router.use(auth_login.auth)
 const cusine_util = require('../../utils/stallowner/cusine')
 const menu_item_util = require('../../utils/main/menu_item')
 
+
 /**
  * Default GET '/' path
  */
@@ -315,29 +316,8 @@ router.get('/getRatingData', async (req, res) =>{
     res.send(pMatrix)
 })
 
-router.get('/orderStatus', (req, res) => {
-    res.render('order-status')
-})
-
-const order_track = require('../../libs/order_track')
-
-router.use(order_track.register)
-
-/**
- * GET '/addOrder'
- * add new order to user cart
- * params: menuItemId - menu item id to be added to cart
- */
-router.post('/addOrder', (req, res) => {
-    //Add order
-    if(req.cart != null){
-
-        const orderline = new order_track.orderline(req.body.menuItemId)
-
-        req.cart.addOrderLine(orderline)
-        res.send('Success')
-    }
-})
+const orders_api_routes = require('./customerOrdersRoutes')
+router.use(orders_api_routes)
 
 
 module.exports = router

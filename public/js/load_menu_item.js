@@ -23,8 +23,74 @@ function generateMenuCardItem(cusine = ''){
     });
 }
 
+
+var cart_count = 0;
+
+function registerAllMenuItemsButtons(){
+    $('.menu-item').off('click');
+    $('.menu-item').click(function() {
+      var btn = $(this);
+      var menuItemId = btn.data('menuItem');
+
+      var csrf = $('#csrf-token').val();
+      $.ajax({
+        method: "POST",
+        url: "addOrder",
+        data: {csrf, menuItemId}
+      }).done(function(orderlineJson) {
+        console.log("Added order");
+        showAlert('Added order');
+        var orderline_id = orderlineJson.orderLineId;
+
+        $.ajax({
+          method: "GET",
+          url: "menuItemId/" + menuItemId
+        }).done((menuItemJson) => {
+          //Add to order list
+          cart_count++;
+          setCartBadgeValue(cart_count);
+          //Bottom order list
+          var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
+          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, orderline_id, true, true);
+          bottomList.append(menuItemHTML);
+          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
+          loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
+        })
+
+      }).catch(err => {
+        showAlert('Error adding item', 3000, 'alert-danger');
+      });
+    });
+}
+
+
+function generateCartItems(){
+  var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
+  $.ajax({
+    method: "GET",
+    url: "/cartItems"
+  }).done((orderlinesJson) => {
+    cart_count = orderlinesJson.length
+    setCartBadgeValue(cart_count)
+    $(orderlinesJson).each(index => {
+      var menuItemId = orderlinesJson[index].itemId;
+
+      $.ajax({
+        method: 'GET',
+        url: "menuItemId/" + menuItemId
+      }).done(menuItemJson =>{
+          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, orderlinesJson[index].orderLineId, true, true);
+          bottomList.append(menuItemHTML);
+          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
+          loadContent($(`#all-bottom-menu-container-menu-item-${orderlinesJson[index].orderLineId}`), menuItem);
+      })
+      
+    })
+  })
+}
+
 /**
- * Clear all menu item inside div element
+ * Clear all menu items inside div element
  */
 function clearMenuItems(container){
     container.html('');
@@ -32,18 +98,15 @@ function clearMenuItems(container){
 
 /**
  * Div element for putting menu items
- * @param {Jquery} container 
- * @param {json} jsonMenuItems
+ * @param {Jquery} container - element for appending the menuitems
+ * @param {json} jsonMenuItems - all the menuitems in json
  */
-function insertContentToDivContainer(container, jsonMenuItems){
+function insertContentToDivContainer(container, jsonMenuItems, no_animation=false){
   $(jsonMenuItems).each(index => {
-    //<button type="button" data-menu-item="${jsonMenuItems[index].id}" class="btn mdc-fab btn-circle menu-item-btn mr-3"><i class="fas fa-plus fa-xs translate-center"></i></button>
-    
-    
     
     var menuItemJson = jsonMenuItems[index];
     
-    const menuItemHTML = getMenuItemHTML(container.attr('id'), menuItemJson.id, index);
+    const menuItemHTML = getMenuItemHTML(container.attr('id'), menuItemJson.id, index, no_animation);
     
     //Create menu item html dynamically
     container.append(menuItemHTML);
@@ -59,51 +122,15 @@ function insertContentToDivContainer(container, jsonMenuItems){
  * if there is no loading animation, this function will be called immediately
  */
 function loadingDone(){
+    generateCartItems();
     generateRecommendedMenuCardItem();
     //First load will fill the div container with all menu items regardless of cusine
     generateMenuCardItem();
     registerAllMenuItemsButtons();
 }
 
-var cart_count = 0;
-var cart_index = 0;
 
-function registerAllMenuItemsButtons(){
-    $('.menu-item').off('click');
-    $('.menu-item').click(function() {
-      var btn = $(this);
-      var menuItemId = btn.data('menuItem');
 
-      var csrf = $('#csrf-token').val();
-      $.ajax({
-        method: "POST",
-        url: "addOrder",
-        data: {csrf, menuItemId}
-      }).done(function() {
-        console.log("Added order");
-        showAlert('Added order');
-
-        $.ajax({
-          method: "GET",
-          url: "menuItemId/" + menuItemId
-        }).done((menuItemJson) => {
-          //Add to order list
-          cart_count++;
-          cart_index++;
-          setCartBadgeValue(cart_count);
-          //Bottom order list
-          var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
-          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, cart_index, true, true);
-          bottomList.append(menuItemHTML);
-          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
-          loadContent($(`#all-bottom-menu-container-menu-item-${cart_index}`), menuItem);
-        })
-
-      }).catch(err => {
-        showAlert('Error adding item', 3000, 'alert-danger');
-      });
-    });
-}
 
 /**
  * Get menu item card html
