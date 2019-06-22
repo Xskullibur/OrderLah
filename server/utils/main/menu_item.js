@@ -51,14 +51,17 @@ module.exports = {
      */
     getMenuItemByCusine: function(cusineId, active=false){
         return Stall.findAll({
-            include: [{model: MenuItem, required: true, as: 'menuItems'
-                
+            include: [{
+                model: MenuItem, required: true, as: 'menuItems',
+                where:{
+                    [Op.or]: [
+                        {active: !active},{active: true}
+                    ]
+                }
             }],
             where: {
                 cusineId,
-                [Op.or]: [
-                    {active: !active},{active: true}
-                ]
+                
             }
         }).map((a) => a.menuItems).reduce((a, b) => a.concat(b))
     },
