@@ -306,13 +306,21 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     const itemDesc = req.body.itemDescription
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
+    var imageName = req.body.imgName
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
     }
 
+    
+
     MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
         //res.render('./successErrorPages/updateSuccess')
+        fs.rename(process.cwd()+'/public/uploads/'+ imageName, process.cwd()+'/public/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+            if(err){
+                console.log(err)
+            }
+        })
         res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err))
 })
