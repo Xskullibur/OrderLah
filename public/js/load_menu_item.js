@@ -43,7 +43,7 @@ function generateSearchMenuCardItem(query){
       insertContentToDivContainer($(all_menu_container_selector), json)
       //Do staggering animations for the items
       doStaggerAnimation();
-      registerAllMenuItemsButtons(all_menu_container_selector, addOrder);
+      registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
   });
 }
 
@@ -105,7 +105,7 @@ function removeOrder(orderLineId){
     cart_count--;
     setCartBadgeValue(cart_count);
     //Remove orderline 
-    $(`#all-bottom-menu-container-menu-item-${orderLineId}`).remove();
+    $(`#all-bottom-menu-container-menu-item-${orderLineId}`).parent().remove();
 
   }).catch(err => {
     showAlert('Error removing item', 3000, 'alert-danger');

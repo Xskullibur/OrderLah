@@ -1,15 +1,16 @@
 @import "./button-transition/button-transition"
 /* Bottom list order items */
+$height: 400px
 .bottom-list
     position: fixed
-    min-height: 400px
+    min-height: $height
     min-width: 100vw
     max-width:100%
     transition: bottom 500ms ease-in
     &.list-open
         bottom: 0
     &.list-close
-        bottom: -400px
+        bottom: -$height
         
 .bottom-list-content
     height: 400px
