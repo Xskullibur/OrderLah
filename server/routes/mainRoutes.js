@@ -231,4 +231,15 @@ router.post('/changePass', (req, res) =>{
     }   
 })
 
+router.post('/updateProfile', (req, res) =>{
+    var email = req.body.email
+    var phone = req.body.phone
+    var birthday = req.body.birthday
+
+    User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+        displayAlert.push('profile successfully updated')
+        res.redirect('/profile')
+    })
+})
+
 module.exports = router
