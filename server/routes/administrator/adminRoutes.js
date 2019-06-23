@@ -31,6 +31,8 @@ const bcrypt = require('bcrypt')
 
 const saltRounds = 10
 
+var displayAlert = []
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -42,8 +44,10 @@ var transporter = nodemailer.createTransport({
 router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
         res.render('admin', {
-            displayStallowner: stallowner
+            displayStallowner: stallowner,
+            displayAlert: displayAlert
         })
+        displayAlert = []
     })
 })
 
@@ -107,6 +111,7 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
             })
 
             //res.render('./successErrorPages/createStallSuccess')
+            displayAlert.push("successfully added stall!")
             res.redirect('/admin/adminPanel')
         }).catch(err => console.log(err))
 
@@ -135,8 +140,9 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                             console.log('Email sent: ' + info.response);
                         }
                     })   
-            
-                    res.render('./successErrorPages/lockSuccess')
+                    displayAlert.push("successully locked account!")
+                    res.redirect('/admin/adminPanel')
+                    //res.render('./successErrorPages/lockSuccess')
                 })
             })            
         })
@@ -171,8 +177,9 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
                         }
                     })   
                 })
-            
-                res.render('./successErrorPages/resetSuccess')
+                displayAlert.push("account password reset!")
+                res.redirect('/admin/adminPanel')
+                //res.render('./successErrorPages/resetSuccess')
             })          
         })
     })
