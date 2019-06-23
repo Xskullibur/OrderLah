@@ -249,6 +249,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 router.use(auth_login.auth)
 
+var displayAlert = []
+
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
@@ -257,8 +259,10 @@ router.get('/showMenu', (req, res) => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
                     res.render('stallowner-menu', {
                         item:item,
-                        stall: myStall
+                        stall: myStall,
+                        displayAlert: displayAlert
                     })
+                    displayAlert = []
                 })    
             })
         }else{
@@ -268,6 +272,7 @@ router.get('/showMenu', (req, res) => {
 })
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+    displayAlert.push('Item successfully added')
     const currentUser = req.user.id
 
     Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
@@ -291,15 +296,17 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
 })
 
 router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+    displayAlert.push('Item deleted!')
     const active = false
     const id = req.body.itemID
     MenuItem.update({active}, {where:{id}}).then(function(){
         //res.render('./successErrorPages/removeSuccess')
         res.redirect('/stallOwner/showMenu')
-    }).catch(err => console.log(err)) 
+    }).catch(err => console.log(err))
 })
 
 router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+    displayAlert.push('Item updated!')
     const currentUser = req.user.id
     const itemName = req.body.itemName
     const price = req.body.itemPrice
