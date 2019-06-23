@@ -372,7 +372,7 @@ async function createTestData() {
             rating: "4",
             comments: "Sauce it really delicious",
             orderId: order9.id,
-            menuItemId: duckRiceitem.id
+            menuItemId: duckRiceItem.id
         })
 
         
@@ -417,7 +417,7 @@ async function createTestData() {
             rating: "5",
             comments: "Very tender",
             orderId: order12.id,
-            menuItemId: duckRiceitem.id
+            menuItemId: duckRiceItem.id
         })
 
         
@@ -447,7 +447,7 @@ async function createTestData() {
             rating: "5",
             comments: "Irresistible!",
             orderId: order14.id,
-            menuItemId: duckRiceitem.id
+            menuItemId: duckRiceItem.id
         })
 
     })
