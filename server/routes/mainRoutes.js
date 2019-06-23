@@ -217,7 +217,8 @@ var displayAlert = []
 var failAlert = []
 
 router.get('/profile', auth_login.auth, (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', displayAlert:displayAlert, failAlert:failAlert})
+    const UserID = req.user.id
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', displayAlert:displayAlert, failAlert:failAlert, UserID:UserID})
     displayAlert = []
     failAlert = []
 })
