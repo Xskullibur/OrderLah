@@ -1,4 +1,18 @@
 
+/**
+ * Order Cart API
+ * 
+ * To add order
+ * POST /order/addOrder
+ * params: menuItemId
+ * 
+ * To list cart items 
+ * GET /cartItems
+ * 
+ * To delete a order 
+ * 
+ */
+
 const express = require('express')
 //Create router
 const router = express.Router()
@@ -13,6 +27,7 @@ router.use(order_track.register)
 router.get('/orderStatus', (req, res) => {
     res.render('order-status')
 })
+
 /**
  * GET '/addOrder'
  * add new order to user cart
@@ -37,6 +52,17 @@ router.post('/addOrder', (req, res) => {
 router.get('/cartItems', (req, res) => {
         res.type('json')
         res.send(JSON.stringify(req.cart.items))
+})
+
+/**
+ * DELETE '/removeOrder'
+ * remove existing order from the cart
+ * params: orderLineId
+ */
+router.delete('/removeOrder', (req, res) => {
+    req.cart.removeOrderLine(req.body.orderLineId)
+    res.send('Success')
+
 })
 
 module.exports = router

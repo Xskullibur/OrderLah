@@ -6,15 +6,19 @@ $(document).ready(function() {
   });
 });
 
+//CSS Selectors
+var bottom_list_selector = 'div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)';
+var recommended_menu_container_selector = '#all-recommended-menu-container';
+var all_menu_container_selector = '#all-menu-container';
 
 function generateRecommendedMenuCardItem(){
   var route = 'recommendedMenuItems';
-    clearMenuItems($('#all-recommended-menu-container'));
+    clearMenuItems($(recommended_menu_container_selector));
     $.get(route, function( json ) {
-        insertContentToDivContainer($('#all-recommended-menu-container'), json)
+        insertContentToDivContainer($(recommended_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtons();
+        registerAllMenuItemsButtonsInContainer(recommended_menu_container_selector, addOrder);
     });
     
 }
@@ -22,69 +26,95 @@ function generateRecommendedMenuCardItem(){
 function generateMenuCardItem(cusine = ''){
 
     var route = cusine == '' ? 'menuItems/' : 'menuItems/' + cusine;
-    clearMenuItems($('#all-menu-container'));
+    clearMenuItems($(all_menu_container_selector));
     $.get(route, function( json ) {
-        insertContentToDivContainer($('#all-menu-container'), json)
+        insertContentToDivContainer($(all_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtons();
+        registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
     });
 }
 
 
 function generateSearchMenuCardItem(query){
   var route = 'menuItemSearch/' + query;
-  clearMenuItems($('#all-menu-container'));
+  clearMenuItems($(all_menu_container_selector));
   $.get(route, function( json ) {
-      insertContentToDivContainer($('#all-menu-container'), json)
+      insertContentToDivContainer($(all_menu_container_selector), json)
       //Do staggering animations for the items
       doStaggerAnimation();
-      registerAllMenuItemsButtons();
+      registerAllMenuItemsButtons(all_menu_container_selector, addOrder);
   });
 }
 
 var cart_count = 0;
 
-function registerAllMenuItemsButtons(){
-    $('.menu-item').off('click');
-    $('.menu-item').click(function() {
+function registerAllMenuItemsButtonsInContainer(containerSelector, fn){
+    $(containerSelector + ' .menu-item').off('click');
+    $(containerSelector + ' .menu-item').click(function() {
       var btn = $(this);
       var menuItemId = btn.data('menuItem');
-
-      var csrf = $('#csrf-token').val();
-      $.ajax({
-        method: "POST",
-        url: "addOrder",
-        data: {csrf, menuItemId}
-      }).done(function(orderlineJson) {
-        console.log("Added order");
-        showAlert('Added order');
-        var orderline_id = orderlineJson.orderLineId;
-
-        $.ajax({
-          method: "GET",
-          url: "menuItemId/" + menuItemId
-        }).done((menuItemJson) => {
-          //Add to order list
-          cart_count++;
-          setCartBadgeValue(cart_count);
-          //Bottom order list
-          var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
-          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, orderline_id, true, true);
-          bottomList.append(menuItemHTML);
-          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
-          loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
-        })
-
-      }).catch(err => {
-        showAlert('Error adding item', 3000, 'alert-danger');
-      });
+      fn(menuItemId);
+      
     });
+}
+
+function addOrder(menuItemId){
+  var csrf = $('#csrf-token').val();
+  $.ajax({
+    method: "POST",
+    url: "addOrder",
+    data: {csrf, menuItemId}
+  }).done(function(orderlineJson) {
+    console.log("Added order");
+    showAlert('Added order');
+    var orderline_id = orderlineJson.orderLineId;
+
+    $.ajax({
+      method: "GET",
+      url: "menuItemId/" + menuItemId
+    }).done((menuItemJson) => {
+      //Add to order list
+      cart_count++;
+      setCartBadgeValue(cart_count);
+      //Bottom order list
+      var bottomList = $(bottom_list_selector);
+      const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', orderline_id, orderline_id, true, true);
+      bottomList.append(menuItemHTML);
+      var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
+      loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
+
+      registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+
+    })
+
+  }).catch(err => {
+    showAlert('Error adding item', 3000, 'alert-danger');
+  });
+}
+
+function removeOrder(orderLineId){
+  var csrf = $('#csrf-token').val();
+  $.ajax({
+    method: "DELETE",
+    url: "removeOrder",
+    data: {csrf, orderLineId}
+  }).done(function() {
+    console.log("Removed order");
+    showAlert('Removed order');
+    cart_count--;
+    setCartBadgeValue(cart_count);
+    //Remove orderline 
+    $(`#all-bottom-menu-container-menu-item-${orderLineId}`).remove();
+
+  }).catch(err => {
+    showAlert('Error removing item', 3000, 'alert-danger');
+  });
 }
 
 
 function generateCartItems(){
-  var bottomList = $('div.container-fluid:nth-child(3) > div:nth-child(1) > div:nth-child(1)');
+  var bottomList = $('');
   $.ajax({
     method: "GET",
     url: "/cartItems"
@@ -98,13 +128,18 @@ function generateCartItems(){
         method: 'GET',
         url: "menuItemId/" + menuItemId
       }).done(menuItemJson =>{
-          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', menuItemId, orderlinesJson[index].orderLineId, true, true);
+          //Bottom order list
+          var bottomList = $(bottom_list_selector);
+          const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', orderlinesJson[index].orderLineId, orderlinesJson[index].orderLineId, true, true);
           bottomList.append(menuItemHTML);
           var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, 4, '$'+ menuItemJson.price)
           loadContent($(`#all-bottom-menu-container-menu-item-${orderlinesJson[index].orderLineId}`), menuItem);
-      })
+          registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+        })
+      
       
     })
+    
   })
 }
 
@@ -145,11 +180,12 @@ function loadingDone(){
     generateRecommendedMenuCardItem();
     //First load will fill the div container with all menu items regardless of cusine
     generateMenuCardItem();
-    registerAllMenuItemsButtons();
 }
 
 
-
+function removeMenuItemByOrderLineHTML(){
+  $('#-menu-item-${index}')
+}
 
 /**
  * Get menu item card html

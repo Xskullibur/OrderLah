@@ -328,7 +328,7 @@ router.get('/getRatingData', async (req, res) =>{
     res.send(pMatrix)
 })
 
-const orders_api_routes = require('./customerOrdersRoutes')
+const orders_api_routes = require('./orders_api')
 router.use(orders_api_routes)
 
 

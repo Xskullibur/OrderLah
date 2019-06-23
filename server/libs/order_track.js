@@ -47,10 +47,10 @@ cart.prototype.addOrderLine = function(orderLine){
 }
 
 cart.prototype.removeOrderLine = function(orderLineId){
-    let index = cart.items.findIndex(v => v.orderLineId == orderLineId)
+    let index = this.items.findIndex(v => v.orderLineId == orderLineId)
     if(index != -1){
         //Remove the orderline
-        cart.items.slice(index, 1)
+        this.items.splice(index, 1)
     }
 }
 
