@@ -7,8 +7,6 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function calcDailyTotal(orders) {
   let sum = 0
-     
-  let orderItems = orders.orders
 
   for (const order in orders.orders) {
     if (orders.orders.hasOwnProperty(order)) {
@@ -115,7 +113,7 @@ function orderInfo(formatedOrder) {
   return content
 }
 
-function showPDF(formatedOrder, summaryDate) {
+function showPDF(formatedOrder, summaryDate, mode) {
 
     getDataUri('../../img/logo.png', function(dataUri) {
 
@@ -180,7 +178,12 @@ function showPDF(formatedOrder, summaryDate) {
   
       console.log(docDefinition);
   
-      pdfMake.createPdf(docDefinition).open({}, window.open('', '_blank') );
+      if (mode === 'show') {
+        pdfMake.createPdf(docDefinition).open({}, window.open('', '_blank') );
+      }
+      else if (mode == 'print') {
+        pdfMake.createPdf(docDefinition).print();
+      }
 
     })
 
