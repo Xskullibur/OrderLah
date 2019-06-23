@@ -94,14 +94,6 @@ router.get('/', auth_login.auth, (req, res) => {
 })
 
 /**
- * GET '/profile' path
- * Get Profile page
- */
-router.get('/profile', auth_login.auth, (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
-})
-
-/**
  * Get all menu items inside the database as JSON
  */
 router.get('/menuItems', auth_login.auth, (req, res) => {
@@ -211,15 +203,29 @@ router.get('/getRatingData', async (req, res) =>{
 
 /* HsienXiang route */
 
-router.post('/changePass', (req, res) =>{
-    console.log(req.body.password)
-    console.log(req.body.password2)
+/**
+ * GET '/profile' path
+ * Get Profile page
+ */
+
+var displayAlert = []
+var failAlert = []
+
+router.get('/profile', auth_login.auth, (req, res) => {
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', displayAlert:displayAlert, failAlert:failAlert})
+    displayAlert = []
+    failAlert = []
+})
+
+router.post('/changePass', (req, res) =>{  
     if(req.body.password != req.body.password2){
-        res.send('fail')
+        failAlert.push('password does not match!')
+        res.redirect('/profile')
     }else{
+        displayAlert.push('password successfully changed')
         bcrypt.hash(req.body.password, 10).then(hash =>{
             User.update({password: hash}, {where:{id: req.user.id}}).then(function(){
-                res.send('good')
+                res.redirect('/profile')
             })
         })
     }   
