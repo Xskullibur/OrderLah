@@ -2,11 +2,6 @@
 const express = require('express');
 const router = express.Router();
 
-// const fs = require('fs');
-// const multer = require('multer')
-// const storage = require('./upload');
-// const upload = multer({storage : storage })
-
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
 
@@ -52,20 +47,20 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     })
 })
 
-router.get('/showMenu', (req, res) => {
-    const id = req.user.id
-    User.findOne({ where: id }).then(user => {
-         if(user.role === 'Admin'){
-            MenuItem.findAll({where: {active: true}}).then((item) =>{
-                res.render('stallowner-menu', {
-                    item:item
-                })
-            })      
-        }else{
-            res.render('./successErrorPages/error')
-        }      
-      })
-})
+// router.get('/showMenu', (req, res) => {
+//     const id = req.user.id
+//     User.findOne({ where: id }).then(user => {
+//          if(user.role === 'Admin'){
+//             MenuItem.findAll({where: {active: true}}).then((item) =>{
+//                 res.render('stallowner-menu', {
+//                     item:item
+//                 })
+//             })      
+//         }else{
+//             res.render('./successErrorPages/error')
+//         }      
+//       })
+// })
 
 router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
     var passGen = generator.generate({
