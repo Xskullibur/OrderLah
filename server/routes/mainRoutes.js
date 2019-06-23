@@ -29,6 +29,11 @@ const passport = require('passport')
 //moment
 const moment = require('moment')
 
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./uploadProfile')
+const upload = multer({storage : storage })
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -231,7 +236,7 @@ router.post('/changePass', (req, res) =>{
     }   
 })
 
-router.post('/updateProfile', (req, res) =>{
+router.post('/updateProfile', upload.single('profileImage'), (req, res) =>{
     var email = req.body.email
     var phone = req.body.phone
     var birthday = req.body.birthday
