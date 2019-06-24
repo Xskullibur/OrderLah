@@ -79,7 +79,7 @@
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+{15}"  required>
+                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+" maxlength="50"  required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -91,7 +91,7 @@
                     <div class="form-group row">
                         <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" required>
+                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" maxlength="255" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -131,7 +131,7 @@
                         <div class="form-group row">        
                             <label for="itemName" class="col-sm-2 col-form-label">Name</label> 
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="itemName" id="itemName" value="{{this.itemName}}" required>
+                                <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+" maxlength="50" value="{{this.itemName}}" required>
                             </div>
                         </div>
                         <div class="form-group row">                               
@@ -143,7 +143,7 @@
                         <div class="form-group row">                      
                             <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label> 
                             <div class="col-sm-10">                      
-                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" value="{{this.itemDesc}}" required>  
+                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" maxlength="255" value="{{this.itemDesc}}" required>  
                             </div>
                         </div>
                         <div class="form-group row">
