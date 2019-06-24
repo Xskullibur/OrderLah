@@ -272,7 +272,6 @@ router.get('/showMenu', (req, res) => {
 })
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
-    displayAlert.push('Item successfully added')
     const currentUser = req.user.id
 
     Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
@@ -290,6 +289,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
 
         MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
             //res.render('./successErrorPages/createSuccess')
+            displayAlert.push('Item successfully added')
             res.redirect('/stallOwner/showMenu')
         }).catch(err => console.log(err))
     })
@@ -328,6 +328,7 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
                 console.log(err)
             }
         })
+        displayAlert.push('Item deleted!')
         res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err))
 })
