@@ -38,16 +38,32 @@ router.use(auth_login.authStallOwner)
 //Get StallID based on logged in Stall Owner ID
 function getStallID(userID) {
     let promise = new Promise((resolve, reject)=>{
-        Stall.findOne({
-            attributes: [ 'id' ],
+
+        User.findOne({
             where: {
-                userId: userID
-            }
+                id: userID
+            },
+            include: [{
+                model: Stall
+            }]
         }).then(stall => {
-            resolve(stall.id)
+            resolve(stall)
         }).catch((err) => {
-            console.log('ERROR')
+            console.log(`ERROR: ${err}`)
         })
+
+        // Stall.findOne({
+        //     where: {
+        //         userId: userID
+        //     },
+        //     include: [{
+        //         model: User
+        //     }]
+        // }).then(stall => {
+        //     resolve(stall)
+        // }).catch((err) => {
+        //     console.log(`ERROR: ${err}`)
+        // })
     })
     return promise
 }
@@ -56,7 +72,7 @@ function getStallID(userID) {
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
-    getStallID(req.user.id).then((stallID) => {
+    getStallID(req.user.id).then((stallOwner) => {
 
         /**
         * Get Current Orders
@@ -68,7 +84,7 @@ router.get('/', (req, res, next) => {
                 status: {
                     [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
                 },
-                stallId: stallID
+                stallId: stallOwner.stall.id
             },
             order: Sequelize.col('orderTiming'),
             include: [{
@@ -116,9 +132,9 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
     }
 
     //Get StallID of logged in stallowner
-    getStallID(req.user.id).then(stallID => {
+    getStallID(req.user.id).then(stallOwner => {
 
-        whereCondition = [{stallId: stallID, status: 'Collection Confirmed'}]
+        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
 
         if (filter) {
             whereCondition.push(filterCondition)
@@ -186,13 +202,13 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     //Get StallID based onlogged in user
-    getStallID(req.user.id).then(stallID => {
+    getStallID(req.user.id).then(stallOwner => {
 
         const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
         let title = `Monthly Summary`                                   // Default Title
     
         // Get date (Month-Year) where the stall has received orders
-        db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders WHERE orderlah_db.orders.stallId = ${stallID}`, { raw: true }).then(([month, metadata]) => {
+        db.query(`SELECT DISTINCT date_format(orderTiming, "%M-%Y") AS uniqueDate FROM orderlah_db.orders WHERE orderlah_db.orders.stallId = ${stallOwner.stall.id}`, { raw: true }).then(([month, metadata]) => {
 
             let dateNotSelected = false                                 // Bool to indicate if a date(Month-Year) is selected
 
@@ -220,7 +236,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                         db.where(db.fn('YEAR', Sequelize.col('orderTiming')), selectedYear),        // Extract Year from orderTiming for Querying with selectedYear
                         {
                             status: 'Collection Confirmed',             // Get Orders where its status is 'Collection Confirmed'
-                            stallId: stallID                            // Orders that belongs to the logged in Stall Owner
+                            stallId: stallOwner.stall.id                         // Orders that belongs to the logged in Stall Owner
                         }
                     ],
                     order: Sequelize.col('orderTiming'),                // Sort the orders according to the orderTiming
@@ -281,8 +297,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                     }
 
                     res.render('../views/stallOwner/monthlySummary',{
-                        month, formatedOrder, title, selectedDate
-                   })
+                        month, formatedOrder, title, selectedDate, stallOwner
+                    })
                 })
             }
             
