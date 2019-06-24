@@ -73,38 +73,39 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data">
+            <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body">
                     <br>
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+" maxlength="50"  required>                           
+                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+" maxlength="50"  required> 
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required, letters only</div>                                                    
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
                             <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" placeholder="enter price" required>
-                        </div>
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required</div>
+                        </div>                       
                     </div>
                     <div class="form-group row">
                         <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" maxlength="255" required>
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-2 imgUp">
                             <div class="imagePreview"></div>                            
-                                <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
+                                <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">                                
                             </div>
-                    </div>
-                    {{!-- <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
-                        <label class="custom-file-label" for="itemImage">Choose image</label>
-                        <div class="invalid-feedback">Invalid file</div>
-                    </div> --}}
+                    </div>                  
                     <div class="modal-footer">
                         <button type="submit" class="red-btn">Create</button>
                     </div>
@@ -125,25 +126,31 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form method="POST" action="/stallOwner/updateItem" enctype="multipart/form-data">
+                    <form method="POST" action="/stallOwner/updateItem" enctype="multipart/form-data" class="needs-validation" novalidate>
                         <br>
                         <div class="modal-body">
                         <div class="form-group row">        
                             <label for="itemName" class="col-sm-2 col-form-label">Name</label> 
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z]+" maxlength="50" value="{{this.itemName}}" required>
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required, letters only</div>
                             </div>
                         </div>
                         <div class="form-group row">                               
                             <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                             <div class="col-sm-10">                     
                                 <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" value="{{this.price}}" required>
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required</div>
                             </div>
                         </div>
                         <div class="form-group row">                      
                             <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label> 
                             <div class="col-sm-10">                      
-                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" maxlength="255" value="{{this.itemDesc}}" required>  
+                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" maxlength="255" value="{{this.itemDesc}}" required> 
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required</div> 
                             </div>
                         </div>
                         <div class="form-group row">
@@ -246,4 +253,25 @@
                 }
             });
         });
+</script>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
 </script>
