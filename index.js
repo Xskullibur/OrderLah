@@ -16,6 +16,9 @@ const exphbs = require('express-handlebars')
 
 const helpers = require('./server/helpers/helpers')
 
+//RedisStore
+var RedisStore = require('connect-redis')(session)
+
 //Setup express
 const app = express()
 //Put app inside global
@@ -33,9 +36,19 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 app.use(cookieParser())
 
+const options = {
+
+    client: process.env.REDIS_CLIENT,
+    host: process.env.REDIS_HOST,
+    socket: 'test',
+    urk: 'TEST'
+
+}
+
 //Session
 app.use(session({
     secret: ']x?f4c?3STdk3<6q_h>4jL%{Hi}_',
+    store: new RedisStore(options),
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }//Set this to true for https website
