@@ -305,8 +305,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
-    displayAlert.push('Item updated!')
+router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
     const currentUser = req.user.id
     const itemName = req.body.itemName
     const price = req.body.itemPrice
@@ -328,7 +327,7 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
                 console.log(err)
             }
         })
-        displayAlert.push('Item deleted!')
+        displayAlert.push('Item updated!')
         res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err))
 })
