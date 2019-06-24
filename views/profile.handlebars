@@ -73,11 +73,11 @@
                                             <div class="form-group form-row">
                                                 <div class="col">
                                                     <label for="password">New Password:</label>
-                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">>
                                                 </div>
                                                 <div class="col">
                                                     <label for="confirm_password">Confirm Password:</label>
-                                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password">
+                                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">>
                                                 </div>
                                             </div>
                                         <button type="submit" class="btn btn-outline-success">Apply</button>

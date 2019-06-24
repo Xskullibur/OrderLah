@@ -2,7 +2,7 @@
 <li class="nav-item dropdown">
     <div class="p-2 border border-danger rounded-pill" >
         <div class="nav-profile">
-            <img class="nav-profile-img" alt="profile" src="/uploads/{{user.id}}.jpeg"></img>
+            <img class="nav-profile-img" alt="profile" src="/uploads/{{user.id}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';"></img>
             {{!-- <span>{{user.username}}Peh Zi Heng</span> --}}
             <a class="nav-link profile-dropdown-toggle d-inline" href="#" id="profile-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                {{user.username}}

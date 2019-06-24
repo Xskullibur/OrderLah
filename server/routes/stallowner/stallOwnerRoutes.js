@@ -266,7 +266,7 @@ router.get('/showMenu', (req, res) => {
                 })    
             })
         }else{
-            res.render('error')
+            res.render('./successErrorPages/error')
         }      
       })
 })
