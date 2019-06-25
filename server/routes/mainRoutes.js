@@ -152,7 +152,8 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
-    res.render('login', {layout: 'blank_layout'})
+    res.render('login', {layout: 'blank_layout', displayAlert:failAlert})
+    failAlert = []
 })
 
 /**
@@ -170,6 +171,7 @@ router.post('/login',
             res.redirect('/admin/adminPanel')
         }
         else if (req.user.role == 'Inactive') {
+            failAlert.push("Your account has been locked please contact admin for more details")
             res.redirect('/login')
         }
         else {
