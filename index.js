@@ -16,8 +16,22 @@ const exphbs = require('express-handlebars')
 
 const helpers = require('./server/helpers/helpers')
 
+//Redis
+const redis = require('redis')
+var client = redis.createClient();
+
+redis.createClient({
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_HOST
+})
+
 //RedisStore
 var RedisStore = require('connect-redis')(session)
+let redisStore = new RedisStore({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    client: client,
+})
 
 //Setup express
 const app = express()
@@ -36,23 +50,23 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-const options = {
-
-    client: process.env.REDIS_CLIENT,
-    host: process.env.REDIS_HOST,
-    socket: 'test',
-    urk: 'TEST'
-
-}
 
 //Session
 app.use(session({
     secret: ']x?f4c?3STdk3<6q_h>4jL%{Hi}_',
-    store: new RedisStore(options),
+    name: 'test',
+    store: redisStore,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }//Set this to true for https website
+    cookie: { secure: false, httpOnly: false }//Set this to true for https website
 }))
+
+app.use((req, res, next) => {
+    if (!req.session) {
+        return next(new Error('Lost Connestion to Redis'))
+    }
+    next()
+})
 
 //Setup debug if needed
 const debug = require('./server/debug')
@@ -70,6 +84,9 @@ const Cusine = db.Cusine
 const sequelize_db = db.db
 
 const RememberMe = db.RememberMe
+
+//Redis inside global
+globalHandle.put('redis', redisStore)
 
 //Put User model inside global
 globalHandle.put('user', User)
