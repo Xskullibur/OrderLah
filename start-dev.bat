@@ -3,7 +3,7 @@
 @ECHO OFF
 
 :: Auto login
-set AUTO_LOGIN=YES
+set AUTO_LOGIN=NO
 set LOGIN_AS=john@customer
 
 :: SET 'orderlah' database environment
