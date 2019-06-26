@@ -161,13 +161,13 @@ router.post('/requesttoken',(req, res) => {
     })
 })
 
-router.post('/checktoken',(req, res) => {
+/*router.post('/checktoken',(req, res) => {
     if(session.token === req.body.code){
         console.log('verification success!!')
     } else {
         console.log('error occured, verification failed!')
     }    
-})
+})*/
 
 router.post('/register', uuid_middleware.verify, (req, res) => {
     if(session.token === req.body.code){
