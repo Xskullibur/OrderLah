@@ -1,0 +1,49 @@
+@import "./colors"
+
+$success: #78CC40
+    
+.order-circle
+    fill: white
+    stroke: $coral-1
+
+.order-pulsing-circle
+    stroke-width: 0
+    fill: $coral-2
+    transform-origin: 50% 50%
+    animation: pulsing 2.5s
+    animation-iteration-count: infinite 
+
+.order-progress-circle
+    stroke-dashoffset: 0
+    transform-origin: 50% 50%
+    transform: rotate(-90deg)
+    transition: stroke-dashoffset 1s linear
+    transition: stroke .3s linear
+    
+    
+    &.complete
+        stroke: $success
+
+
+
+@keyframes pulsing
+  0% 
+      transform: scale(.2)
+  50%
+      transform: scale(1.1)
+  100%
+      transform: scale(.2)
+
+
+.order-text
+    stroke: $sub-text-color
+    font-size: .95em
+    display: block
+
+.order-sub-text
+    stroke: $coral-1
+    font-size: 1.45em
+
+    .plain
+        stroke: $sub-text-color
+        font-size: 1.25em

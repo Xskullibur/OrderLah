@@ -14,22 +14,22 @@
 $menu-item-btn-size: 50px
 
 // Btn
-.menu-item-btn
-    +fixed-size($menu-item-btn-size)
-    padding: 10px 16px
-    border-radius: 35px
-    font-size: 24px
-    line-height: 1.33
+// .menu-item-btn
+//     +fixed-size($menu-item-btn-size)
+//     padding: 10px 16px
+//     border-radius: 35px
+//     font-size: 24px
+//     line-height: 1.33
 
-    //Offset set by size
-    position: relative
-    top: -($menu-item-btn-size / 2)
+//     //Offset set by size
+//     position: relative
+//     top: -($menu-item-btn-size / 2)
 
 
 //Body
-.menu-item-body
-    position: relative
-    top: -$menu-item-btn-size / 2
+// .menu-item-body
+//     position: relative
+//     top: -$menu-item-btn-size / 2
 
 //Menu list
 .menu-list
@@ -43,19 +43,22 @@ $menu-item-btn-size: 50px
     font-style: italic
     font-weight: bold
         
+
+.menu-item
+    .card
+        box-shadow: none
+        transition: box-shadow 60ms linear
+    .card:hover
+        cursor: pointer
+        box-shadow: 0px 0px 10px 2px rgba($coral-1,1)
+
 //Animations
 .menu-item.load-animation
     position: relative
     top: -150px
     opacity: 0
     transition: top 250ms cubic-bezier(0.5, -0.5, 0.5, 1.5), opacity 350ms linear
-
-    .card
-        box-shadow: none
-        transition: box-shadow 60ms linear
-
-    .card:hover
-        box-shadow: 0px 0px 10px 2px rgba($coral-1,1)
+    
     &.show
         top: 0
         opacity: 1

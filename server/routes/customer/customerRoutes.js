@@ -247,4 +247,152 @@ router.post('/checkOrder', (req, res) =>{
     console.log(number)
 })
 
+router.use(auth_login.auth)
+
+const cusine_util = require('../../utils/stallowner/cusine')
+const menu_item_util = require('../../utils/main/menu_item')
+
+
+/**
+ * Default GET '/' path
+ */
+router.get('/', (req, res) => {
+    cusine_util.getAllCusine().then(cusines => {
+        res.render('index', {cusines: cusines})
+    })
+})
+
+/**
+ * GET '/profile' path
+ * Get Profile page
+ */
+router.get('/profile', (req, res) => {
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
+})
+/**
+ * Get '/menuItem' all menu items inside the database as JSON
+ */
+router.get('/menuItems/', (req, res) => {
+    res.type('json')
+    menu_item_util.getAllMenuItem().then( menuItems => {
+        res.type('json')
+        res.send(JSON.stringify(menuItems))
+    })
+
+})
+/**
+ * Get '/menuItem/:cusine' all menu items where cusine is {Asian, Japanese, Western} inside the database as JSON
+ */
+router.get('/menuItems/:cusine', async (req, res) => {
+    let cusine = req.params.cusine
+    cusine = await cusine_util.getCusineByCusineType(cusine)
+    res.type('json')
+    menu_item_util.getMenuItemByCusine(cusine.id).then( menuItems => {
+            res.send(JSON.stringify(menuItems))
+    })
+
+})
+
+/**
+ * GET '/menuItemId/:menuItemId'
+ * return the specific menu item as JSON
+ */
+router.get('/menuItemId/:menuItemId', (req, res) =>{
+    menu_item_util.getMenuItemByID(req.params.menuItemId).then((menuItem) => {
+        res.type('json')
+        res.send(JSON.stringify(menuItem))
+    })
+})
+
+/**
+ * GET '/menuItemSearch/:item_name'
+ * return all menu items specified by the item_name
+ * params: item_name
+ */
+router.get('/menuItemSearch/:item_name', (req, res) => {
+    menu_item_util.getMenuItemByName(req.params.item_name).then((menuItems) => {
+        res.type('json')
+        res.send(JSON.stringify(menuItems))
+    })
+})
+
+const getRatingMatrix = require('../../ratings/ratings')
+const SVD_Optimizer = require('../../libs/ml/svd_sgd')
+
+let optimizer;
+
+
+/**
+ * GET '/recommendedMenuItems'
+ * Return user perferences menu items
+ */
+router.get('/recommendedMenuItems', (req, res) => {
+    //let userId = req.user.id
+
+    trainIfNotTrained(() => {
+        let menuItemsIds = optimizer.getRatingMatrix()[1]
+        menuItemsIds = argsort(menuItemsIds).slice(0, 5)
+    
+        menuItemsIds = menuItemsIds.map(v => menu_item_util.getMenuItemByID(v))
+    
+        Promise.all(menuItemsIds).then(menuItems => {
+            menuItems = menuItems.filter((e) => e != null)
+            res.type('json')
+            res.send(JSON.stringify(menuItems))
+        })
+    })
+
+})
+
+/**
+ * GET '/cartMenuItems'
+ * Returns all current order cart items
+ */
+router.get('/cartMenuItems', (req, res) => {
+    
+    res.type('json')
+    res.send(JSON.stringify(menuItems))
+})
+
+function trainIfNotTrained(cb){
+    if(optimizer == undefined || optimizer == null){
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
+            optimizer.reset()
+            optimizer.train()
+            cb()
+        })
+    }else{
+        getRatingMatrix(db, MenuItem, User).then((ratings) => {
+            //Retrain
+            optimizer.updateRatingsMatrix(ratings)
+            optimizer.iterations = 100
+            optimizer.train()
+            cb()
+        })
+        
+    }
+}
+
+
+function argsort(arr){
+    return arr.map((item, index) => [item, index])
+    .sort((a,b) => b[0] - a[0])
+    .map(v => v[1])
+}
+
+router.get('/getRatingData', async (req, res) =>{
+
+    
+    let optimizer = new SVD_Optimizer()
+    
+    let pMatrix = optimizer.getRatingMatrix()
+    console.log(ratings);
+    res.send(pMatrix)
+})
+
+const orders_api_routes = require('./orders_api')
+router.use(orders_api_routes)
+
+
 module.exports = router

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/mocha --timeout 5000",
     "compile-sass": "sass -I node_modules --no-source-map sass:public/css",
-    "start": "node index.js",
+    "start": "npm run compile-sass && node index.js",
     "start:dev": "nodemon --watch sass --watch server --watch ./index.js --watch ./dummy.js -e js,sass,css"
   },
   "keywords": [
@@ -33,17 +33,22 @@
     "jimp": "^0.6.4",
     "jsonwebtoken": "^8.5.1",
     "material-components-web": "^2.3.0",
+    "mathjs": "^5.10.3",
     "moment": "^2.24.0",
     "multer": "^1.4.1",
     "mysql2": "^1.6.5",
     "nodemailer": "^6.2.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "passport-remember-me": "^0.0.1",
     "paypal-rest-sdk": "^1.8.1",
     "rand-token": "^0.4.0",
+    "pdfmake": "^0.1.57",
     "sequelize": "^5.8.1",
+    "socket.io": "^2.2.0",
     "supertest": "^4.0.2",
     "tinygradient": "^1.0.0",
+    "uid2": "^0.0.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

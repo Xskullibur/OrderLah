@@ -56,6 +56,8 @@ const MenuItem = db.MenuItem
 const Cusine = db.Cusine
 const sequelize_db = db.db
 
+const RememberMe = db.RememberMe
+
 //Put User model inside global
 globalHandle.put('user', User)
 globalHandle.put('stall', Stall)
@@ -64,6 +66,8 @@ globalHandle.put('orderItem', OrderItem)
 globalHandle.put('menuItem', MenuItem)
 globalHandle.put('cusine', Cusine)
 globalHandle.put('db', sequelize_db)
+
+globalHandle.put('rememberme', RememberMe)
 
 //connect to db
 const dummy = require('./dummy')
@@ -79,6 +83,11 @@ const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
 app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
+
+//Websocket setup
+require('./server/libs/orderlah_websocket/orderlah_websocket')
+
+
 
 app.listen(port, () => {
     console.log(`Server is listening ${port}`);

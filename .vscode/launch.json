@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "type": "node",
             "request": "launch",
@@ -12,10 +11,11 @@
             "program": "${workspaceFolder}/index.js",
             "env": {
                 "NODE_ENV":"dev",
-                "DB_HOST":"localhost",
+                "DB_HOST":"192.168.99.100",
                 "DB_USERNAME":"orderlah_web_user",
-                "DB_PASSWORD":"mysecurepassword"
-
+                "DB_PASSWORD":"mysecurepassword",
+                "AUTO_LOGIN":"YES",
+                "LOGIN_AS":"john@customer"
             }
         },
         {

@@ -1,3 +1,10 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.57/pdfmake.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.57/pdfmake.js.map"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.57/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.57/pdfmake.min.js.map"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.57/vfs_fonts.js"></script>
+<script src="/js/PDFmake.js"></script>
+
 {{> fixed_scroll_btn}}
 
 <div class="container" style="position: relative; top: 5vh; width:">
@@ -14,8 +21,8 @@
                         </a>
 
                         <div class="dropdown-menu">
-                            {{#each month}}
-                                <a class="dropdown-item" href="{{formatDate month.uniqueDate 'MMM'}}-{{formatDate result.uniqueDate 'YYYY'}}">{{formatDate result.uniqueDate "MMM-YYYY"}}</a>
+                            {{#each month as |result|}}
+                                <a class="dropdown-item" href="{{result.uniqueDate}}">{{result.uniqueDate}}</a>
                             {{/each}}
                         </div>
                     </div>
@@ -36,14 +43,14 @@
                             {{!-- Options --}}
                             <div class="row pb-3">
                                 <div class="col">
-                                    <button class="btn btn-block md-btn-lg btn-primary">
+                                    <button onclick="showPDF({{jsonStringfy formatedOrder}}, '{{selectedDate}}', {{jsonStringfy stallOwner}}, 'show')" class="btn btn-block md-btn-lg btn-primary">
                                         <i class="fa fa-file-pdf"></i>
                                         Export to PDF
                                     </button>
                                 </div>
 
                                 <div class="col">
-                                    <button class="btn btn-block md-btn-lg btn-success">
+                                    <button onclick="showPDF({{jsonStringfy formatedOrder}}, '{{selectedDate}}', {{jsonStringfy stallOwner}}, 'print')" class="btn btn-block md-btn-lg btn-success">
                                         <i class="fas fa-print"></i>
                                         Print
                                     </button>
@@ -110,12 +117,14 @@
                     </div>
                 {{else}}
 
-                    {{#if monthYearSelected}}
+                    {{!-- If date is not selected --}}
+                    {{#if dateNotSelected}}
                         <div class="alert alert-info" role="alert">
                             <h4 class="alert-heading">Please select a month to continue</h4>
                             <p>If there are no months available please contact the adinistrator immediateley</p>
                             <p class="mb-0"></p>
                         </div>
+                    {{!-- Date not found --}}
                     {{else}}
                         <div class="alert alert-danger" role="alert">
                         <h4 class="alert-heading">No Monthly Summary Found!</h4>

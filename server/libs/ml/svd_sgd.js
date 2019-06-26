@@ -19,8 +19,9 @@ function SVD_Optimizer(R, K, alpha, iterations){
 
     this.num_users = R.length
     this.num_items = R[0].length
+    
 
-    this.train = function(){
+    this.reset = function(){
         //Normal distribution random
         this.P = []
         this.Q = []
@@ -42,6 +43,12 @@ function SVD_Optimizer(R, K, alpha, iterations){
                 this.Q[i][j] = randn(1.0/this.K)
             }
         }
+    }
+
+    this.reset()
+
+    this.train = function(){
+
 
         //Get list of training data
         this.training_data = []
@@ -91,6 +98,37 @@ function SVD_Optimizer(R, K, alpha, iterations){
             
             
         }
+    }
+
+    this.updateRatingsMatrix = function(R){
+        let new_num_users = R.length
+        let new_num_items = R[0].length
+
+        if(this.num_users != new_num_users){
+            //There is new users
+            //Create new rows for P matrix
+            for (let i = this.num_users; i < new_num_users; i++) {
+                //Create a new row for P matrix
+                for (let j = 0; j < this.K; j++) {
+                    this.P[i][j] = randn(1.0/this.K)
+                }
+            }
+            this.num_users = new_num_users
+        }
+
+        if(this.num_items != new_num_items){
+            //There is new items
+            //Create new rows for Q matrix
+            for (let i = this.num_items; i < new_num_items; i++) {
+                //Create a new row for Q matrix
+                for (let j = 0; j < this.K; j++) {
+                    this.Q[i][j] = randn(1.0/this.K)
+                }
+            }
+            this.num_items = new_num_items
+        }
+        this.R = R
+
     }
 
     this.getRating = function(i, j){

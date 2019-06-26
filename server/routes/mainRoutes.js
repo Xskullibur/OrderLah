@@ -11,9 +11,11 @@ const uuid_middleware = require('../libs/uuid_middleware')
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
 
-const MenuItem = globalHandle.get('menuItem')
+//DB
+const db = globalHandle.get('db');
 
-//Get User model
+//Get models
+const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
@@ -42,7 +44,7 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
-
+app.use(passport.authenticate('remember-me'))
 
 //Locals middleware
 app.use((req, res, next) => {
@@ -84,6 +86,27 @@ passport.use(new LocalStrategy({usernameField: 'email',},
     }
 ))
 
+const RememberMeStrategy = require('passport-remember-me').Strategy;
+const rememberme_utils = require('../utils/main/rememberme')
+
+
+passport.use(new RememberMeStrategy(
+    function(token, done) {
+        rememberme_utils.consumeToken(token, function (err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        return done(null, user);
+      })
+    },
+    function(user, done) {
+      var token = rememberme_utils.generateToken(64);
+      rememberme_utils.saveToken(token, user.id, function(err) {
+        if (err) { return done(err); }
+        return done(null, token);
+      })
+    }
+  ))
+
 passport.serializeUser(function(user, done) {   
     done(null, user.id)
 })
@@ -96,29 +119,7 @@ passport.deserializeUser(function(id, done) {
 
 //Define main 'route' path
 
-/**
- * Default GET '/' path
- */
-router.get('/', auth_login.auth, (req, res) => {
-    res.render('index', {size: [1,2,2,3,55,5,6,6,67,7,7]})
-})
 
-/**
- * GET '/profile' path
- * Get Profile page
- */
-router.get('/profile', auth_login.auth, (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
-})
-
-/**
- * Get all menu items inside the database as JSON
- */
-router.get('/menuItems', auth_login.auth, (req, res) => {
-   MenuItem.findAll({}).then( menuItems => {
-       res.send(JSON.stringify(menuItems))
-   })
-})
 
 const profile_gen = require('../libs/profile_img_generator')
 /**
@@ -213,9 +214,23 @@ router.get('/login', (req, res) => {
 router.post('/login', 
     passport.authenticate('local', { 
         failureRedirect: '/login' 
-    }), (req, res) => {
+    }),
+    (req, res, next) => {
+        // issue a remember me cookie if the option was checked
+        if (!req.body.remember_me) { return next(); }
+    
+        var token = rememberme_utils.generateToken(64);
+        rememberme_utils.saveToken(token, req.user.id, function(err) {
+          if (err) { return done(err); }
+          res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 7 days
+          return next();
+        });
+      }, (req, res) => {
         if (req.user.role === "Customer") {
             res.redirect('/')
+        }
+        else if (req.user.role == 'Admin') {
+            res.redirect('/stallOwner/adminPanel')
         }
         else {
             res.redirect('/stallOwner/')
@@ -232,17 +247,6 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
-router.get('/getRatingData', (req, res) =>{
 
-    const db = globalHandle.get('db');
-    let rating_matrix = [];
-
-    User.findAll().then(users=>{
-        users.forEach(user => {
-            rating_matrix[user.id] = []
-        });
-        res.send(rating_matrix)
-    })
-})
 
 module.exports = router

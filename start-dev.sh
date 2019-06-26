@@ -1,5 +1,9 @@
 # Unix Bourne-Again shell script
 
+# Auto login
+export AUTO_LOGIN="YES"
+export LOGIN_AS="john@customer"
+
 # SET 'orderlah' database environment
 
 # set Development

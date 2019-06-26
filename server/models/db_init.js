@@ -42,7 +42,10 @@ const Stall = require('./stall').model(Sequelize, db)
 const MenuItem = require('./menuItem').model(Sequelize, db)
 const Order = require('./order').model(Sequelize, db)
 const OrderItem = require('./orderItem').model(Sequelize, db)
-const Cusine = require('../models/cusine').model(Sequelize, db)
+const Cusine = require('./cusine').model(Sequelize, db)
+
+//Others
+const RememberMe = require('./rememberme').model(Sequelize, db)
 
 //Relations
 User.hasOne(Stall);
@@ -53,9 +56,12 @@ Cusine.hasOne(Stall);
 Order.belongsToMany(MenuItem, { through: OrderItem })
 MenuItem.belongsToMany(Order, { through: OrderItem })
 
+//Others
+User.hasMany(RememberMe)
+
 module.exports = {
     //Models
-    User, Stall, MenuItem, Order, OrderItem, Cusine,
+    User, Stall, MenuItem, Order, OrderItem, Cusine, RememberMe,
 
     connect: function (drop = false, done) {
         //Init database connections

@@ -19,8 +19,47 @@ module.exports = {
         return accum;
     },
     
+    jsonStringfy(context){
+        return JSON.stringify(context)
+    },
+
     ifEquals(input1, input2, trueOutput, falseOutput){
         return (input1 === input2) ? trueOutput : falseOutput;
+    },
+
+    ifCondition(input1, operator, input2, options){
+        switch (operator) {
+            case "==":
+                if (input1 === input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+        
+            case ">":
+                if (input1 > input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+                
+            case "<":
+                if (input1 < input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+
+            case ">=":
+                if (input1 >= input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+
+            case "<=":
+                if (input1 <= input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+        }
+
     },
 
     calcItemPrice(items){

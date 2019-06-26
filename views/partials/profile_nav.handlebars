@@ -1,19 +1,17 @@
-
 <li class="nav-item dropdown">
-    <div class="p-2 border border-danger rounded-pill" >
-        <div class="nav-profile">
-            <img class="nav-profile-img" alt="profile" src="/img/profiles/{{user.id}}.png"></img>
-            {{!-- <span>{{user.username}}Peh Zi Heng</span> --}}
-            <a class="nav-link profile-dropdown-toggle d-inline" href="#" id="profile-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-               {{user.username}}
-            </a>
-            <div class="dropdown-menu position-absolute" aria-labelledby="profile-dropdown">
-                    <a class="dropdown-item" href="/profile">Account Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/logout">Logout</a>
-            </div>
+<div class="p-2 border border-danger rounded-pill" >
+    <div class="nav-profile">
+        <img class="nav-profile-img" alt="profile" src="/img/profiles/{{user.id}}.png"></img>
+        {{!-- <span>{{user.username}}Peh Zi Heng</span> --}}
+        <a class="nav-link profile-dropdown-toggle d-inline" href="#" id="profile-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{user.username}}
+        </a>
+        <div class="dropdown-menu position-absolute" aria-labelledby="profile-dropdown">
+                <a class="dropdown-item" href="/profile">Account Settings</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Logout</a>
         </div>
     </div>
-
-
+</div>
 </li>
+

@@ -1,9 +1,10 @@
 <link type="text/css" rel="stylesheet" href="/css/bottom_list.css">
+<link type="text/css" rel="stylesheet" href="/css/scroll-content.css">
 <div class="container-fluid container-scoll">
     <div class="row">
         <div class="col">
-            {{#each size}}
-                {{> menu_items/menu_item_bottom_list index=@index}}
+            {{#each cart_items}}
+                {{> menu_items/menu_item_bottom_list item=this index=@index}}
             {{/each}}
         </div>
     </div>

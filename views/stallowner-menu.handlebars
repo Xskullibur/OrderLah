@@ -1,5 +1,5 @@
 
-<link rel="stylesheet" href="/css/card.css">
+<link rel="stylesheet" href="/css/stallowner.css">
 <br>
 <center>
     <div class="row">
@@ -11,7 +11,7 @@
             <br>
         </div>
         <div class="col-sm-1">
-            <button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add Item</button>
+            <button type="button" class="red-btn" data-toggle="modal" data-target="#createForm">Add</button>
         </div>
         <div class="col-sm-5">
         </div>
@@ -26,14 +26,14 @@
                         <div class="container">
                             <div class="card">
                                 <div class="card__image-container shimmerBG media">
-                                    <center><img class="card__image" src="/uploads/{{this.owner}}{{this.itemName}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" title="{{this.itemDesc}}"></center>
+                                    <center><img class="card__image" src="/uploads/{{this.owner}}{{this.itemName}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" style="max-width: 100%;" title="{{this.itemDesc}}"></center>
                                 </div>
                                 <div class="card__content">
                                     <br>
                                     <center>
-                                         <h5 class="card__title">{{this.itemName}}</h5>
-                                         <h5 class="card__title">${{this.price}}</h5>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
+                                         <h6 class="card__title">{{this.itemName}}</h6>
+                                         <h6 class="card__title">${{this.price}}</h6>
+                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm" style="margin:5px;">
                                             <svg width="24" height="24" viewBox="0 0 24 24">
                                                 <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
                                             </svg>                                                                

@@ -13,8 +13,27 @@ module.exports = {
     auth: function(req, res, next){
         //Dev
         if(process.env.NODE_ENV === 'dev') {
-            next()
-            return
+
+            if(process.env.AUTO_LOGIN  === 'YES'){
+                console.warn("Warning: you are auto login as a customer, to disable auto login. Set the Environment variable 'AUTO_LOGIN' to other values then 'YES'");
+                
+                const globalHandle = require('./global/global')
+                const User = globalHandle.get('user')
+
+                User.findOne({where: {email: process.env.LOGIN_AS}}).then(cust => {
+                    req.user = cust
+                    res.locals.user = cust
+                    res.locals.isCustomer = true
+                    next()
+                })
+                return
+            }else{
+                next()
+                return
+            }
+
+            
+            
         }
 
         if(req.user !== null && req.user !== undefined) {
@@ -36,8 +55,24 @@ module.exports = {
     authStallOwner: function(req, res, next){
         //Dev
         if(process.env.NODE_ENV === 'dev') {
-            next()
-            return
+
+            //Auto login
+            if(process.env.AUTO_LOGIN  === 'YES' && process.env.LOGIN_AS === 'stallowner'){
+                console.warn("Warning: you are auto login as a stallowner, to disable auto login. Set the Environment variable 'AUTO_LOGIN' to other values then 'YES'");
+                const globalHandle = require('./global/global')
+                const User = globalHandle.get('user')
+
+                User.findOne({where: {email: process.env.LOGIN_AS}}).then(stallowner => {
+                    req.user = stallowner
+                    res.locals.user = stallowner
+                    res.locals.isCustomer = false
+                    next()
+                })
+                return
+            }else{
+                next()
+                return
+            }
         }
 
         if(req.user !== null && req.user !== undefined && req.user.role === 'Stallowner') {

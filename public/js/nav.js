@@ -26,3 +26,11 @@ function checkScrollGrow(){
         
     }
 }
+
+/**
+ * Set the count of cart icon
+ * @param {number} val 
+ */
+function setCartBadgeValue(val){
+    $('#nav-cart-count').text(val)
+}
