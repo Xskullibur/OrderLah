@@ -319,30 +319,53 @@ router.get('/dashboard/', (req, res) =>{
         })
     })
 
-    let getOrdersPerItem = new Promise(function (resolve, reject) {
+    function getOrdersPerItem() {
+        return new Promise(function(resolve, reject) {
+            getStallOwner.then(function(stallOwner){
+                db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
+                FROM orderlah_db.orderItems
+                INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+                INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
+                WHERE orders.stallId = ${stallOwner.stall.id}
+                AND orders.status = 'Collection Confirmed'
+                GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
+                    resolve(result)
+                }).catch(err => {
+                    reject(err)
+                })
+            })
+        })   
+    }
 
-        getStallOwner.then(function(stallOwner){
-            db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
-            FROM orderlah_db.orderItems
-            INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
-            INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
-            WHERE orders.stallId = ${stallOwner.stall.id}
-            AND orders.status = 'Collection Confirmed'
-            GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
-                resolve(result)
-            }).catch(err => {
-                reject(err)
+    function getAvgRatingPerItem(){
+        return new Promise(function(resolve, reject) {
+            getStallOwner.then(function(stallOwner){
+                db.query(`SELECT menuItems.itemName, AVG(orderItems.rating)-1 AS average
+                FROM orders
+                INNER JOIN orderItems ON orders.id = orderItems.orderId
+                INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
+                WHERE orders.stallId = ${stallOwner.stall.id}
+                AND orders.status = 'Collection Confirmed'
+                GROUP BY menuItems.id`).then(([result, metadata]) => {
+                    resolve(result)
+                }).catch(err => {
+                    reject(err)
+                })
             })
         })
-    })
+    }
 
-    getOrdersPerItem.then(function(OrdersPerItem){
+    async function main() {
+        OrdersPerItem = await getOrdersPerItem()
+        AvgRatingPerItem = await getAvgRatingPerItem()
+    
         // res.send(OrdersPerItem)
         res.render('../views/stallOwner/dashboard', {
-            OrdersPerItem
+            OrdersPerItem, AvgRatingPerItem
         });
-    })
+    }
 
+    main()
 
 })
 

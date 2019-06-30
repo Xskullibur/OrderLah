@@ -1,5 +1,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-<script>var OrdersPerItem = {{{jsonStringfy OrdersPerItem}}}</script>
+<script>
+    var OrdersPerItem = {{{jsonStringfy OrdersPerItem}}};
+    var AvgRatingPerItem = {{{jsonStringfy AvgRatingPerItem}}};
+</script>
 <script src="/js/createChart.js"></script>
 
 <div class="container" style="position: relative; top: 5vh; width:">
@@ -16,8 +19,8 @@
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Text</p>
+                            <h4 class="card-title">Average Rating Per Item</h4>
+                            <canvas id="ARPI"></canvas>
                         </div>
                     </div>
                 </div>

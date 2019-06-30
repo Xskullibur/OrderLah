@@ -9,14 +9,15 @@ var backgroundColor =  [
 
 window.onload = function() {
    showOrdersPerItem()
+   showAverageRating()
 }
 
 function showOrdersPerItem() {
-    var OPIlabels = []
-    var OPIdata = []
+    var labels = []
+    var data = []
     OrdersPerItem.forEach(item => {
-        OPIlabels.push(item.ItemName)
-        OPIdata.push(item.NoOfOrders)
+        labels.push(item.ItemName)
+        data.push(item.NoOfOrders)
     });
 
     var ctx = document.getElementById('OrdersPerItem').getContext('2d');
@@ -26,15 +27,62 @@ function showOrdersPerItem() {
 
         // The data for our dataset
         data: {
-            labels: OPIlabels,
+            labels: labels,
             datasets: [{
-                label: 'My First dataset',
+                label: 'Orders Per Item',
                 backgroundColor,
-                data: OPIdata
+                data: data
             }]
         },
 
         // Configuration options go here
-        options: {}
+        options: {
+            legend: { position: 'bottom'},
+        }
+    });
+}
+
+function showAverageRating() {
+    var labels = []
+    var data = []
+
+    AvgRatingPerItem.forEach(item => {
+        labels.push(item.itemName)
+        data.push(item.average)
+    });
+
+    var ctx = document.getElementById('ARPI').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            datasets: [{
+                label: '# of Votes',
+                data: data,
+                backgroundColor,
+                borderWidth: 1
+            }],
+            labels: labels,
+        },
+
+        // Configuration options go here
+        options: {
+            scaleShowValues: true,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }], 
+                xAxes: [{
+                ticks: {
+                    autoSkip: false
+                }
+              }]
+            },
+            legend: { display: false },
+        }
     });
 }
