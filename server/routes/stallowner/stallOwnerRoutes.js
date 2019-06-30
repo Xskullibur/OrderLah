@@ -36,7 +36,7 @@ router.use(auth_login.authStallOwner)
  */
 
 //Get StallID based on logged in Stall Owner ID
-function getStallID(userID) {
+function getStallInfo(userID) {
     let promise = new Promise((resolve, reject)=>{
 
         User.findOne({
@@ -72,7 +72,7 @@ function getStallID(userID) {
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
-    getStallID(req.user.id).then((stallOwner) => {
+    getStallInfo(req.user.id).then((stallOwner) => {
 
         /**
         * Get Current Orders
@@ -132,7 +132,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
     }
 
     //Get StallID of logged in stallowner
-    getStallID(req.user.id).then(stallOwner => {
+    getStallInfo(req.user.id).then(stallOwner => {
 
         whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
 
@@ -202,7 +202,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     //Get StallID based onlogged in user
-    getStallID(req.user.id).then(stallOwner => {
+    getStallInfo(req.user.id).then(stallOwner => {
 
         const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
         let title = `Monthly Summary`                                   // Default Title
@@ -308,6 +308,43 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
+// Dashboard
+router.get('/dashboard/', (req, res) =>{
+
+    let getStallOwner = new Promise(function (resolve, reject) {
+        getStallInfo(req.user.id).then(stallOwner => {
+            resolve(stallOwner);
+        }).catch(err => {
+            reject(err)
+        })
+    })
+
+    let getOrdersPerItem = new Promise(function (resolve, reject) {
+
+        getStallOwner.then(function(stallOwner){
+            db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
+            FROM orderlah_db.orderItems
+            INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+            INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
+            WHERE orders.stallId = ${stallOwner.stall.id}
+            AND orders.status = 'Collection Confirmed'
+            GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
+                resolve(result)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    })
+
+    getOrdersPerItem.then(function(OrdersPerItem){
+        // res.send(OrdersPerItem)
+        res.render('../views/stallOwner/dashboard', {
+            OrdersPerItem
+        });
+    })
+
+
+})
 
 /**
  * ALSON LOGIC ROUTES
