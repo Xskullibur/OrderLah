@@ -9,22 +9,30 @@
         for(var i = 0; i <ca.length; i++) {
             var c = ca[i];
             while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+                c = c.substring(1);
             }
             if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+                return c.substring(name.length, c.length);
             }
         }
         return "";
     }
 
-    $(document).ready(function (){
 
+
+    function subStrCookie(cookie){
+        var pattern = /:(.+)\./;
+        return pattern.exec(cookie)[1];
+    }
+
+    $(document).ready(function (){
+        var sid = subStrCookie(getCookie('connect.sid'))
+        console.log(sid)
         //Connect to websocket
         var socket = io('http://localhost:4000/');
         socket.on('connect', () => {
         console.log(socket.connected); // true
-            socket.emit('sessionid', getCookie('sid'))
+            socket.emit('sessionid', sid)
             socket.on('reply', function(reply){
                 console.log(reply);
             })

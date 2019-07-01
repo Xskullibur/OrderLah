@@ -321,7 +321,6 @@ const STATUS = {
 
 function getUpdateStatus(status) {
     switch (status) {
-
         case STATUS.OrderPending:
             return STATUS.PreparingOrder
 

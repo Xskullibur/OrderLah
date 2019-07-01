@@ -20,6 +20,11 @@ io.on('connection', function(socket){
         console.log(msg);
         var sessionId = msg
 
+        // RedisStore.all((err, sessions) => {
+        //     console.log(sessions);
+                        
+        // })
+
         //Retrieve the session store inside redis
         RedisStore.get(sessionId, (err, session) => {
 
@@ -37,12 +42,14 @@ io.on('connection', function(socket){
 
         })
 
-        socket.emit('reply', 'ALSON IS THE GREATEST')
+        console.log(sessionId);
+
+        //socket.emit('reply', 'ALSON IS THE GREATEST')
         
     })
     socket.on('disconnect', function(){
         console.log('user disconnected');
-      });
+    });
 });
   
 

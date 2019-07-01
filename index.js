@@ -54,7 +54,6 @@ app.use(cookieParser())
 //Session
 app.use(session({
     secret: ']x?f4c?3STdk3<6q_h>4jL%{Hi}_',
-    name: 'test',
     store: redisStore,
     resave: false,
     saveUninitialized: true,
