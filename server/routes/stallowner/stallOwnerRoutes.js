@@ -275,9 +275,9 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     const currentUser = req.user.id
 
     Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-        const itemName = req.body.itemName
+        const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")     
         const price = req.body.itemPrice
-        const itemDesc = req.body.itemDescription
+        const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
         const owner = req.user.id
         const active = true
         const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
