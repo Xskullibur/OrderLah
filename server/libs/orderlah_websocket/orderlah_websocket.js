@@ -15,6 +15,8 @@ const globalHandle = require('../global/global')
 RedisStore = globalHandle.get('redis')
 
 io.on('connection', function(socket){
+    console.log(socket.id);
+    
     console.log('a user connected');
     socket.on('sessionid', function (msg) {
         console.log(msg);
