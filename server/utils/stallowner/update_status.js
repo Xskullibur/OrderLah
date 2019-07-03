@@ -5,15 +5,19 @@ const Order = globalHandle.get('order')
 
 module.exports = {
     
-    updateOrderStatus: function(orderID, currentStatus) {
+    updateOrderStatus: function({orderID, currentStatus}) {
 
-        // Get order that status is going to be updated
-        let selectedOrder = new Promise(function(resolve, reject) {
-            let status = getUpdateStatus(currentStatus)
-            Order.update({ status }, { where: { id: orderID } })
+        // Get Updated Status
+        let status = getUpdateStatus(currentStatus)
+
+        // Update  DB based on updated status
+        return Order.update({ 
+            status 
+        }, 
+        { 
+            where: { id: orderID } 
         })
 
-        return selectedOrder
     }
 
 }

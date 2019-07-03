@@ -36,15 +36,14 @@
                 console.log(reply);
             })
         });
-        socket.on('update-status', function(msg){
-
-        })
     })
 
-    function updateStatus(OrderID, currentStatus){
-        socket.emit('update-status', {OrderID, currentStatus})
+    function updateStatus(orderID, currentStatus){
+        socket.emit('update-status', {orderID, currentStatus})
     }
+
 </script>
+
 <div class="container" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
         <div class="col-md-12 mb-4">
@@ -129,7 +128,7 @@
                                                         <div class="row">
                                                             <form action="./updateStatus/{{order.id}}" method="post" class="mx-auto">
 
-                                                                <button type="button" onclick="updateStatus('{{order.id}}', '{{order.status}}');" id="updateStatusBtn_{{order.id}}" class="btn btn-sm btn-outline-primary mx-auto">
+                                                                <button type="button" onclick="updateStatus('{{{order.id}}}', '{{{order.status}}}');" id="updateStatusBtn_{{order.id}}" class="btn btn-sm btn-outline-primary mx-auto">
                                                                     <b id="updateStatusTxt_{{order.id}}">{{getNextStatus order.status}}</b>
                                                                 </button>
                                                                 

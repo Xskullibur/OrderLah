@@ -1,4 +1,4 @@
-function updateStatus(orderID) {
+function updateUIStatus(orderID) {
 
     const STATUS = {
         OrderPending: 'Order Pending',
