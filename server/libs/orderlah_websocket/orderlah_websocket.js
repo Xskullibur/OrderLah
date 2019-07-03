@@ -1,6 +1,7 @@
 // const Server = require('socket.io');
 // const io = new Server();
 
+const status =require('../../utils/stallowner/update_status')
 const server = require('http').createServer();
 
 const io = require('socket.io')(server, {
@@ -52,6 +53,18 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
+
+    socket.on('update-status', function({OrderID, currentStatus}) {
+        console.log(OrderID + " " + currentStatus)
+        status.updateOrderStatus({
+            OrderID, currentStatus
+        }).then((result) => {
+            console.log(result)
+        }).catch((err) => {
+            console.log(err)
+        });
+    })
+
 });
   
 

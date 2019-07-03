@@ -18,11 +18,19 @@ const helpers = require('./server/helpers/helpers')
 
 //Redis
 const redis = require('redis')
-var client = redis.createClient();
-
-redis.createClient({
+var client = redis.createClient({
     port: process.env.REDIS_PORT,
     host: process.env.REDIS_HOST
+})
+
+client.on('connect', () => {
+    console.log("Redis is connected");
+    
+})
+
+client.on('error', (err) => {
+    console.log(err);
+    
 })
 
 //RedisStore

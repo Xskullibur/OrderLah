@@ -9,22 +9,20 @@ module.exports = {
 
         // Get order that status is going to be updated
         let selectedOrder = new Promise(function(resolve, reject) {
-            Order.findOne({
-                where: {
-                    id: orderID
-                }
-            }).then(result => {
-                resolve(result)
-            }).catch(err => {
-                reject(err)
-            })
+            let status = getUpdateStatus(currentStatus)
+            Order.update({ status }, { where: { id: orderID } })
         })
 
-        let status = getUpdateStatus(currentStatus)
-
-        return Order.update({ status }, { where: { id: orderID } })
+        return selectedOrder
     }
 
+}
+
+const STATUS = {
+    OrderPending: 'Order Pending',
+    PreparingOrder: 'Preparing Order',
+    ReadyForCollection: 'Ready for Collection',
+    CollectionConfirmed: 'Collection Confirmed'
 }
 
 function getUpdateStatus(status) {
