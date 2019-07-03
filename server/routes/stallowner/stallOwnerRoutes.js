@@ -426,9 +426,9 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
 
 router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
     const currentUser = req.user.id
-    const itemName = req.body.itemName
+    const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const price = req.body.itemPrice
-    const itemDesc = req.body.itemDescription
+    const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
     var imageName = req.body.imgName
