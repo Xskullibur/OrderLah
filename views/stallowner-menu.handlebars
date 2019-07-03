@@ -1,9 +1,20 @@
 
 <link rel="stylesheet" href="/css/stallowner.css">
+{{#if displayAlert}}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <center><strong>{{this.displayAlert}}</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+
 <br>
-<center>
+<center>   
+    <h2>{{stall.stallName}}</h2>
+    <br>
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4">           
         </div>
         <div class="col-sm-2">
             <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Search Menu"
@@ -26,22 +37,22 @@
                         <div class="container">
                             <div class="card">
                                 <div class="card__image-container shimmerBG media">
-                                    <center><img class="card__image" src="/uploads/{{this.owner}}{{this.itemName}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" style="max-width: 100%;" title="{{this.itemDesc}}"></center>
+                                    <center><img class="card__image" src="/uploads/{{this.image}}" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" title="{{this.itemDesc}}"></center>
                                 </div>
                                 <div class="card__content">
                                     <br>
                                     <center>
                                          <h6 class="card__title">{{this.itemName}}</h6>
                                          <h6 class="card__title">${{this.price}}</h6>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm" style="margin:5px;">
-                                            <svg width="24" height="24" viewBox="0 0 24 24">
-                                                <path d="M1.438 16.872l-1.438 7.128 7.127-1.438 12.642-12.64-5.69-5.69-12.641 12.64zm2.271 2.253l-.85-.849 11.141-11.125.849.849-11.14 11.125zm20.291-13.436l-2.817 2.819-5.69-5.691 2.816-2.817 5.691 5.689z"/>
-                                            </svg>                                                                
-                                        <button type="button" type="submit" class="red-btn" data-toggle="modal">
-                                            <svg width="24" height="24" viewBox="0 0 24 24">
-                                                <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/>
-                                            </svg>
+                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm{{this.id}}" title="edit">
+                                            <font size="1">Edit</font>
+                                        </button>                                                                                            
+                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#deleteForm{{this.id}}" title="delete">
+                                            <font size="1">Delete</font>
                                         </button>
+                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#commentForm{{this.id}}" title="comments and rating">
+                                           <font size="1">Review</font>
+                                        </button>                                             
                                     </center>
                                 </div>
                             </div>
@@ -62,40 +73,41 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data">
+            <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body">
                     <br>
-                    {{!-- <div class="form-group row">
-                            <div class="col-sm-2 imgUp">
-                                <div class="imagePreview"></div>                            
-                                    <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
-                                </div>
-                    </div> --}}
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" placeholder="enter name" required>
+                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z\s]{1,50}" placeholder="enter item name" required> 
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required, max 50 letters </div>                                                    
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="itemPrice" id="itemPrice" placeholder="enter price" required>
-                        </div>
+                            <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" placeholder="enter price" required>
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required</div>
+                        </div>                       
                     </div>
                     <div class="form-group row">
                         <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" required>
+                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" pattern="[a-zA-Z0-9\s]{1,255}"  required>
+                            <div class="valid-feedback">Valid</div>
+                            <div class="invalid-feedback">required, max 255 characters</div>
                         </div>
                     </div>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
-                        <label class="custom-file-label" for="itemImage">Choose image</label>
-                        <div class="invalid-feedback">Invalid file</div>
-                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2 imgUp">
+                            <div class="imagePreview"></div>                            
+                                <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg" required>                                
+                            </div>
+                    </div>                  
                     <div class="modal-footer">
-                        <button type="button submit" class="red-btn">Create</button>
+                        <button type="submit" class="red-btn">Create</button>
                     </div>
                 </form>
             </div>
@@ -103,52 +115,118 @@
     </div>
 </div>
 
-<div class="modal fade" id="updateForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+{{#if item}}
+    {{#each item}}
+        <div class="modal fade" id="updateForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/stallOwner/updateItem" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <br>
+                        <div class="modal-body">
+                        <div class="form-group row">        
+                            <label for="itemName" class="col-sm-2 col-form-label">Name</label> 
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z\s]+" maxlength="50" value="{{this.itemName}}" required>
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required, letters only</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">                               
+                            <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
+                            <div class="col-sm-10">                     
+                                <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" value="{{this.price}}" required>
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required</div>
+                            </div>
+                        </div>
+                        <div class="form-group row">                      
+                            <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label> 
+                            <div class="col-sm-10">                      
+                                <input type="text" class="form-control" name="itemDescription" id="itemDescription" maxlength="255" value="{{this.itemDesc}}" required> 
+                                <div class="valid-feedback">Valid</div>
+                                <div class="invalid-feedback">required</div> 
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2 imgUp">
+                                <div class="imagePreview" style="background: url(/uploads/{{this.image}}); background-size: 225px 140px;"></div>                            
+                                    <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
+                                </div>
+                        </div>                       
+                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}">
+                        <input type="hidden" id="imgName" name="imgName" value="{{this.image}}"> 
+                        <div class="modal-footer">
+                            <button type="submit" class="red-btn">Update</button>  
+                        </div> 
+                        </div>            
+                    </form>
+                </div>
             </div>
-            <form method="POST" action="" enctype="">
-                <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="itemName" class="col-sm-2 col-form-label">Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" name="itemPrice" id="itemPrice" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" required>
-                        </div>
-                    </div>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" name="" id="" accept="image/png,image/jpeg,image/jpg">
-                        <label class="custom-file-label" for="">Choose image</label>
-                        <div class="invalid-feedback">Invalid file</div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button submit" class="red-btn">Update</button>
-                    </div>
-            </form>
         </div>
-    </div>
-</div>
-    
+    {{/each}}
+{{/if}}
 
+{{#if item}}
+    {{#each item}}
+        <div class="modal fade" id="deleteForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Are you sure to delete?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/stallOwner/deleteItem">
+                        <br>
+                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <center>
+                                <button type="submit" class="red-btn">Yes</button>
+                                <button data-dismiss="modal" class="red-btn">No</button>  
+                            </center>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
 
-{{!-- <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+{{#if item}}
+    {{#each item}}
+        <div class="modal fade" id="commentForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Show review for {{this.itemName}}?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/stallOwner/viewComment">
+                        <br>
+                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <center>
+                                <button type="submit" class="red-btn">Yes</button>
+                                <button data-dismiss="modal" class="red-btn">No</button>  
+                            </center>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
+
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>    
 <script>
@@ -175,4 +253,25 @@
                 }
             });
         });
-</script> --}}
+</script>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

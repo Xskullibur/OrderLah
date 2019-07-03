@@ -44,6 +44,10 @@
             <li class="nav-item">
               <a class="nav-link" href="/pastOrders">Past Orders</a>
             </li>
+          {{else if isAdmin}}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/adminPanel">Manage Stalls</a>
+            </li>
           {{else}}
             {{!-- STALL OWNER NAV --}}
             <li class="nav-item">
@@ -56,6 +60,10 @@
 
             <li class="nav-item">
               <a class="nav-link" href="/stallOwner/monthlySummary/">Monthly Summary</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/stallOwner/showMenu">Manage Menu</a>
             </li>
           {{/if}}
 

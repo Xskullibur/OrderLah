@@ -21,6 +21,7 @@ const Order = globalHandle.get('order');
 const MenuItem = globalHandle.get('menuItem');
 const Stall = globalHandle.get('stall');
 const User = globalHandle.get('user')
+const OrderItem = globalHandle.get('orderItem')
 
 //Get App
 const app = globalHandle.get('app')
@@ -365,64 +366,72 @@ router.post('/updateStatus/:orderID', (req, res) => {
  * HSIEN XIANG ROUTES
  */
 
+router.use(auth_login.auth)
+
+var displayAlert = []
+
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
-        if (user.role === 'Admin') {
-            MenuItem.findAll({where: { active: true}}).then((item) =>{
-                res.render('stallowner-menu', {
-                    item:item
-                })
+         if(user.role === 'Stallowner'){
+            Stall.findOne({where: {userId: id}}).then(myStall => {
+                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                    res.render('stallowner-menu', {
+                        item:item,
+                        stall: myStall,
+                        displayAlert: displayAlert
+                    })
+                    displayAlert = []
+                })    
             })
-        }else if(user.role === 'Stallowner'){
-            MenuItem.findAll({where: {owner: req.user.id, active: true}}).then((item) =>{
-                res.render('stallowner-menu', {
-                    item:item
-                })
-            })      
         }else{
-            res.render('error')
+            res.render('./successErrorPages/error')
         }      
       })
-    
-
-
-
-    //res.render('stallowner-menu')
 })
 
-router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
-    User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
-        res.render('admin', {
-            displayStallowner: stallowner
-        })
+router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+    const currentUser = req.user.id
+
+    Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+        const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")     
+        const price = req.body.itemPrice
+        const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
+        const owner = req.user.id
+        const active = true
+        const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
+        const stallId = theStall.id
+
+        if (!fs.existsSync('./public/uploads')){
+            fs.mkdirSync('./public/uploads');
+        }
+
+        MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
+            //res.render('./successErrorPages/createSuccess')
+            displayAlert.push('Item successfully added')
+            res.redirect('/stallOwner/showMenu')
+        }).catch(err => console.log(err))
     })
 })
 
-// router.post('/submitStall',  (req, res) =>{
-//     const username = req.body.username
-//     const firstName = req.body.firstName
-//     const lastName = req.body.lastName
-//     const email = req.body.email
-//     const birthday = req.body.birthday
-//     const password = req.body.password
-//     const phone = req.body.phone
-//     const role = 'Stallowner'
+router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+    displayAlert.push('Item deleted!')
+    const active = false
+    const id = req.body.itemID
+    MenuItem.update({active}, {where:{id}}).then(function(){
+        //res.render('./successErrorPages/removeSuccess')
+        res.redirect('/stallOwner/showMenu')
+    }).catch(err => console.log(err))
+})
 
-//     User.create({
-//         username, firstName, lastName, email, birthday, password, phone, role
-//     }).then(function(){
-//         res.send('good')
-//     }).catch(err => console.log(err))
-
-// })
-
-router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
+    const currentUser = req.user.id
     const itemName = req.body.itemName
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription
-    const owner = req.user.id
-    const active = true
+    const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
+    const id = req.body.itemID
+    var imageName = req.body.imgName
 
     if (!fs.existsSync('./public/uploads')){
         fs.mkdirSync('./public/uploads');
@@ -430,28 +439,36 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
 
     
 
-    MenuItem.create({ itemName, price, itemDesc, owner, active}).then(function() {
-        // alert("Item successfully added")
-        //res.send('Good')
-        res.render('createSuccess')
+    MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+        //res.render('./successErrorPages/updateSuccess')
+        fs.rename(process.cwd()+'/public/uploads/'+ imageName, process.cwd()+'/public/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+            if(err){
+                console.log(err)
+            }
+        })
+        displayAlert.push('Item updated!')
+        res.redirect('/stallOwner/showMenu')
     }).catch(err => console.log(err))
 })
 
-router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
-    const active = false
+router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
+    const itemID = req.body.itemID
+    console.log(itemID)
     const id = req.user.id
-    MenuItem.update({active}, {where: id}).then(
-    function(){res.send('item removed')}).catch(err => console.log(err))
-    
+    MenuItem.findOne({where : {id: itemID}}).then(menu =>{
+        User.findOne({ where: id }).then(user => {
+            if(user.role === 'Stallowner'){
+               OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
+                   res.render('stallmenu-comment', {
+                       items: items,
+                       menu: menu
+                   })
+               })
+           }else{
+               res.render('./successErrorPages/error')
+           }      
+         })
+    })   
 })
-
-// router.post('/updateItem', upload.single("itemImage"), (req, res) =>{
-//     const itemName = req.body.itemName
-//     const price = req.body.itemPrice
-//     const itemDesc = req.body.itemDescription
-
-//     MenuItem.update({itemName, price, itemDesc},{where:{id: req.body.id}})
-// })
-
 
 module.exports = router;

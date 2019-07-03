@@ -29,6 +29,11 @@ const passport = require('passport')
 //moment
 const moment = require('moment')
 
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./uploadProfile')
+const upload = multer({storage : storage })
+
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(passport.authenticate('remember-me'))
@@ -43,7 +48,8 @@ app.use((req, res, next) => {
 //Nav Middleware
 app.use((req, res, next) => {
     if (req.user != undefined) {
-        res.locals.isCustomer = (req.user.role == 'Customer')        
+        res.locals.isCustomer = (req.user.role == 'Customer')
+        res.locals.isAdmin = (req.user.role == 'Admin')        
     }
     next()
 })
@@ -107,6 +113,14 @@ passport.deserializeUser(function(id, done) {
 //Define main 'route' path
 
 
+/**
+ * Get all menu items inside the database as JSON
+ */
+router.get('/menuItems', auth_login.auth, (req, res) => {
+   MenuItem.findAll({}).then( menuItems => {
+       res.send(JSON.stringify(menuItems))
+   })
+})
 
 const profile_gen = require('../libs/profile_img_generator')
 /**
@@ -153,7 +167,8 @@ router.post('/register', uuid_middleware.verify, (req, res) => {
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
-    res.render('login', {layout: 'blank_layout'})
+    res.render('login', {layout: 'blank_layout', displayAlert:failAlert})
+    failAlert = []
 })
 
 /**
@@ -179,7 +194,11 @@ router.post('/login',
             res.redirect('/')
         }
         else if (req.user.role == 'Admin') {
-            res.redirect('/stallOwner/adminPanel')
+            res.redirect('/admin/adminPanel')
+        }
+        else if (req.user.role == 'Inactive') {
+            failAlert.push("Your account has been locked please contact admin for more details")
+            res.redirect('/login')
         }
         else {
             res.redirect('/stallOwner/')
@@ -197,5 +216,47 @@ router.get('/logout', (req, res) => {
 })
 
 
+
+/* HsienXiang route */
+
+/**
+ * GET '/profile' path
+ * Get Profile page
+ */
+
+var displayAlert = []
+var failAlert = []
+
+router.get('/profile', auth_login.auth, (req, res) => {
+    const UserID = req.user.id
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', displayAlert:displayAlert, failAlert:failAlert, UserID:UserID})
+    displayAlert = []
+    failAlert = []
+})
+
+router.post('/changePass', (req, res) =>{  
+    if(req.body.password != req.body.password2){
+        failAlert.push('password does not match!')
+        res.redirect('/profile')
+    }else{
+        displayAlert.push('password successfully changed')
+        bcrypt.hash(req.body.password, 10).then(hash =>{
+            User.update({password: hash}, {where:{id: req.user.id}}).then(function(){
+                res.redirect('/profile')
+            })
+        })
+    }   
+})
+
+router.post('/updateProfile', upload.single('profileImage'), (req, res) =>{
+    var email = req.body.email
+    var phone = req.body.phone
+    var birthday = req.body.birthday
+
+    User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+        displayAlert.push('profile successfully updated')
+        res.redirect('/profile')
+    })
+})
 
 module.exports = router
