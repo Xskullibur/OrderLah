@@ -309,7 +309,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 // Dashboard
-router.get('/dashboard/', (req, res) =>{
+router.get('/orderDetails/', (req, res) =>{
 
     let getStallOwner = new Promise(function (resolve, reject) {
         getStallInfo(req.user.id).then(stallOwner => {
@@ -358,9 +358,9 @@ router.get('/dashboard/', (req, res) =>{
     async function main() {
         OrdersPerItem = await getOrdersPerItem()
         AvgRatingPerItem = await getAvgRatingPerItem()
-    
+
         // res.send(OrdersPerItem)
-        res.render('../views/stallOwner/dashboard', {
+        res.render('../views/stallOwner/orderDetails', {
             OrdersPerItem, AvgRatingPerItem
         });
     }
