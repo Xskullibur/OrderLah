@@ -50,7 +50,7 @@
                                     {{!-- Submit Btn --}}
                                     <div class="form-row">
                                         <div class="form-group col text-right">
-                                            <a href="/stallOwner/allOrders/1" class="btn btn-outline-danger">Clear</a>
+                                            <button type="reset" class="btn btn-outline-danger" onclick="document.getElementById('orderNo').disabled = false; document.getElementById('orderDate').disabled = false;">Clear</button>
                                             <button type="submit" class="btn btn-outline-danger" id="filterSubmitBtn">Apply Filter</button>
                                         </div>
                                     </div>
@@ -66,3 +66,29 @@
         </div>
     </div>
 </div>
+
+<script>
+
+    let orderNo = document.getElementById('orderNo')
+    let orderDate = document.getElementById('orderDate')
+
+    orderNo.oninput = function() {
+        if (this.value.length) {
+            orderDate.disabled = true
+        }
+        else{
+            orderDate.disabled = false
+        }
+    }
+
+    orderDate.oninput = function() {
+        if (this.value.length) {
+            orderNo.disabled = true
+
+        }
+        else{
+            orderNo.disabled = false
+        }
+    }
+
+</script>
