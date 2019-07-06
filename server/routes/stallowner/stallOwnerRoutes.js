@@ -308,7 +308,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
-// Dashboard
+// Order Details
 router.get('/orderDetails/', (req, res) =>{
 
     function getStallOwner() {

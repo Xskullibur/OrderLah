@@ -7,6 +7,14 @@
 <script src="/js/createChart.js"></script>
 
 <div class="container" style="position: relative; top: 5vh; width:">
+
+    {{!-- Filter --}}
+    <div class="row mb-4">
+        <div class="col">
+            {{>stallowner_items/all_orders_filter}}
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="px-md-5 pb-md-5 px-sm-3 pb-sm-3" style="width: 100%;">
