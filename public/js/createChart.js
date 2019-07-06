@@ -10,6 +10,7 @@ var backgroundColor =  [
 window.onload = function() {
    showOrdersPerItem()
    showAverageRating()
+   showEachItemRating()
 }
 
 function showOrdersPerItem() {
@@ -85,4 +86,42 @@ function showAverageRating() {
             legend: { display: false },
         }
     });
+}
+
+function showEachItemRating() {
+    EachItemRating.forEach(itemRating => {
+        
+        var labels = []
+        var data = []
+
+        var ratings = itemRating.rating
+
+        ratings.forEach(item => {
+            labels.push(item.label)
+            data.push(item.count)
+        });
+
+        var ctx = document.getElementById(`Rating_${itemRating.id}`).getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'pie',
+    
+            // The data for our dataset
+            data: {
+                labels,
+                datasets: [{
+                    label: itemRating.itemName,
+                    backgroundColor,
+                    data: data
+                }]
+            },
+    
+            // Configuration options go here
+            options: {
+                legend: { position: 'bottom'},
+            }
+        });
+
+    });
+
 }

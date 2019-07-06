@@ -2,6 +2,7 @@
 <script>
     var OrdersPerItem = {{{jsonStringfy OrdersPerItem}}};
     var AvgRatingPerItem = {{{jsonStringfy AvgRatingPerItem}}};
+    var EachItemRating = {{{jsonStringfy EachItemRating}}};
 </script>
 <script src="/js/createChart.js"></script>
 
@@ -10,7 +11,7 @@
         <div class="col-md-12">
             <div class="px-md-5 pb-md-5 px-sm-3 pb-sm-3" style="width: 100%;">
 
-                <div class="card-deck">
+                <div class="card-deck mb-2">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Number of Items Bought:</h4>
@@ -25,41 +26,19 @@
                     </div>
                 </div>
 
-                <div class="card mt-3">
-                    <div class="card-body">
-
-                        <h4 class="card-title">View Orders</h4>
-                        {{!-- Filter --}}
-                        <div class="container mt-3">
-                            <div class="col">
-                                <form action="/stallOwner/allOrders/1" class="p-3" method="GET">
-
-                                    {{!-- Inputs --}}
-                                    <div class="form-row">
-                                        <div class="form-group col">
-                                            <label for="orderNo">Order No.</label>
-                                            <input type="number" name="orderNo" id="orderNo" class="form-control" placeholder="eg. 1" aria-describedby="Order Number" value="{{#if orderFilter}}{{orderFilter}}{{/if}}">
-                                        </div>
-
-                                        <div class="form-group col">
-                                            <label for="date">Order Date</label>
-                                            <input type="date" name="orderDate" id="orderDate" class="form-control" placeholder="01/06/2019" aria-describedby="Order Date" value="{{#if dateFilter}}{{dateFilter}}{{/if}}">
-                                        </div>
-                                    </div>
-
-                                    {{!-- Submit Btn --}}
-                                    <div class="form-row">
-                                        <div class="form-group col text-right">
-                                            <button type="reset" class="btn btn-outline-danger" onclick="document.getElementById('orderNo').disabled = false; document.getElementById('orderDate').disabled = false;">Clear</button>
-                                            <button type="submit" class="btn btn-outline-danger" id="filterSubmitBtn">Apply Filter</button>
-                                        </div>
-                                    </div>
-
-                                </form>
+                <div class="container-fluid text-center">
+                    {{#each EachItemRating as |item|}}
+                        <div class="card d-inline-block mx-2 my-2">
+                            <div class="card-body">
+                                <h4 class="card-title">{{item.itemName}}</h4>
+                                <canvas id="Rating_{{item.id}}"></canvas>
                             </div>
                         </div>
+                    {{/each}}
+                </div>
 
-                    </div>
+
+                <div class="card-group" id="EIR">
                 </div>
                 
             </div>

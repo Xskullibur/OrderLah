@@ -321,50 +321,115 @@ router.get('/orderDetails/', (req, res) =>{
         })
     }
 
-    function getOrdersPerItem() {
+    function getOrdersPerItem(stallOwner) {
         return new Promise(function(resolve, reject) {
-            getStallOwner.then(function(stallOwner){
-                db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
-                FROM orderlah_db.orderItems
-                INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
-                INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
-                WHERE orders.stallId = ${stallOwner.stall.id}
-                AND orders.status = 'Collection Confirmed'
-                GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
-                    resolve(result)
-                }).catch(err => {
-                    reject(err)
-                })
+
+            db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
+            FROM orderlah_db.orderItems
+            INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+            INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
+            WHERE orders.stallId = ${stallOwner.stall.id}
+            AND orders.status = 'Collection Confirmed'
+            GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
+                resolve(result)
+            }).catch(err => {
+                reject(err)
             })
+
         })   
     }
 
-    function getAvgRatingPerItem(){
+    function getAvgRatingPerItem(stallOwner){
         return new Promise(function(resolve, reject) {
-            getStallOwner.then(function(stallOwner){
-                db.query(`SELECT menuItems.itemName, AVG(orderItems.rating)-1 AS average
-                FROM orders
-                INNER JOIN orderItems ON orders.id = orderItems.orderId
-                INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
-                WHERE orders.stallId = ${stallOwner.stall.id}
-                AND orders.status = 'Collection Confirmed'
-                GROUP BY menuItems.id`).then(([result, metadata]) => {
-                    resolve(result)
-                }).catch(err => {
-                    reject(err)
-                })
+
+            db.query(`SELECT menuItems.itemName, AVG(orderItems.rating)-1 AS average
+            FROM orders
+            INNER JOIN orderItems ON orders.id = orderItems.orderId
+            INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
+            WHERE orders.stallId = ${stallOwner.stall.id}
+            AND orders.status = 'Collection Confirmed'
+            GROUP BY menuItems.id`).then(([result, metadata]) => {
+                resolve(result)
+            }).catch(err => {
+                reject(err)
             })
+
         })
     }
 
-    function getEachItemRating() {
+    function getRatingCount(menuItemId, rating) {
+
+        return new Promise(function(resolve, reject) {
+            db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating
+            FROM orderItems
+            WHERE orderItems.menuItemId = ${menuItemId}
+            AND orderItems.rating  = '${rating}';`).then(([result, metadata]) => {
+                resolve(result[0].Rating)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+
+    }
+
+    function getEachItemRating(stallOwner) {
+
+        return new Promise(function(resolve, reject) {
+            // Get Stall's Items
+            db.query(`SELECT menuItems.id, menuItems.itemName
+            FROM menuItems
+            WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
+    
+                EachItemRating = []
+    
+                for (const key in allItems) {
+                    if (allItems.hasOwnProperty(key)) {
+                        const item = allItems[key];
+
+                        line = {}
+
+                        line.id = item.id
+                        line.itemName = item.itemName
         
-        // Get Stall's Items
-        db.query(`SELECT menuItems.id, menuItems.itemName, orderItems.rating
-        FROM orderItems
-        INNER JOIN orders ON orderItems.orderId = orders.id
-        INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
-        WHERE orders.stallId = 3;`)
+                        rating5 = await getRatingCount(item.id, 5)
+                        rating4 = await getRatingCount(item.id, 4)
+                        rating3 = await getRatingCount(item.id, 3)
+                        rating2 = await getRatingCount(item.id, 2)
+                        rating1 = await getRatingCount(item.id, 1)
+        
+                        line.rating = [
+                            {
+                                label: "5 Stars",
+                                count: rating5
+                            },
+                            {
+                                label: "4 Stars",
+                                count: rating4
+                            },
+                            {
+                                label: "3 Stars",
+                                count: rating3
+                            },
+                            {
+                                label: "2 Stars",
+                                count: rating2
+                            },
+                            {
+                                label: "1 Stars",
+                                count: rating1
+                            },
+                        ]
+        
+                        EachItemRating.push(line)
+                    }
+                }
+
+                resolve(EachItemRating)
+
+            }).catch(err => {
+                reject(err)
+            })
+        })
 
     }
 
@@ -372,12 +437,13 @@ router.get('/orderDetails/', (req, res) =>{
 
         StallOwner = await getStallOwner()                                                          
 
-        OrdersPerItem = await getOrdersPerItem()
-        AvgRatingPerItem = await getAvgRatingPerItem()
+        OrdersPerItem = await getOrdersPerItem(StallOwner)
+        AvgRatingPerItem = await getAvgRatingPerItem(StallOwner)
+        EachItemRating = await getEachItemRating(StallOwner)
 
-        // res.send(OrdersPerItem)
+        // res.send(EachItemRating)
         res.render('../views/stallOwner/orderDetails', {
-            OrdersPerItem, AvgRatingPerItem
+            OrdersPerItem, AvgRatingPerItem, EachItemRating
         });
     }
 
