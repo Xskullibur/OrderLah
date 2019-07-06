@@ -54,14 +54,14 @@ io.on('connection', function(socket){
         console.log('user disconnected');
     });
 
-    socket.on('update-status', function({orderID, currentStatus}) {
+    socket.on('update-status', function({orderID, updatedStatus}) {
 
         status.updateOrderStatus({
-            orderID, currentStatus
+            orderID, updatedStatus
         }).then((result) => {
-            console.log(result)
+            console.log(`Success: ${result}`)
         }).catch((err) => {
-            console.log(err)
+            console.log(`Error: ${err}`)
         });
 
     })
