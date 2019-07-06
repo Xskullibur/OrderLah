@@ -311,13 +311,15 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 // Dashboard
 router.get('/orderDetails/', (req, res) =>{
 
-    let getStallOwner = new Promise(function (resolve, reject) {
-        getStallInfo(req.user.id).then(stallOwner => {
-            resolve(stallOwner);
-        }).catch(err => {
-            reject(err)
+    function getStallOwner() {
+        return new Promise(function(resolve, reject) {
+            getStallInfo(req.user.id).then(stallOwner => {
+                resolve(stallOwner);
+            }).catch(err => {
+                reject(err)
+            })
         })
-    })
+    }
 
     function getOrdersPerItem() {
         return new Promise(function(resolve, reject) {
@@ -355,7 +357,21 @@ router.get('/orderDetails/', (req, res) =>{
         })
     }
 
+    function getEachItemRating() {
+        
+        // Get Stall's Items
+        db.query(`SELECT menuItems.id, menuItems.itemName, orderItems.rating
+        FROM orderItems
+        INNER JOIN orders ON orderItems.orderId = orders.id
+        INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
+        WHERE orders.stallId = 3;`)
+
+    }
+
     async function main() {
+
+        StallOwner = await getStallOwner()                                                          
+
         OrdersPerItem = await getOrdersPerItem()
         AvgRatingPerItem = await getAvgRatingPerItem()
 
