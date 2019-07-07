@@ -293,15 +293,15 @@ router.get('/payment', auth_login.auth, (req, res) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-            "return_url": "http://localhost:3000/payment-redirect",
-            "cancel_url": "http://localhost:3000/payment-void"
+            "return_url": "http://localhost:3000/paymentSuccess",
+            "cancel_url": "http://localhost:3000/paymentCancel"
         },
         "transactions": [{
             "item_list": {
                 "items": [{
-                    "name": "test",
-                    "sku": "test",
-                    "price": "1.00",
+                    "name": "food",
+                    "sku": "001",
+                    "price": "4.50",
                     "currency": "SGD",
                     "quantity": 1
                 }]
@@ -330,9 +330,34 @@ router.get('/payment', auth_login.auth, (req, res) => {
     res.render('payment', {size: MenuItem.count()})
 })
 
-router.get('paymentSuccess', (req, res) =>{
+router.get('/paymentSuccess', (req, res) =>{
     const payerID = req.query.PayerID
     const paymentId = req.query.paymentId
+
+    const execute_payment_json = {
+        "payer_id": payerId,
+        "transactions": [{
+            "amount": {
+                "currency": "SGD",
+                "total": "4.50"
+            }
+        }]
+    }
+
+    paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+        if (error) {
+            console.log(error.response);
+            throw error;
+        } else {
+            console.log(JSON.stringify(payment));
+            res.send('Success');
+        }
+    });
+    
+})
+
+router.get('paymentCancel', (req, res) =>{
+    res.send('cancel')
 })
 
 
