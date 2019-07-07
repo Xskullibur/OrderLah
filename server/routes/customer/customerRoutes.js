@@ -25,68 +25,6 @@ const Sequelize = require('sequelize')
 //Get App
 const app = globalHandle.get('app')
 
-
-
-//Define main 'customer' paths
-
-//Payment PAYPAL
-const paypal = require('paypal-rest-sdk')
-paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU',
-    'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
-  });
-
-/**
- * GET '/payment' 
- * Payment stage for ordering items
- */
-router.get('/payment', auth_login.auth, (req, res) => {
-
-    var create_payment_json = {
-        "intent": "order",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://localhost:3000/payment-redirect",
-            "cancel_url": "http://localhost:3000/payment-void"
-        },
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "item",
-                    "sku": "item",
-                    "price": "1.00",
-                    "currency": "USD",
-                    "quantity": 1
-                }]
-            },
-            "payee": {"email": "payee@gmail.com"},
-            "amount": {
-                "currency": "USD",
-                "total": "1.00"
-            },
-            "description": "This is the payment description."
-        }]
-    };
-    
-    
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            throw error;
-        } else {
-            console.log("Create Payment Response");
-            console.log(payment);
-        }
-    });
-
-    res.render('payment', {size: MenuItem.count()})
-})
-
-
-
-
 //Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review', (req, res) => {
     res.render('customer/review',{})
@@ -330,6 +268,72 @@ router.get('/getRatingData', async (req, res) =>{
 
 const orders_api_routes = require('./orders_api')
 router.use(orders_api_routes)
+
+//Define main 'customer' paths
+
+//Payment PAYPAL
+const paypal = require('paypal-rest-sdk')
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc', //i changed it to mine to test -hsienxiang
+    'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
+  });
+
+/**
+ * GET '/payment' 
+ * Payment stage for ordering items
+ */
+
+//hsien xiang's route
+router.get('/payment', auth_login.auth, (req, res) => {
+
+    var create_payment_json = {  //test data
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": "http://localhost:3000/payment-redirect",
+            "cancel_url": "http://localhost:3000/payment-void"
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": "test",
+                    "sku": "test",
+                    "price": "1.00",
+                    "currency": "SGD",
+                    "quantity": 1
+                }]
+            },
+            "amount": {
+                "currency": "SGD",
+                "total": "1.00"
+            },
+            "description": "This is the payment description."
+        }]
+    };
+
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            throw error;
+        } else {
+            console.log(payment);
+            for(let i = 0; i < payment.links.length; i++){
+                if(payment.links[i].rel === 'approval_url'){
+                    res.redirect(payment.links[i].href)
+                }
+            }
+        }
+    });
+
+    res.render('payment', {size: MenuItem.count()})
+})
+
+router.get('paymentSuccess', (req, res) =>{
+    const payerID = req.query.PayerID
+    const paymentId = req.query.paymentId
+})
 
 
 module.exports = router
