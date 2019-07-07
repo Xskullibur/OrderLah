@@ -284,7 +284,7 @@ paypal.configure({
  * Payment stage for ordering items
  */
 
-//hsien xiang's route
+//hsien xiang's route - done by hsienxiang and ziheng
 router.get('/payment', auth_login.auth, (req, res) => {
 
     var create_payment_json = {  //test data
@@ -319,11 +319,11 @@ router.get('/payment', auth_login.auth, (req, res) => {
             throw error;
         } else {
             console.log(payment);
-            for(let i = 0; i < payment.links.length; i++){
-                if(payment.links[i].rel === 'approval_url'){
-                    res.redirect(payment.links[i].href)
-                }
-            }
+            // for(let i = 0; i < payment.links.length; i++){
+            //     if(payment.links[i].rel === 'approval_url'){
+            //         res.redirect(payment.links[i].href)
+            //     }
+            // }
         }
     });
 
