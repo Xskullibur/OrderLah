@@ -287,9 +287,9 @@ paypal.configure({
 //hsien xiang's route - done by hsienxiang and ziheng
 router.get('/payment', auth_login.auth, (req, res) => {
    
-    var totalAmount = 3
+    var totalAmount = 7
     res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
-    
+
 })
 
 
