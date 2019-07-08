@@ -314,51 +314,51 @@ router.get('/payment', auth_login.auth, (req, res) => {
         }]
     };
 
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            throw error;
-        } else {
-            console.log(payment);
-            // for(let i = 0; i < payment.links.length; i++){
-            //     if(payment.links[i].rel === 'approval_url'){
-            //         res.redirect(payment.links[i].href)
-            //     }
-            // }
-        }
-    });
+    // paypal.payment.create(create_payment_json, function (error, payment) {
+    //     if (error) {
+    //         throw error;
+    //     } else {
+    //         console.log(payment);
+    //         for(let i = 0; i < payment.links.length; i++){
+    //             if(payment.links[i].rel === 'approval_url'){
+    //                 res.redirect(payment.links[i].href)
+    //             }
+    //         }
+    //     }
+    // });
 
     res.render('payment', {size: MenuItem.count()})
 })
 
-router.get('/paymentSuccess', (req, res) =>{
-    const payerID = req.query.PayerID
-    const paymentId = req.query.paymentId
+// router.get('/paymentSuccess', (req, res) =>{
+//     const payerID = req.query.PayerID
+//     const paymentId = req.query.paymentId
 
-    const execute_payment_json = {
-        "payer_id": payerId,
-        "transactions": [{
-            "amount": {
-                "currency": "SGD",
-                "total": "4.50"
-            }
-        }]
-    }
+//     const execute_payment_json = {
+//         "payer_id": payerId,
+//         "transactions": [{
+//             "amount": {
+//                 "currency": "SGD",
+//                 "total": "4.50"
+//             }
+//         }]
+//     }
 
-    paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-        if (error) {
-            console.log(error.response);
-            throw error;
-        } else {
-            console.log(JSON.stringify(payment));
-            res.send('Success');
-        }
-    });
+//     paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+//         if (error) {
+//             console.log(error.response);
+//             throw error;
+//         } else {
+//             console.log(JSON.stringify(payment));
+//             res.send('Success');
+//         }
+//     });
     
-})
+// })
 
-router.get('paymentCancel', (req, res) =>{
-    res.send('cancel')
-})
+// router.get('paymentCancel', (req, res) =>{
+//     res.send('cancel')
+// })
 
 
 module.exports = router
