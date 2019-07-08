@@ -2,6 +2,7 @@
 // const io = new Server();
 
 const status =require('../../utils/stallowner/update_status')
+const transactions = require('../../utils/main/order_transactions')
 const server = require('http').createServer();
 
 const io = require('socket.io')(server, {
@@ -15,51 +16,49 @@ const io = require('socket.io')(server, {
 const globalHandle = require('../global/global')
 RedisStore = globalHandle.get('redis')
 
+const sessionIDs = {}
+
 io.on('connection', function(socket){
+
     console.log(socket.id);
-    
     console.log('a user connected');
+    
+    // On User Connect
     socket.on('sessionid', function (msg) {
         console.log(msg);
         var sessionId = msg
 
-        // RedisStore.all((err, sessions) => {
-        //     console.log(sessions);
-                        
-        // })
-
-        //Retrieve the session store inside redis
-        RedisStore.get(sessionId, (err, session) => {
-
-            if (err) {
-                console.log(err);
-            }
-            else{
-                if (session) {
-                    console.log(session);
-                }
-                else{
-                    console.log("Error");
-                }
-            }
-
-        })
-
-        console.log(sessionId);
-
-        //socket.emit('reply', 'ALSON IS THE GREATEST')
+        //Store session id with socket id
+        sessionIDs[socket.id] = sessionId
+        //io.to(socket.id) get socket
         
     })
+    
+    // On User Disconnect
     socket.on('disconnect', function(){
         console.log('user disconnected');
+        delete sessionIDs[socket.id] 
     });
 
+    // Customers events
+    socket.on('', function(){
+
+    })
+
+    // Stallowners events
+    // [On Update Order Status]
     socket.on('update-status', function({orderID, updatedStatus}) {
 
         status.updateOrderStatus({
             orderID, updatedStatus
         }).then((result) => {
             console.log(`Success: ${result}`)
+            transactions.getCustomerByOrderID(orderID).then(orderCust => {
+                getSessionsFromCustomerID(orderCust.user.id, (session) => {
+                    const socketid = getSocketIDBySessionID(session.id)
+                    io.to(socketid).emit('update-status', {updatedStatus})
+                })
+            })
         }).catch((err) => {
             console.log(`Error: ${err}`)
         });
@@ -73,3 +72,42 @@ server.listen(4000,() => {
     console.log('Websocket listening on 4000');
     
 });
+
+function getSocketIDBySessionID(sessionId){
+    for (let {socketId, tsessionId} in sessionIDs) {
+        if(sessionId == tsessionId)return socketId
+    }
+    return null
+}
+
+function getSessionsFromCustomerID(custId, yieldCB){
+    for(var socketId in sessionIDs){
+        var sessionId = sessionIDs[socketId]
+        getSessionBySessionID(sessionId, (err, session) => {
+            if(!err && session.user.id === custId){
+                yieldCB(session);
+            }
+        })
+    }
+}
+
+function getSessionBySessionID(sessionId, cb){
+    //Retrieve the session store inside redis
+    RedisStore.get(sessionId, (err, session) => {
+        if (err) {
+            console.log(err);
+            cb(err, null)
+        }
+        else{
+            if (session) {
+                console.log(session);
+                cb(null, session)
+            }
+            else{
+                console.log("Error");
+                cb('Empty', null)
+            }
+        }
+
+    })
+}

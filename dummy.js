@@ -7,15 +7,15 @@ const create_order = require('./server/utils/stallowner/create_order')
 const cusine = require('./server/utils/stallowner/cusine')
 const stall = require('./server/utils/stallowner/stall')
 
-module.exports = () => {
+module.exports = async () => {
     
-    createCustomers()
-    createTestData()
+    await createCustomers()
+    await createTestData()
 }
     
-function createCustomers() {
+async function createCustomers() {
     //Customers
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'administrator',
         firstName: 'lee',
         lastName: 'hsienxiang',
@@ -25,7 +25,7 @@ function createCustomers() {
         phone: '91234567',
         role: 'Admin',
     })
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'Yummy Steak',
         firstName: 'Anna',
         lastName: 'Tan',
@@ -35,7 +35,7 @@ function createCustomers() {
         phone: '91234567',
         role: 'Stallowner',
     })
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'Tasty Noodle',
         firstName: 'Ben',
         lastName: 'Lim',
@@ -46,7 +46,7 @@ function createCustomers() {
         role: 'Stallowner',
     })
     //Customers
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'John',
         firstName: 'John',
         lastName: 'Tan',
@@ -56,7 +56,7 @@ function createCustomers() {
         phone: '91234567',
         role: 'Customer',
     })
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'Lama',
         firstName: 'lama',
         lastName: 'Tan',
@@ -66,7 +66,7 @@ function createCustomers() {
         phone: '91234567',
         role: 'Customer',
     })
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'Tom',
         firstName: 'tom',
         lastName: 'Tan',
@@ -76,7 +76,7 @@ function createCustomers() {
         phone: '91234567',
         role: 'Customer',
     })
-    user.createUserWithLastName({
+    await user.createUserWithLastName({
         username: 'Dick',
         firstName: 'dick',
         lastName: 'Tan',
@@ -117,7 +117,7 @@ async function createTestData() {
 
     //Western (1 Stall Owner, 3 Food Item, 3 Orders)
     let westernCusine = await cusine.createCusine('Western')
-    createStallOwnerAndStall({
+    await createStallOwnerAndStall({
         username: 'Nayrb',
         firstName: 'Nayrb',
         email: 'nayrb@stallowner',
@@ -158,7 +158,7 @@ async function createTestData() {
             userId: 4,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order1.id,
             menuItemId: chickenCutletItem.id,
@@ -172,7 +172,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: chickenCutletItem.id,
@@ -185,7 +185,7 @@ async function createTestData() {
             userId: 1,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: chickenCutletItem.id,
@@ -197,7 +197,7 @@ async function createTestData() {
     //Asian (2 Stalls)
     let asianCusine = await cusine.createCusine('Asian')
     //Chicken Rice (1 Stall Owner, 4 Food Item, 2 Orders)
-    createStallOwnerAndStall({
+    await createStallOwnerAndStall({
         username: 'Stall Owner',
         firstName: 'nosla',
         email: 'nosla@stallowner',
@@ -255,7 +255,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: chickenItem.id
@@ -267,7 +267,7 @@ async function createTestData() {
             userId: 1,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order2.id,
             menuItemId: chickenItem.id
@@ -279,7 +279,7 @@ async function createTestData() {
             userId: 2,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order3.id,
             menuItemId: chickenItem.id
@@ -291,7 +291,7 @@ async function createTestData() {
             userId: 3,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order4.id,
             menuItemId: chickenItem.id
@@ -303,7 +303,7 @@ async function createTestData() {
             userId: 4,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order5.id,
             menuItemId: chickenItem.id
@@ -316,14 +316,14 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 5,
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
             orderId: order6.id,
             menuItemId: chickenItem.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 5,
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
@@ -337,7 +337,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Very crispy skin",
@@ -352,7 +352,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             rating: "3",
             comments: "Chicken a little dry...",
@@ -367,7 +367,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             rating: "4",
             comments: "Sauce it really delicious",
@@ -382,7 +382,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             rating: "1",
             comments: "Too dry, disgusting",
@@ -397,7 +397,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 3,
             rating: "5",
             comments: "As delicious as before, keep up the good work!",
@@ -412,7 +412,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             rating: "5",
             comments: "Very tender",
@@ -427,7 +427,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Best chicken rice around here!",
@@ -442,7 +442,7 @@ async function createTestData() {
             userId: customer.id,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Irresistible!",
@@ -453,7 +453,7 @@ async function createTestData() {
     })
 
     //Noodle (1 Stall Owner, 2 Food Item, 3 Orders)
-    createStallOwnerAndStall({
+    await createStallOwnerAndStall({
         username: 'Eldoon',
         firstName: 'Eldoon',
         email: 'eldoon@stallowner',
@@ -489,12 +489,12 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: fishballNoodle.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: wantonNoodleItem.id
@@ -505,7 +505,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: fishballNoodle.id,
@@ -518,7 +518,7 @@ async function createTestData() {
             userId: 3,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: fishballNoodle.id,
@@ -531,7 +531,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order4.id,
             menuItemId: fishballNoodle.id,
@@ -544,7 +544,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order5.id,
             menuItemId: fishballNoodle.id,
@@ -558,7 +558,7 @@ async function createTestData() {
             userId: 2,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order6.id,
             menuItemId: wantonNoodleItem.id,
@@ -571,7 +571,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order7.id,
             menuItemId: wantonNoodleItem.id,
@@ -583,7 +583,7 @@ async function createTestData() {
     
     //Japanese (1 Stall Owner, 2 Food Item, 3 Orders)
     let japCusine = await cusine.createCusine('Japanese')
-    createStallOwnerAndStall({
+    await createStallOwnerAndStall({
         username: 'Mayushi',
         firstName: 'mayushi',
         email: 'mayushi@stallowner',
@@ -619,7 +619,7 @@ async function createTestData() {
             userId: 2,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order.id,
             menuItemId: katsuItem.id,
@@ -633,7 +633,7 @@ async function createTestData() {
             userId: 5,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: katsuItem.id,
@@ -647,7 +647,7 @@ async function createTestData() {
             userId: 1,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: misoItem.id,
@@ -658,7 +658,7 @@ async function createTestData() {
 
     //Drink (1 Stall Owner, 2 Item, 6 Orders)
     let drinkCusine = await cusine.createCusine('Drinks')
-    createStallOwnerAndStall({
+    await createStallOwnerAndStall({
         username: 'Knird',
         firstName: 'Knird',
         email: 'Knird@stallowner',
@@ -694,7 +694,7 @@ async function createTestData() {
             userId: 2,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order.id,
             menuItemId: barleyItem.id,
@@ -708,7 +708,7 @@ async function createTestData() {
             userId: 3,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 5,
             orderId: order2.id,
             menuItemId: barleyItem.id,
@@ -722,7 +722,7 @@ async function createTestData() {
             userId: 1,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: barleyItem.id,
@@ -736,7 +736,7 @@ async function createTestData() {
             userId: 2,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order4.id,
             menuItemId: iceLemonTeaItem.id,
@@ -750,7 +750,7 @@ async function createTestData() {
             userId: 3,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 5,
             orderId: order5.id,
             menuItemId: iceLemonTeaItem.id,
@@ -764,7 +764,7 @@ async function createTestData() {
             userId: 1,
             stallId: stall.id
         })
-        create_order.createOrderItem({
+        await create_order.createOrderItem({
             quantity: 1,
             orderId: order6.id,
             menuItemId: iceLemonTeaItem.id,

@@ -50,6 +50,7 @@ const RememberMe = require('./rememberme').model(Sequelize, db)
 //Relations
 User.hasOne(Stall);
 User.hasMany(Order);
+Order.belongsTo(User);
 Stall.hasMany(MenuItem);
 Stall.hasMany(Order);
 Cusine.hasOne(Stall);

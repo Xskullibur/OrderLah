@@ -30,8 +30,8 @@
         socket.on('connect', () => {
         console.log(socket.connected); // true
             socket.emit('sessionid', sid)
-            socket.on('reply', function(reply){
-                console.log(reply);
+            socket.on('update-status', function({updatedStatus}){
+                console.log(updatedStatus);
             })
         });
     })
