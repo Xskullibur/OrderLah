@@ -287,47 +287,47 @@ paypal.configure({
 //hsien xiang's route - done by hsienxiang and ziheng
 router.get('/payment', auth_login.auth, (req, res) => {
 
-    var create_payment_json = {  //test data
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://localhost:3000/paymentSuccess",
-            "cancel_url": "http://localhost:3000/paymentCancel"
-        },
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "food",
-                    "sku": "001",
-                    "price": "4.50",
-                    "currency": "SGD",
-                    "quantity": 1
-                }]
-            },
-            "amount": {
-                "currency": "SGD",
-                "total": "1.00"
-            },
-            "description": "This is the payment description."
-        }]
-    };
+    // var create_payment_json = {  //test data
+    //     "intent": "sale",
+    //     "payer": {
+    //         "payment_method": "paypal"
+    //     },
+    //     "redirect_urls": {
+    //         "return_url": "http://localhost:3000/paymentSuccess",
+    //         "cancel_url": "http://localhost:3000/paymentCancel"
+    //     },
+    //     "transactions": [{
+    //         "item_list": {
+    //             "items": [{
+    //                 "name": "food",
+    //                 "sku": "001",
+    //                 "price": "4.50",
+    //                 "currency": "SGD",
+    //                 "quantity": 1
+    //             }]
+    //         },
+    //         "amount": {
+    //             "currency": "SGD",
+    //             "total": "1.00"
+    //         },
+    //         "description": "This is the payment description."
+    //     }]
+    // }
 
     // paypal.payment.create(create_payment_json, function (error, payment) {
     //     if (error) {
     //         throw error;
     //     } else {
     //         console.log(payment);
-    //         for(let i = 0; i < payment.links.length; i++){
-    //             if(payment.links[i].rel === 'approval_url'){
-    //                 res.redirect(payment.links[i].href)
-    //             }
-    //         }
+    //         // for(let i = 0; i < payment.links.length; i++){
+    //         //     if(payment.links[i].rel === 'approval_url'){
+    //         //         res.redirect(payment.links[i].href)
+    //         //     }
+    //         // }
     //     }
-    // });
-
-    res.render('payment', {size: MenuItem.count()})
+    // })
+    var totalAmount = 3
+    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
 })
 
 // router.get('/paymentSuccess', (req, res) =>{

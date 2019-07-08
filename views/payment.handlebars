@@ -40,7 +40,7 @@ paypal.Buttons().render('#paypal-button-container');
                 return actions.order.create({
                     purchase_units: [{
                         amount: {
-                            value: '4.50'                          
+                            value: {{totalAmount}},                                                  
                         }
                     }]
                 });
