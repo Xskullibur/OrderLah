@@ -30,7 +30,6 @@
 
 <script>
         paypal.Buttons({
-
             createOrder: function(data, actions) {
                 return actions.order.create({
                     purchase_units: [{
@@ -40,18 +39,10 @@
                     }]
                 });
             },
-
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {                   
-                    alert('Transaction completed by ' + details.payer.name.given_name + '!');
-                })
-
-                return actions.request.post('/confrimPayment', {
-                    paymentID: data.paymentID,
-                    payerID: data.payerID,
-                    payerName: details.payer.name.given_name
-                })
+            onApprove: function(data, actions) {                
+                return actions.order.capture().then(function(details) {                               
+                    alert('Transaction completed by ' + details.payer.name.given_name + '!');                                         
+                })                                                                  
             }
-
         }).render('#paypal-button-container');
 </script>
