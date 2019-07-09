@@ -402,9 +402,9 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
         const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
         const stallId = theStall.id
 
-        if (!fs.existsSync('./public/uploads')){
-            fs.mkdirSync('./public/uploads');
-        }
+        // if (!fs.existsSync('./public/uploads')){
+        //     fs.mkdirSync('./public/uploads');
+        // }
 
         MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
             //res.render('./successErrorPages/createSuccess')
@@ -433,15 +433,15 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     const id = req.body.itemID
     var imageName = req.body.imgName
 
-    if (!fs.existsSync('./public/uploads')){
-        fs.mkdirSync('./public/uploads');
-    }
+    // if (!fs.existsSync('./public/uploads')){
+    //     fs.mkdirSync('./public/uploads');
+    // }
 
     
 
     MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
         //res.render('./successErrorPages/updateSuccess')
-        fs.rename(process.cwd()+'/public/uploads/'+ imageName, process.cwd()+'/public/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+        fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
             if(err){
                 console.log(err)
             }
