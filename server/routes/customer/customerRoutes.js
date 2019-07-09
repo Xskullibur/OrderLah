@@ -4,6 +4,12 @@ const router = express.Router()
 //MomentJS
 const moment = require('moment')
 
+// Uploads for menu item
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./customerupload');
+const upload = multer({storage : storage })
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -106,11 +112,13 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
 });
 
-router.post('/saveReview/:id/:orderid', (req, res) => {
+router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
     let comments = req.body.comments;
+    let rating = req.body.rating;
 
     OrderItem.update({
-        comments
+        comments,
+        rating
     }, {
         where: {
             menuItemId: req.params.id,
