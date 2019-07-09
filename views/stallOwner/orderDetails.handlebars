@@ -15,39 +15,143 @@
         </div>
     </div>
 
+
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="px-md-5 pb-md-5 px-sm-3 pb-sm-3" style="width: 100%;">
+            <div class="pb-md-5 pb-sm-3" style="width: 100%;">
 
-                <div class="card-deck mb-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Number of Items Bought:</h4>
-                            <canvas id="OrdersPerItem"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Average Rating Per Item</h4>
-                            <canvas id="ARPI"></canvas>
-                        </div>
-                    </div>
-                </div>
+                <!--Accordion wrapper-->
+                <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
 
-                <div class="container-fluid text-center">
-                    {{#each EachItemRating as |item|}}
-                        <div class="card d-inline-block mx-2 my-2">
+                    <!-- Accordion card -->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header" role="tab" id="headingOne1">
+                            <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true"
+                                aria-controls="collapseOne1">
+                                <h5 class="mb-0">
+                                    General Information<i class="text-right fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <!-- Card body -->
+                        <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1" data-parent="#accordionEx">
                             <div class="card-body">
-                                <h4 class="card-title">{{item.itemName}}</h4>
-                                <canvas id="Rating_{{item.id}}"></canvas>
+
+                                
+                                {{!-- General Charts --}}
+                                <div class="card-deck mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Number of Items Bought:</h4>
+                                            <canvas id="OrdersPerItem"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title">Average Rating Per Item</h4>
+                                            <canvas id="ARPI"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
                             </div>
                         </div>
-                    {{/each}}
+
+                    </div>
+                    <!-- Accordion card -->
+
+                    <!-- Accordion card -->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header" role="tab" id="headingTwo2">
+                            <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
+                                <div class="container">    
+                                    <div class="row">
+                                        <h5 class="col-11 mb-0">
+                                            Rating per item
+                                        </h5>
+                                        <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Card body -->
+                        <div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2" data-parent="#accordionEx">
+                            <div class="card-body">
+                            
+                            
+                                {{!-- Each Food Item Charts --}}
+                                <div class="card-group" id="EIR">
+                                    <div class="container-fluid text-center">
+
+                                        {{!-- Each Food Item Charts --}}
+                                        <div class="card-group" id="EIR">
+                                            <div class="container-fluid text-center">
+                                                {{#each EachItemRating as |item|}}
+                                                    <div class="card d-inline-block mx-2 my-2">
+                                                        <div class="card-body">
+                                                            <h4 class="card-title">{{item.itemName}}</h4>
+                                                            <canvas id="Rating_{{item.id}}"></canvas>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            
+                            
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Accordion card -->
+
                 </div>
+                <!-- Accordion wrapper -->
+
+                {{!-- <div class="accordian md-accordian" id="chartAccordian" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="card-header" role="tab" id="generalInfo">
+                            <a data-toggle="collapse" data-parent="#chartAccordian" href="#generalCharts" aria-expanded="true" aria-controls="generalCharts">
+                                <h5 class="mb-0">
+                                    General Info<i class="fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+                        <div id="generalCharts" class="collapse in" role="tabpanel" aria-labelledby="generalInfo">
+                            <div class="card-body">
 
 
-                <div class="card-group" id="EIR">
-                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" role="tab" id="eachFoodRatingsCard">
+                            <a data-toggle="collapse" data-parent="#chartAccordian" href="#foodRatingCharts" aria-expanded="true" aria-controls="foodRatingCharts">
+                                <h5 class="mb-0">
+                                    Individual Food Ratings<i class="fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+                        <div id="foodRatingCharts" class="collapse in" role="tabpanel" aria-labelledby="eachFoodRatingsCard">
+                            <div class="card-body">
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+
                 
             </div>
         </div>
