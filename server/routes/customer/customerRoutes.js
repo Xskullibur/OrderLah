@@ -184,56 +184,6 @@ router.get('/pastOrders', (req, res, next) => {
 
 });
 
-/*router.get('/pastOrders', (req, res) => {
-    Order.findAll({
-        attributes: [ 'id' ],
-            where: {
-                userId: userID
-            },
-        order: Sequelize.col('orderTiming'),
-        include: [{
-            model: MenuItem
-        }]
-
-    }).then((currentOrders) => {
-        // res.send(currentOrders);
-
-        const testImg = process.cwd() + '/public/img/no-image'
-        res.render('customer/pastorders', {
-            currentOrders:currentOrders,
-            helpers: {
-                calcTotal(order){
-                    let sum = 0;
-                    order.menuItems.forEach(order => {
-                        sum += order.price*order.orderItem.quantity
-                    });
-                    return sum.toFixed(2);
-                },
-                calcItemPrice(items){
-                    return (items.price * items.orderItem.quantity).toFixed(2)
-                },
-                formatDate(date, formatType){
-                    return moment(date).format(formatType);
-                },
-                getTitle(menuItem){
-                    let title = []
-
-                    menuItem.forEach(item => {
-                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
-                    });
-
-                    return title.join(', ')
-                },
-                
-            },
-            currentOrders
-        });
-
-    }).catch((err) => console.error(err));
-
-});
-*/
-
 router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
 });
