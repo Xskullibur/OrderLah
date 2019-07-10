@@ -24,8 +24,23 @@ const order_track = require('../../libs/order_track')
 //create cart, res.locals.cart_items, req.cart
 router.use(order_track.register)
 
-router.get('/orderStatus', (req, res) => {
-    res.render('order-status')
+const order = require('../../utils/stallowner/order')
+router.get('/orderStatus/:orderId', async (req, res) => {
+
+    //Check user is authorised to access order id 
+    const orderId = req.params.orderId
+    const userId = req.user.id
+
+    let valid = await order.checkOrderIsInUser(userId, orderId)
+    
+    if(valid){
+        order.getOrderId(orderId).then((order => {
+            res.render('order-status', {order})
+        }))
+    }else res.redirect('/orderStatus')
+
+
+
 })
 
 /**

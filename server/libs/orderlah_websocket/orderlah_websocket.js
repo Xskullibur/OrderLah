@@ -54,8 +54,8 @@ io.on('connection', function(socket){
         }).then((result) => {
             console.log(`Success: ${result}`)
             transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                getSessionsFromCustomerID(orderCust.user.id, (session) => {
-                    const socketid = getSocketIDBySessionID(session.id)
+                getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
+                    const socketid = getSocketIDBySessionID(sessionid)
                     io.to(socketid).emit('update-status', {updatedStatus})
                 })
             })
@@ -74,7 +74,8 @@ server.listen(4000,() => {
 });
 
 function getSocketIDBySessionID(sessionId){
-    for (let {socketId, tsessionId} in sessionIDs) {
+    for (let socketId in sessionIDs) {
+        let tsessionId = sessionIDs[socketId]
         if(sessionId == tsessionId)return socketId
     }
     return null
@@ -84,8 +85,8 @@ function getSessionsFromCustomerID(custId, yieldCB){
     for(var socketId in sessionIDs){
         var sessionId = sessionIDs[socketId]
         getSessionBySessionID(sessionId, (err, session) => {
-            if(!err && session.user.id === custId){
-                yieldCB(session);
+            if(!err && session.passport.user === custId){
+                yieldCB(sessionId, session);
             }
         })
     }

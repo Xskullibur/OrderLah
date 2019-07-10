@@ -3,7 +3,7 @@ const user = require('./server/utils/main/user')
 
 //Stall
 const menu_item = require('./server/utils/main/menu_item')
-const create_order = require('./server/utils/stallowner/create_order')
+const order_util = require('./server/utils/stallowner/order')
 const cusine = require('./server/utils/stallowner/cusine')
 const stall = require('./server/utils/stallowner/stall')
 
@@ -153,12 +153,12 @@ async function createTestData() {
             stallId: stall.id
         })
         //Creates orders
-        let order1 = await create_order.createOrder({
+        let order1 = await order_util.createOrder({
             status: 'Collection Confirmed',
             userId: 4,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order1.id,
             menuItemId: chickenCutletItem.id,
@@ -166,26 +166,26 @@ async function createTestData() {
             comments: "AMAZINGGGGGGGGGGGGGGG",
         })
 
-        let order2 = await create_order.createOrder({
+        let order2 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: chickenCutletItem.id,
             rating: "2",
             comments: "Tasted raw, not very cooked...",
         })
-        let order3 = await create_order.createOrder({
+        let order3 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 1,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: chickenCutletItem.id,
@@ -249,81 +249,81 @@ async function createTestData() {
             role: 'Customer',
         })
         //Orders (Pending Status)
-        let order = await create_order.createOrder({
+        let order = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: chickenItem.id
         })
 
-        let order2 = await create_order.createOrder({
+        let order2 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: previousDate,
             userId: 1,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order2.id,
             menuItemId: chickenItem.id
         })
 
-        let order3 = await create_order.createOrder({
+        let order3 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
             userId: 2,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order3.id,
             menuItemId: chickenItem.id
         })
 
-        let order4 = await create_order.createOrder({
+        let order4 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
             userId: 3,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order4.id,
             menuItemId: chickenItem.id
         })
         
-        let order5 = await create_order.createOrder({
+        let order5 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
             userId: 4,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order5.id,
             menuItemId: chickenItem.id
         })
 
         //Orders (Completed)
-        let order6 = await create_order.createOrder({
+        let order6 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 5,
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
             orderId: order6.id,
             menuItemId: chickenItem.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 5,
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
@@ -331,13 +331,13 @@ async function createTestData() {
             menuItemId: duckRiceItem.id
         })
 
-        let order7 = await create_order.createOrder({
+        let order7 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousMonth,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Very crispy skin",
@@ -346,13 +346,13 @@ async function createTestData() {
         })
 
         
-        let order8 = await create_order.createOrder({
+        let order8 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousMonth,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             rating: "3",
             comments: "Chicken a little dry...",
@@ -361,13 +361,13 @@ async function createTestData() {
         })
 
         
-        let order9 = await create_order.createOrder({
+        let order9 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousMonth,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             rating: "4",
             comments: "Sauce it really delicious",
@@ -376,13 +376,13 @@ async function createTestData() {
         })
 
         
-        let order10 = await create_order.createOrder({
+        let order10 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousMonth,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             rating: "1",
             comments: "Too dry, disgusting",
@@ -391,13 +391,13 @@ async function createTestData() {
         })
 
         
-        let order11 = await create_order.createOrder({
+        let order11 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 3,
             rating: "5",
             comments: "As delicious as before, keep up the good work!",
@@ -406,13 +406,13 @@ async function createTestData() {
         })
 
         
-        let order12 = await create_order.createOrder({
+        let order12 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             rating: "5",
             comments: "Very tender",
@@ -421,13 +421,13 @@ async function createTestData() {
         })
 
         
-        let order13 = await create_order.createOrder({
+        let order13 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Best chicken rice around here!",
@@ -436,13 +436,13 @@ async function createTestData() {
         })
 
         
-        let order14 = await create_order.createOrder({
+        let order14 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: customer.id,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             rating: "5",
             comments: "Irresistible!",
@@ -483,68 +483,68 @@ async function createTestData() {
         })
 
         //Orders
-        let order = await create_order.createOrder({
+        let order = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: fishballNoodle.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 2,
             orderId: order.id,
             menuItemId: wantonNoodleItem.id
         })
-        let order2 = await create_order.createOrder({
+        let order2 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: fishballNoodle.id,
             rating: "1",
             comments: "The noodle is too dry not enought taste",
         })
-        let order3 = await create_order.createOrder({
+        let order3 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 3,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: fishballNoodle.id,
             rating: "2",
             comments: "Too little ingredients",
         })
-        let order4 = await create_order.createOrder({
+        let order4 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order4.id,
             menuItemId: fishballNoodle.id,
             rating: "1",
             comments: "not Filling",
         })
-        let order5 = await create_order.createOrder({
+        let order5 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order5.id,
             menuItemId: fishballNoodle.id,
@@ -552,26 +552,26 @@ async function createTestData() {
             comments: "The noodle is too dry not enought taste",
         })
 
-        let order6 = await create_order.createOrder({
+        let order6 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 2,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order6.id,
             menuItemId: wantonNoodleItem.id,
             rating: "3",
             comments: "OKOK Standard could be improved",
         })
-        let order7 = await create_order.createOrder({
+        let order7 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order7.id,
             menuItemId: wantonNoodleItem.id,
@@ -613,13 +613,13 @@ async function createTestData() {
         })
 
         //Orders
-        let order = await create_order.createOrder({
+        let order = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: 2,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order.id,
             menuItemId: katsuItem.id,
@@ -627,13 +627,13 @@ async function createTestData() {
             comments: "Delicious",
         })
 
-        let order2 = await create_order.createOrder({
+        let order2 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
             userId: 5,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order2.id,
             menuItemId: katsuItem.id,
@@ -641,13 +641,13 @@ async function createTestData() {
             comments: "WOWWWWWW",
         })
 
-        let order3 = await create_order.createOrder({
+        let order3 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date(),
             userId: 1,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: misoItem.id,
@@ -688,13 +688,13 @@ async function createTestData() {
         })
 
         //Orders
-        let order = await create_order.createOrder({
+        let order = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 2,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order.id,
             menuItemId: barleyItem.id,
@@ -702,13 +702,13 @@ async function createTestData() {
             comments: "Really Homemade!",
         })
 
-        let order2 = await create_order.createOrder({
+        let order2 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 3,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 5,
             orderId: order2.id,
             menuItemId: barleyItem.id,
@@ -716,13 +716,13 @@ async function createTestData() {
             comments: "",
         })
 
-        let order3 = await create_order.createOrder({
+        let order3 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 1,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order3.id,
             menuItemId: barleyItem.id,
@@ -730,13 +730,13 @@ async function createTestData() {
             comments: "A real thirst quencher",
         })
 
-        let order4 = await create_order.createOrder({
+        let order4 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 2,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order4.id,
             menuItemId: iceLemonTeaItem.id,
@@ -744,13 +744,13 @@ async function createTestData() {
             comments: "Really Sour!",
         })
 
-        let order5 = await create_order.createOrder({
+        let order5 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 3,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 5,
             orderId: order5.id,
             menuItemId: iceLemonTeaItem.id,
@@ -758,13 +758,13 @@ async function createTestData() {
             comments: "",
         })
 
-        let order6 = await create_order.createOrder({
+        let order6 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
             userId: 1,
             stallId: stall.id
         })
-        await create_order.createOrderItem({
+        await order_util.createOrderItem({
             quantity: 1,
             orderId: order6.id,
             menuItemId: iceLemonTeaItem.id,
