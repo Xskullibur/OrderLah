@@ -315,7 +315,7 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         console.error(err);
         return res.send(500);
     }
-    if (order.result.purchase_units[0].amount.status == 'COMPLETED') {
+    if (order.result.status == 'COMPLETED') {
         console.log('transaction confrimed')
     }
 
