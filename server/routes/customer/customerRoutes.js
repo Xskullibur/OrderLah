@@ -279,6 +279,9 @@ paypal.configure({
     'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
   });
 
+const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
+const payPalClient = require('./ppClient')
+
 /**
  * GET '/payment' 
  * Payment stage for ordering items
@@ -300,6 +303,22 @@ router.post('/confrimPayment', auth_login.auth, (req, res) =>{
     var orderID = req.body.orderID
     console.log(orderID)
     console.log(payerName)
+
+    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    let order
+    try {
+        order = payPalClient.client().execute(request);
+    } catch (err) {
+        console.error(err);
+        return res.send(500);
+    }
+    console.log(order.result.purchase_units[0].amount.value)
+    if (order.result.purchase_units[0].amount.value == '7') {
+        console.log('transaction confrimed')
+    }
+
 })
 
 module.exports = router
