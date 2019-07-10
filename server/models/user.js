@@ -23,12 +23,13 @@ module.exports = {
             
             const User = db.define('user', {
                 username: {type: Sequelize.STRING, allowNull: false, unique: true},
-                firstName: {type: Sequelize.STRING, allowNull: false},
+                firstName: {type: Sequelize.STRING, allowNull: true},
                 lastName: {type: Sequelize.STRING, allowNull: true},
                 email:  {type: Sequelize.STRING, allowNull: false, unique: true},
-                birthday:  {type: Sequelize.DATE, allowNull: false},
-                password:  {type: Sequelize.STRING, allowNull: false},
-                phone:  {type: Sequelize.STRING(10), allowNull: false},
+                birthday:  {type: Sequelize.DATE, allowNull: true},
+                password:  {type: Sequelize.STRING, allowNull: true},
+                phone:  {type: Sequelize.STRING(10), allowNull: true},
+                googleId: {type: Sequelize.STRING, allowNull: true, unique: true, defaultValue: null},
                 role: {type: Sequelize.ENUM('Customer', 'Admin', 'Stallowner'), allowNull: false, defaultValue:'Customer'},
             })
     

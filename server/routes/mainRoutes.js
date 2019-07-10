@@ -117,6 +117,43 @@ passport.deserializeUser(function(id, done) {
     .catch(done => console.log(done))
 })
 
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+const user_utils = require ('../utils/main/user')
+passport.use(new GoogleStrategy({
+    clientID: '284136247085-bemrg8vspbvg4ruh4k2c5bvde4dotj1m.apps.googleusercontent.com',
+    clientSecret: 'ot4lMcPHgGDBdWdQgT_KVHZs',
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    user_utils.createUserByGoogle({
+        username: profile.displayName,
+        firstName: profile.displayName,
+        email: profile.emails[0].value,
+        googleId: profile.id,
+        role: "customer"
+    }).then((user) => {
+        cb(null, user)
+    });
+  }
+));
+
+// app.get('/auth/google',
+//   passport.authenticate('google', { scope: ['profile','email'] }));
+
+app.get('/auth/google', passport.authenticate('google', {
+    scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+    ]
+}));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
 //Define main 'route' path
 
 
