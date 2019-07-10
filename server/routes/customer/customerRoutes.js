@@ -285,6 +285,7 @@ paypal.configure({
  */
 
 //hsien xiang's route - done by hsienxiang and ziheng
+
 router.get('/payment', auth_login.auth, (req, res) => {
    
     var totalAmount = 7
@@ -295,10 +296,10 @@ router.get('/payment', auth_login.auth, (req, res) => {
 router.post('/confrimPayment', auth_login.auth, (req, res) =>{
     //var paymentID = req.body.paymentID
     //var payerID = req.body.payerID
-    //var payerName = req.body.payerName
+    var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)
-    res.send('good')
+    console.log(payerName)
 })
 
 module.exports = router
