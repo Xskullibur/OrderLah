@@ -451,6 +451,10 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
+router.get('/ratings/:item?/', (req, res) => {
+    res.render('../views/stallOwner/ratingsView')
+})
+
 /**
  * HSIEN XIANG ROUTES
  */
