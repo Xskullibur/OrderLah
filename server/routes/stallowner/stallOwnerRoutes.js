@@ -451,8 +451,19 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
-router.get('/ratings/:item?/', (req, res) => {
-    res.render('../views/stallOwner/ratingsView')
+router.get('/ratings/:selectedItem?/', (req, res) => {
+
+    selectedItem = req.params.selectedItem
+
+    if (selectedItem) {
+        
+    } else {
+        
+    }
+
+    res.render('../views/stallOwner/ratingsView', {
+        selectedItem
+    })
 })
 
 /**

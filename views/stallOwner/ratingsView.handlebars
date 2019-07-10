@@ -3,7 +3,11 @@
         <div class="col-md-12 mb-4">
             <div style="width: 100%;">
 
-                
+                {{#if selectedItem}}
+                    <p>{{selectedItem}}</p>
+                {{else}}
+                    <p>Empty</p>
+                {{/if}}
 
             </div>
         </div>
