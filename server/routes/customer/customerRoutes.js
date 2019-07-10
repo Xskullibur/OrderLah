@@ -293,14 +293,12 @@ router.get('/payment', auth_login.auth, (req, res) => {
 })
 
 router.post('/confrimPayment', auth_login.auth, (req, res) =>{
-    var paymentID = req.body.paymentID
-    var payerID = req.body.payerID
+    //var paymentID = req.body.paymentID
+    //var payerID = req.body.payerID
     //var payerName = req.body.payerName
-    if(paymentID != null && payerID != null){
-        res.send("Payment ID: " + paymentID + " Payer ID:" + payerID)
-    }else{
-        res.send("Payment failed")
-    }
+    var orderID = req.body.orderID
+    console.log(orderID)
+    res.send('good')
 })
 
 module.exports = router
