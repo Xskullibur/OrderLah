@@ -14,6 +14,9 @@ const auth_login = require('../../libs/auth_login')
 //MomentJS
 const moment = require('moment')
 
+// Utils
+const order_util = require('../../utils/stallowner/order')
+
 //Global
 //Models
 const globalHandle = require('../../libs/global/global')
@@ -35,44 +38,11 @@ router.use(auth_login.authStallOwner)
  * ALSON ROUTES 
  */
 
-//Get StallID based on logged in Stall Owner ID
-function getStallInfo(userID) {
-    let promise = new Promise((resolve, reject)=>{
-
-        User.findOne({
-            where: {
-                id: userID
-            },
-            include: [{
-                model: Stall
-            }]
-        }).then(stall => {
-            resolve(stall)
-        }).catch((err) => {
-            console.log(`ERROR: ${err}`)
-        })
-
-        // Stall.findOne({
-        //     where: {
-        //         userId: userID
-        //     },
-        //     include: [{
-        //         model: User
-        //     }]
-        // }).then(stall => {
-        //     resolve(stall)
-        // }).catch((err) => {
-        //     console.log(`ERROR: ${err}`)
-        // })
-    })
-    return promise
-}
-
 //Current Orders Route
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
-    getStallInfo(req.user.id).then((stallOwner) => {
+    order_util.getStallInfo(req.user.id).then((stallOwner) => {
 
         /**
         * Get Current Orders
@@ -132,7 +102,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
     }
 
     //Get StallID of logged in stallowner
-    getStallInfo(req.user.id).then(stallOwner => {
+    order_util.getStallInfo(req.user.id).then(stallOwner => {
 
         whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
 
@@ -202,7 +172,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     //Get StallID based onlogged in user
-    getStallInfo(req.user.id).then(stallOwner => {
+    order_util.getStallInfo(req.user.id).then(stallOwner => {
 
         const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
         let title = `Monthly Summary`                                   // Default Title
@@ -313,7 +283,7 @@ router.get('/orderDetails/', (req, res) =>{
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
-            getStallInfo(req.user.id).then(stallOwner => {
+            order_util.getStallInfo(req.user.id).then(stallOwner => {
                 resolve(stallOwner);
             }).catch(err => {
                 reject(err)
@@ -375,11 +345,7 @@ router.get('/orderDetails/', (req, res) =>{
     function getEachItemRating(stallOwner) {
 
         return new Promise(function(resolve, reject) {
-            // Get Stall's Items
-            db.query(`SELECT menuItems.id, menuItems.itemName
-            FROM menuItems
-            WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
-    
+            order_util.getStallOwnerMenuItems(stallOwner.stall.id).then(async ([allItems, metadata]) => {
                 EachItemRating = []
     
                 for (const key in allItems) {
@@ -425,11 +391,69 @@ router.get('/orderDetails/', (req, res) =>{
                 }
 
                 resolve(EachItemRating)
-
             }).catch(err => {
                 reject(err)
             })
+            
         })
+
+
+        // return new Promise(function(resolve, reject) {
+        //     // Get Stall's Items
+        //     db.query(`SELECT menuItems.id, menuItems.itemName
+        //     FROM menuItems
+        //     WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
+    
+        //         EachItemRating = []
+    
+        //         for (const key in allItems) {
+        //             if (allItems.hasOwnProperty(key)) {
+        //                 const item = allItems[key];
+
+        //                 line = {}
+
+        //                 line.id = item.id
+        //                 line.itemName = item.itemName
+        
+        //                 rating5 = await getRatingCount(item.id, 5)
+        //                 rating4 = await getRatingCount(item.id, 4)
+        //                 rating3 = await getRatingCount(item.id, 3)
+        //                 rating2 = await getRatingCount(item.id, 2)
+        //                 rating1 = await getRatingCount(item.id, 1)
+        
+        //                 line.rating = [
+        //                     {
+        //                         label: "5 Stars",
+        //                         count: rating5
+        //                     },
+        //                     {
+        //                         label: "4 Stars",
+        //                         count: rating4
+        //                     },
+        //                     {
+        //                         label: "3 Stars",
+        //                         count: rating3
+        //                     },
+        //                     {
+        //                         label: "2 Stars",
+        //                         count: rating2
+        //                     },
+        //                     {
+        //                         label: "1 Stars",
+        //                         count: rating1
+        //                     },
+        //                 ]
+        
+        //                 EachItemRating.push(line)
+        //             }
+        //         }
+
+        //         resolve(EachItemRating)
+
+        //     }).catch(err => {
+        //         reject(err)
+        //     })
+        // })
 
     }
 
@@ -454,16 +478,43 @@ router.get('/orderDetails/', (req, res) =>{
 router.get('/ratings/:selectedItem?/', (req, res) => {
 
     selectedItem = req.params.selectedItem
+    allRatings = {}
 
-    if (selectedItem) {
-        
-    } else {
-        
+    async function main() {
+        let stallOwner = await order_util.getStallInfo(req.user.id)
+
+        if (selectedItem) {
+            
+        } else {
+            await order_util.getStallOwnerMenuItems(stallOwner.id).then( async ([menuItems, metadata]) => {
+    
+                for (const item in menuItems) {
+                    if (menuItems.hasOwnProperty(item)) {
+                        const menuItem = menuItems[item];
+    
+                        allRatings.id = menuItem.id
+                        allRatings.itemName = menuItem.itemName
+    
+                        await order_util.getMenuItemRatings(menuItem.id).then(([ratings, metadata]) => {
+                            allRatings.ratings = ratings
+                        })
+    
+                    }
+                }
+    
+            })
+        }
+
+        res.send(allRatings)
+    
+        // res.render('../views/stallOwner/ratingsView', {
+        //     selectedItem
+        // })
+
     }
 
-    res.render('../views/stallOwner/ratingsView', {
-        selectedItem
-    })
+    main()
+
 })
 
 /**

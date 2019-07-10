@@ -4,6 +4,8 @@ const globalHandle = require('../../libs/global/global')
 //Get models
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
+const User = globalHandle.get('user')
+const Stall = globalHandle.get('stall')
 
 /**
  * Order
@@ -94,6 +96,53 @@ module.exports = {
 
         })
         return promise
+    },
+
+    /**
+     * Get all menu items belonging to a stall owner id
+     * @param {Number} stallOwnerId 
+     */
+    getStallOwnerMenuItems: function (stallOwnerId) {
+        return db.query(`SELECT menuItems.id, menuItems.itemName
+        FROM menuItems
+        WHERE menuItems.stallId = ${stallOwnerId};`)
+    },
+
+    /**
+     * Get Stall + StallOwner info from logged in user id
+     * @param {number} userID 
+     */
+    getStallInfo: function (userID) {
+        let promise = new Promise((resolve, reject)=>{
+
+            User.findOne({
+                where: {
+                    id: userID
+                },
+                include: [{
+                    model: Stall
+                }]
+            }).then(stall => {
+                resolve(stall)
+            }).catch((err) => {
+                console.log(`ERROR: ${err}`)
+            })
+        })
+        return promise
+    },
+
+    /**
+     * Get all ratings based on menu item id
+     * @param {number} menuItemId 
+     */
+    getMenuItemRatings: function (menuItemId) {
+        return db.query(`SELECT CONCAT(users.firstName, " ", users.lastName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        FROM orders
+        INNER JOIN orderItems ON orderItems.orderId = orders.id
+        INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
+        INNER JOIN users ON orders.userId = users.id
+        WHERE orders.status = 'Collection Confirmed'
+        AND menuItems.id = ${menuItemId}`)
     }
 
 }
