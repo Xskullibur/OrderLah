@@ -296,7 +296,7 @@ router.get('/payment', auth_login.auth, (req, res) => {
 
 })
 
-router.post('/confrimPayment', auth_login.auth, (req, res) =>{
+router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     //var paymentID = req.body.paymentID
     //var payerID = req.body.payerID
     var payerName = req.body.payerName
@@ -309,13 +309,13 @@ router.post('/confrimPayment', auth_login.auth, (req, res) =>{
 
     let order
     try {
-        order = payPalClient.client().execute(request);
+        order = await payPalClient.client().execute(request);
+        console.log(order)
     } catch (err) {
         console.error(err);
         return res.send(500);
     }
-    console.log(order.result.purchase_units[0].amount.value)
-    if (order.result.purchase_units[0].amount.value == '7') {
+    if (order.result.purchase_units[0].amount.status == 'COMPLETED') {
         console.log('transaction confrimed')
     }
 
