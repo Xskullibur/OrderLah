@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/mocha --timeout 5000",
     "compile-sass": "sass -I node_modules --no-source-map sass:public/css",
-    "start": "npm run compile-sass && node index.js",
+    "start": "npm run compile-sass && node --harmony index.js",
     "start:dev": "nodemon --watch sass --watch server --watch ./index.js --watch ./dummy.js -e js,sass,css"
   },
   "keywords": [
@@ -25,6 +25,7 @@
   "dependencies": {
     "bcrypt": "^3.0.6",
     "bootstrap": "^4.3.1",
+    "connect-redis": "^3.4.1",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "express": "^4.16.4",
