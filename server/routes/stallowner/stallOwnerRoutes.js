@@ -37,7 +37,7 @@ router.use(auth_login.authStallOwner)
  */
 
 //Get StallID based on logged in Stall Owner ID
-function getStallID(userID) {
+function getStallInfo(userID) {
     let promise = new Promise((resolve, reject)=>{
 
         User.findOne({
@@ -73,7 +73,7 @@ function getStallID(userID) {
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
-    getStallID(req.user.id).then((stallOwner) => {
+    getStallInfo(req.user.id).then((stallOwner) => {
 
         /**
         * Get Current Orders
@@ -133,7 +133,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
     }
 
     //Get StallID of logged in stallowner
-    getStallID(req.user.id).then(stallOwner => {
+    getStallInfo(req.user.id).then(stallOwner => {
 
         whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
 
@@ -203,7 +203,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     //Get StallID based onlogged in user
-    getStallID(req.user.id).then(stallOwner => {
+    getStallInfo(req.user.id).then(stallOwner => {
 
         const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
         let title = `Monthly Summary`                                   // Default Title
@@ -309,6 +309,148 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
+// Order Details
+router.get('/orderDetails/', (req, res) =>{
+
+    function getStallOwner() {
+        return new Promise(function(resolve, reject) {
+            getStallInfo(req.user.id).then(stallOwner => {
+                resolve(stallOwner);
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    }
+
+    function getOrdersPerItem(stallOwner) {
+        return new Promise(function(resolve, reject) {
+
+            db.query(`SELECT orderlah_db.menuItems.itemName ItemName, COUNT(orderItems.menuItemId) AS NoOfOrders
+            FROM orderlah_db.orderItems
+            INNER JOIN orderlah_db.menuItems ON orderlah_db.orderItems.menuItemId = orderlah_db.menuItems.id
+            INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
+            WHERE orders.stallId = ${stallOwner.stall.id}
+            AND orders.status = 'Collection Confirmed'
+            GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
+                resolve(result)
+            }).catch(err => {
+                reject(err)
+            })
+
+        })   
+    }
+
+    function getAvgRatingPerItem(stallOwner){
+        return new Promise(function(resolve, reject) {
+
+            db.query(`SELECT menuItems.itemName, AVG(orderItems.rating)-1 AS average
+            FROM orders
+            INNER JOIN orderItems ON orders.id = orderItems.orderId
+            INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
+            WHERE orders.stallId = ${stallOwner.stall.id}
+            AND orders.status = 'Collection Confirmed'
+            GROUP BY menuItems.id`).then(([result, metadata]) => {
+                resolve(result)
+            }).catch(err => {
+                reject(err)
+            })
+
+        })
+    }
+
+    function getRatingCount(menuItemId, rating) {
+
+        return new Promise(function(resolve, reject) {
+            db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating
+            FROM orderItems
+            WHERE orderItems.menuItemId = ${menuItemId}
+            AND orderItems.rating  = '${rating}';`).then(([result, metadata]) => {
+                resolve(result[0].Rating)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+
+    }
+
+    function getEachItemRating(stallOwner) {
+
+        return new Promise(function(resolve, reject) {
+            // Get Stall's Items
+            db.query(`SELECT menuItems.id, menuItems.itemName
+            FROM menuItems
+            WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
+    
+                EachItemRating = []
+    
+                for (const key in allItems) {
+                    if (allItems.hasOwnProperty(key)) {
+                        const item = allItems[key];
+
+                        line = {}
+
+                        line.id = item.id
+                        line.itemName = item.itemName
+        
+                        rating5 = await getRatingCount(item.id, 5)
+                        rating4 = await getRatingCount(item.id, 4)
+                        rating3 = await getRatingCount(item.id, 3)
+                        rating2 = await getRatingCount(item.id, 2)
+                        rating1 = await getRatingCount(item.id, 1)
+        
+                        line.rating = [
+                            {
+                                label: "5 Stars",
+                                count: rating5
+                            },
+                            {
+                                label: "4 Stars",
+                                count: rating4
+                            },
+                            {
+                                label: "3 Stars",
+                                count: rating3
+                            },
+                            {
+                                label: "2 Stars",
+                                count: rating2
+                            },
+                            {
+                                label: "1 Stars",
+                                count: rating1
+                            },
+                        ]
+        
+                        EachItemRating.push(line)
+                    }
+                }
+
+                resolve(EachItemRating)
+
+            }).catch(err => {
+                reject(err)
+            })
+        })
+
+    }
+
+    async function main() {
+
+        StallOwner = await getStallOwner()                                                          
+
+        OrdersPerItem = await getOrdersPerItem(StallOwner)
+        AvgRatingPerItem = await getAvgRatingPerItem(StallOwner)
+        EachItemRating = await getEachItemRating(StallOwner)
+
+        // res.send(EachItemRating)
+        res.render('../views/stallOwner/orderDetails', {
+            OrdersPerItem, AvgRatingPerItem, EachItemRating
+        });
+    }
+
+    main()
+
+})
 
 /**
  * ALSON LOGIC ROUTES

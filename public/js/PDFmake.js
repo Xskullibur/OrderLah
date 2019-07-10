@@ -123,8 +123,22 @@ function showPDF(formatedOrder, summaryDate, stallOwner , mode) {
             columns: [
               {width: '*', text: ''},
               {
-                layout: {defaultBorder: false, paddingLeft: function(i, node) { return 10 }, paddingRight: function(i, node) { return 0 }, paddingTop: function(i, node) { return 0 }, paddingBottom: function(i, node) { return 0 }},
+                layout: {
+                  hLineWidth: function (i, node) {
+                    return (i === 0 || i === node.table.body.length) ? 1 : 0;
+                  },
+                  vLineWidth: function (i, node) {
+                    return (i === 0 || i === node.table.widths.length) ? 1 : 0;
+                  },
+                  hLineColor: function (i, node) { return 'black' },
+                  vLineColor: function (i, node) { return 'black' }, 
+                  paddingLeft: function(i, node) { return 10 }, 
+                  paddingRight: function(i, node) { return 5 }, 
+                  paddingTop: function(i, node) { return 2 }, 
+                  paddingBottom: function(i, node) { return 2 }
+                },
                 width: 'auto',
+                fontSize: 10, 
                 table: {
                   headerRows: 1,
                   height: ['auto', 'auto'],
@@ -133,7 +147,7 @@ function showPDF(formatedOrder, summaryDate, stallOwner , mode) {
                     ['Stall:', `${stallOwner.stall.stallName}`],
                     ['User:', `${stallOwner.firstName}`],
                     ['Email:', `${stallOwner.email}`],
-                    ['Tel:', `${stallOwner.phone}`]
+                    ['Tel:', `${stallOwner.phone}`],
                   ]
                 }
               }
