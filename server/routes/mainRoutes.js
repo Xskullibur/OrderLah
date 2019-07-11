@@ -124,16 +124,34 @@ passport.use(new GoogleStrategy({
     clientSecret: 'ot4lMcPHgGDBdWdQgT_KVHZs',
     callbackURL: "http://localhost:3000/auth/google/callback"
   },
-  function(accessToken, refreshToken, profile, cb) {
-    user_utils.createUserByGoogle({
-        username: profile.displayName,
-        firstName: profile.displayName,
-        email: profile.emails[0].value,
-        googleId: profile.id,
-        role: "customer"
-    }).then((user) => {
-        cb(null, user)
-    });
+  function(accessToken, refreshToken, profile, cb){
+      User.findOne({
+          where:{
+              email: profile.emails[0].value
+          }
+      }).then( user =>{
+        if (!user){
+            console.log('google account being created...')
+            user_utils.createUserByGoogle({
+                username: profile.displayName,
+                firstName: profile.displayName,
+                email: profile.emails[0].value,
+                googleId: profile.id,
+                role: "customer"
+            }).then((user) => {
+                cb(null, user)
+            });
+        }else{
+            console.log('google account already created...')
+            User.findOne({
+                where:{
+                    email: profile.emails[0].value
+                }
+            }).then( user =>{
+             return cb(null, user)   
+            })
+        }
+      })
   }
 ));
 
@@ -207,7 +225,7 @@ router.post('/requesttoken',(req, res) => {
     }    
 })*/
 
-router.post('/register', uuid_middleware.verify, (req, res) => {
+router.post('/register', (req, res) => {
     if(session.token === req.body.code){
         //Create the user account
         console.log('Verification success, account being created...')
