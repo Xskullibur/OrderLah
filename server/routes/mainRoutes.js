@@ -284,6 +284,22 @@ router.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+router.get('/guestLogin',(req, res) =>{
+    console.log('Verification success, account being created...')
+    User.create({
+        username: "guest"+Date.now(),
+        email: "guest"+Date.now(),
+        firstName: "guest"+Date.now(),
+        password: ""
+    }).then(user => {
+        req.login(user, function(err) {
+            if (err) { 
+                return next(err); 
+            }
+            return res.redirect('/');
+          });
+    })
+})
 
 
 module.exports = router
