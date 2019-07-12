@@ -477,6 +477,7 @@ router.get('/orderDetails/', (req, res) =>{
 
 router.get('/ratings/', (req, res) => {
 
+    title = "Ratings (All Time)"
     allRatings = []
 
     async function main() {
@@ -510,7 +511,7 @@ router.get('/ratings/', (req, res) => {
         // res.send(allRatings)
     
         res.render('../views/stallOwner/ratingsView', {
-            allRatings
+            allRatings, title
         })
 
     }
