@@ -475,41 +475,43 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
-router.get('/ratings/:selectedItem?/', (req, res) => {
+router.get('/ratings/', (req, res) => {
 
-    selectedItem = req.params.selectedItem
-    allRatings = {}
+    allRatings = []
 
     async function main() {
         let stallOwner = await order_util.getStallInfo(req.user.id)
 
-        if (selectedItem) {
-            
-        } else {
-            await order_util.getStallOwnerMenuItems(stallOwner.id).then( async ([menuItems, metadata]) => {
-    
+        await order_util.getStallOwnerMenuItems(stallOwner.stall.id)            // Get menu items belonging to stall owner
+            .then( async ([menuItems, metadata]) => {
+
                 for (const item in menuItems) {
                     if (menuItems.hasOwnProperty(item)) {
                         const menuItem = menuItems[item];
     
-                        allRatings.id = menuItem.id
-                        allRatings.itemName = menuItem.itemName
+                        newLine = {}
+
+                        //Push ID and Item Name into new line
+                        newLine.id = menuItem.id
+                        newLine.itemName = menuItem.itemName
     
+                        // Get ratings for each items and push into new line 
                         await order_util.getMenuItemRatings(menuItem.id).then(([ratings, metadata]) => {
-                            allRatings.ratings = ratings
+                            newLine.ratings = ratings
                         })
     
+                        // Push newline into allRatings
+                        allRatings.push(newLine)
                     }
                 }
-    
-            })
-        }
 
-        res.send(allRatings)
+        })
+
+        // res.send(allRatings)
     
-        // res.render('../views/stallOwner/ratingsView', {
-        //     selectedItem
-        // })
+        res.render('../views/stallOwner/ratingsView', {
+            allRatings
+        })
 
     }
 

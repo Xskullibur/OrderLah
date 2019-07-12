@@ -100,12 +100,12 @@ module.exports = {
 
     /**
      * Get all menu items belonging to a stall owner id
-     * @param {Number} stallOwnerId 
+     * @param {Number} stallId 
      */
-    getStallOwnerMenuItems: function (stallOwnerId) {
+    getStallOwnerMenuItems: function (stallId) {
         return db.query(`SELECT menuItems.id, menuItems.itemName
         FROM menuItems
-        WHERE menuItems.stallId = ${stallOwnerId};`)
+        WHERE menuItems.stallId = ${stallId};`)
     },
 
     /**
@@ -136,13 +136,14 @@ module.exports = {
      * @param {number} menuItemId 
      */
     getMenuItemRatings: function (menuItemId) {
-        return db.query(`SELECT CONCAT(users.firstName, " ", users.lastName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        return db.query(`SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
         INNER JOIN users ON orders.userId = users.id
         WHERE orders.status = 'Collection Confirmed'
-        AND menuItems.id = ${menuItemId}`)
+        AND menuItems.id = ${menuItemId}
+        ORDER BY 2 DESC`)
     }
 
 }

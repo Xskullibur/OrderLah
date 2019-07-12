@@ -3,29 +3,73 @@
         <div class="col-md-12 mb-4">
             <div style="width: 100%;">
 
-                <div class="card-columns">
-                    <div class="card">
-                        <img class="card-img-top" src="holder.js/100x180/" alt="">
-                        <div class="card-body">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Text</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <img class="card-img-top" src="holder.js/100x180/" alt="">
-                        <div class="card-body">
-                            <h4 class="card-title">Title</h4>
-                            <p class="card-text">Text</p>
-                        </div>
+                <div class="row text-center mb-4">
+                    <div class="col">
+                        <h1>Ratings</h1>
                     </div>
                 </div>
 
+                {{!-- Accordion --}}
+                <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+                    {{#each allRatings as |item|}}
 
-                {{#if selectedItem}}
-                    <p>{{selectedItem}}</p>
-                {{else}}
-                    <p>Empty</p>
-                {{/if}}
+                        <!-- Accordion card -->
+                        <div class="card">
+
+                            <!-- Card header -->
+                            <div class="card-header" role="tab" id='heading_{{item.id}}'>
+                                <a data-toggle="collapse" data-parent="#accordionEx" href="#collapse_{{item.id}}" aria-expanded="true" aria-controls="collapse_{{item.id}}">
+
+                                    <div class="container">
+                                        <div class="row">
+                                            <h5 class="col-11 mb-0">
+                                                {{item.itemName}}
+                                            </h5>
+                                            <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                        </div>
+                                    </div>
+
+                                </a>
+                            </div>
+
+                            <!-- Card body -->
+                            <div id="collapse_{{item.id}}" class="collapse {{#ifCondition @index "==" 0}}show{{/ifCondition}}" role="tabpanel" aria-labelledby='heading_{{item.id}}' data-parent="#accordionEx">
+                                <div class="card-body">
+
+                                    {{!-- Ratings --}}
+                                    <div class="card-columns">
+
+                                        {{!-- Each Rating --}}
+                                        {{#each item.ratings as |itemRating|}}                                            
+                                            <div class="card d-inline-block">
+
+                                                <img class="card-img-top" src="holder.js/100x180/" alt="">
+
+                                                <blockquote class="blockquote mb-0 card-body">
+                                                    <h5 class="card-title font-weight-bold">
+                                                        Rating: {{#for itemRating.rating}}<i class="fa fa-star text-warning" aria-hidden="true"></i>{{/for}}
+                                                    </h5>
+                                                    <p>Comments: {{itemRating.comments}}</p>
+                                                    <footer class="blockquote-footer">
+                                                        <small class="text-muted">
+                                                            Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
+                                                        </small>
+                                                    </footer>
+                                                </blockquote>
+
+                                            </div>
+                                        {{/each}}
+
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- Accordion card -->
+
+                    {{/each}}
+                </div>
 
             </div>
         </div>

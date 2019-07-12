@@ -27,6 +27,12 @@ module.exports = {
         return (input1 === input2) ? trueOutput : falseOutput;
     },
 
+    /**
+     * 
+     * @param {any} input1 
+     * @param {string} operator 
+     * @param {any} input2 
+     */
     ifCondition(input1, operator, input2, options){
         switch (operator) {
             case "==":
