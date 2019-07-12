@@ -36,31 +36,42 @@
                             <div id="collapse_{{item.id}}" class="collapse {{#ifCondition @index "==" 0}}show{{/ifCondition}}" role="tabpanel" aria-labelledby='heading_{{item.id}}' data-parent="#accordionEx">
                                 <div class="card-body">
 
-                                    {{!-- Ratings --}}
-                                    <div class="card-columns">
+                                    {{#if item.ratings}}
 
-                                        {{!-- Each Rating --}}
-                                        {{#each item.ratings as |itemRating|}}                                            
-                                            <div class="card d-inline-block">
+                                        {{!-- Ratings --}}
+                                        <div class="card-columns">
 
-                                                <img class="card-img-top" src="holder.js/100x180/" alt="">
+                                            {{!-- Each Rating --}}
+                                            {{#each item.ratings as |itemRating|}}                                            
+                                                <div class="card d-inline-block">
 
-                                                <blockquote class="blockquote mb-0 card-body">
-                                                    <h5 class="card-title font-weight-bold">
-                                                        Rating: {{#for itemRating.rating}}<i class="fa fa-star text-warning" aria-hidden="true"></i>{{/for}}
-                                                    </h5>
-                                                    <p>Comments: {{itemRating.comments}}</p>
-                                                    <footer class="blockquote-footer">
-                                                        <small class="text-muted">
-                                                            Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
-                                                        </small>
-                                                    </footer>
-                                                </blockquote>
+                                                    <img class="card-img-top" src="holder.js/100x180/" alt="">
 
-                                            </div>
-                                        {{/each}}
+                                                    <blockquote class="blockquote mb-0 card-body">
+                                                        <h5 class="card-title font-weight-bold">
+                                                            Rating: {{#for itemRating.rating}}<i class="fa fa-star text-warning" aria-hidden="true"></i>{{/for}}
+                                                        </h5>
+                                                        <p>Comments: {{itemRating.comments}}</p>
+                                                        <footer class="blockquote-footer">
+                                                            <small class="text-muted">
+                                                                Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
+                                                            </small>
+                                                        </footer>
+                                                    </blockquote>
 
-                                    </div>
+                                                </div>
+                                            {{/each}}
+
+                                        </div>
+
+                                    {{else}}
+                                        
+                                        <div class="alert alert-info" role="alert">
+                                            <strong>Ratings Not Found</strong>
+                                        </div>
+
+                                    {{/if}}
+
                                     
                                 </div>
                             </div>
