@@ -12,16 +12,20 @@ $success: #78CC40
     transform-origin: 50% 50%
     animation: pulsing 2.5s
     animation-iteration-count: infinite 
+    
+    &.complete
+        animation: none
+
 
 .order-progress-circle
     stroke-dashoffset: 0
     transform-origin: 50% 50%
     transform: rotate(-90deg)
-    transition: stroke-dashoffset 1s linear
-    transition: stroke .3s linear
+    transition: stroke-dashoffset 1s linear, stroke .3s linear,  fill .3s linear
     
     
     &.complete
+        fill: lighten($success, 10%)
         stroke: $success
 
 

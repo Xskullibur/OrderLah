@@ -37,13 +37,17 @@
                                                 <div class="col-2">
                                                     <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}img/no-image.jpg{{/if}}" alt"">
                                                 </div>
-                                                <div class="col">
+                                                <div class="col-8">
                                                     <div class="row">
                                                         {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
                                                     </div>
-                                                    <div class="row">
-                                                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
-                                                        <button class="btn btn-outline-success my-2 my-sm-0 offset-md-1" type="submit" onclick="location.href='/review';">Review order</button>
+                                                    <div class="row my-5">
+                                                        <div class="col">
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.id}}';">Check Status</button>
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review';">Review order</button>
+                                                    
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col" style="text-align: right;">

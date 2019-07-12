@@ -53,5 +53,47 @@ module.exports = {
         })
     },
 
+    
+    /**
+     * Get all user orders 
+     * @param {number} userId - User id of all the orders
+     * @return {Promise}
+     */
+    getOrderByUserId: function(userId){
+        return Order.findAll({
+            where: {
+                userId
+            }
+        })
+    },
+
+    /**
+     * Get order by order id
+     * @param {number} orderId - order id
+     * @return {Promise}
+     */
+    getOrderId: function(orderId){
+        return Order.findByPk(orderId)
+    },
+
+    /**
+     * Check if the order id belongs to a user id
+     * @param {number} userId - user id
+     * @param {number} orderId - order id
+     * @return {Promise}
+     */
+    checkOrderIsInUser: function (userId, orderId) {
+        let promise = new Promise((resolve, reject) => {
+            Order.count({
+                where: {
+                    userId, id:orderId
+                }
+            }).then(count => {
+                resolve(count == 1)
+            })
+
+        })
+        return promise
+    }
 
 }
