@@ -20,6 +20,12 @@
 
 </head>
 <body>
+    {{#if isDev}}
+            <span style="color:red;">Warning! you are running dev build, login authentications are disabled in this build. Run using production scripts for testing authentications</span>
+            {{#if autoLogin}}
+                <br><span style="color:blue;">Automatic Login As: {{autoLoginAs}}</span>
+            {{/if}}
+    {{/if}}
     <div style="background-image: url('/img/Homepage-3.jpg'); min-width: 100vw; min-height: 100vh;">
     <div style="position: fixed; min-width: 100%; min-height: 100%; overflow-y: auto; overflow-x: hidden; background-color: rgba(0, 17, 38, .7) ">
         {{{body}}}

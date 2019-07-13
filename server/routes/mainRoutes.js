@@ -54,7 +54,14 @@ app.use((req, res, next) => {
     next()
 })
 
+//Handlebars locals
 app.use((req, res, next)=>{
+
+    res.locals.isDev = process.env.NODE_ENV === 'dev'
+
+    res.locals.autoLogin = process.env.AUTO_LOGIN  === 'YES'
+    res.locals.autoLoginAs = process.env.LOGIN_AS
+
     //Set first login if not
     if(req.user){
         if(req.session.firstLogin == undefined)req.session.firstLogin = true
