@@ -32,15 +32,9 @@
                                                 <div class="col">
 
                                                     <select class="custom-select" name="item_filter" id="item_filter">
-                                                        <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}}>Filter by menu item</option>
+                                                        <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}} id="item_filter_default">Filter by menu item</option>
                                                         {{#each menu_items as |item|}}
-
-                                                            {{#ifCondition @root.item_filter "==" item.id}}
-                                                                <option value="{{item.id}}" selected>{{item.itemName}}</option>
-                                                            {{else}}
-                                                                <option value="{{item.id}}">{{item.itemName}}</option>
-                                                            {{/ifCondition}}
-
+                                                            <option value="{{item.id}}" {{#ifCondition @root.item_filter "==" item.id}}selected{{/ifCondition}}>{{item.itemName}}</option>
                                                         {{/each}}
                                                     </select>
 
@@ -72,7 +66,7 @@
                                         <div class="col text-right">
                                             <div class="row">
                                                 <div class="col">
-                                                    <button type="reset" class="btn btn-outline-danger">Reset</button>
+                                                    <a href="/stallOwner/ratings/" class="btn btn-outline-danger">Reset</a>
                                                     <button class="btn btn-outline-danger">Filter</button>
                                                 </div>
                                             </div>
