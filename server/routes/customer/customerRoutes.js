@@ -115,10 +115,16 @@ router.get('/review/:id/:orderid', (req, res)=> {
 router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
+    let image = req.body.reviewImage;
+
+    if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
+        fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
+    }
 
     OrderItem.update({
         comments,
-        rating
+        rating,
+        image
     }, {
         where: {
             menuItemId: req.params.id,

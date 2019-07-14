@@ -51,7 +51,6 @@ h1 { font-size: 1.5em; margin: 10px; }
 			<input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
-                    <input type="file" id="reviewImage" name="reviewImage" accept="image/png,image/jpeg,image/jpg,image/gif">
                     <img id="poster" src="/img/no-image.jpg" alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
                 </div>
                 <div class="col-lg-9">
@@ -70,8 +69,8 @@ h1 { font-size: 1.5em; margin: 10px; }
                             <textarea class="form-control" id="" name="comments" rows="8">{{orderItem.comments}}</textarea>
                         </div>
                     </row>
-                    <button id="butAddVideo" type="submit" class="btn btn-primary" style="float:right;">Save
-			        </button>
+                    <input type="file" name="reviewImage" id="reviewImage" accept="image/png,image/jpeg,image/jpg" style="float:left;">
+                    <button id="butAddVideo" type="submit" class="btn btn-primary" style="float:right;">Save</button>
                 </div>
             </div>
 		</form>

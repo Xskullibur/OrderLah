@@ -319,5 +319,44 @@ router.get('/guestLogin',(req, res) =>{
     })
 })
 
+router.get('/forgotPassword', (req, res) =>{
+    res.render('resetpassword1', {layout: 'blank_layout'})
+})
+
+router.post('/forgotPassword', (req, res) =>{
+    User.findOne({
+        where:{
+            email: req.body.email
+        }
+    }).then( user =>{
+      if (!user){
+          console.log('Error! Account not found...')
+      }else{
+            console.log('Ok, up and runnning...')
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user:'orderlah54@gmail.com',
+                    pass: 'orderlahpassword'
+                }
+            });
+    
+            let mailOptions = {
+                from:'Orderlah Team',
+                to: req.body.email,
+                subject: 'Reset password',
+                text: 'looks like you wanted to reset your password...'
+            };
+        
+            transporter.sendMail(mailOptions, function(err, data){
+                if (err) {
+                    console.log('error occured: ', err)
+                } else {
+                    console.log('reset password email sent to user id:', user.id)
+                }
+            })
+        }
+    })
+})
 
 module.exports = router
