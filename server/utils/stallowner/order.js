@@ -135,15 +135,27 @@ module.exports = {
      * Get all ratings based on menu item id
      * @param {number} menuItemId 
      */
-    getMenuItemRatings: function (menuItemId) {
-        return db.query(`SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+    getMenuItemRatings: function (menuItemId, item_filter, rating_filter) {
+
+        query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
         INNER JOIN users ON orders.userId = users.id
         WHERE orders.status = 'Collection Confirmed'
-        AND menuItems.id = ${menuItemId}
-        ORDER BY 2 DESC`)
+        AND menuItems.id = ${menuItemId}`
+
+        if (item_filter) {
+            query += ` AND menuItems.id = ${item_filter}`
+        }
+
+        if (rating_filter){
+            query += ` AND orderItems.rating = "${rating_filter}"`
+        }
+
+        query += ' ORDER BY 2 DESC'
+
+        return db.query(query)
     }
 
 }

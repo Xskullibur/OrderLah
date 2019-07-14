@@ -479,39 +479,81 @@ router.get('/ratings/', (req, res) => {
 
     title = "Ratings (All Time)"
     allRatings = []
+    menu_items = {}
+    item_filter = null
+    rating_filter = null
+
+    function getFilters() {
+        if (req.query.item_filter) {
+            item_filter = parseInt(req.query.item_filter)
+        }
+
+        if (req.query.rating_filter) {
+            rating_filter = parseInt(req.query.rating_filter)  
+            console.log(rating_filter);
+        }
+    }
 
     async function main() {
+
+        await getFilters()
+
+        // Get logged in stall owner
         let stallOwner = await order_util.getStallInfo(req.user.id)
 
-        await order_util.getStallOwnerMenuItems(stallOwner.stall.id)            // Get menu items belonging to stall owner
+        // Get menu items belonging to stall owner
+        await order_util.getStallOwnerMenuItems(stallOwner.stall.id)
             .then( async ([menuItems, metadata]) => {
+
+                menu_items = menuItems
 
                 for (const item in menuItems) {
                     if (menuItems.hasOwnProperty(item)) {
                         const menuItem = menuItems[item];
     
-                        newLine = {}
+                        // If filter exist
+                        if (item_filter) {
+                            if (item_filter == menuItem.id) {
+                                newLine = {}
 
-                        //Push ID and Item Name into new line
-                        newLine.id = menuItem.id
-                        newLine.itemName = menuItem.itemName
-    
-                        // Get ratings for each items and push into new line 
-                        await order_util.getMenuItemRatings(menuItem.id).then(([ratings, metadata]) => {
-                            newLine.ratings = ratings
-                        })
-    
-                        // Push newline into allRatings
-                        allRatings.push(newLine)
+                                //Push ID and Item Name into new line
+                                newLine.id = menuItem.id
+                                newLine.itemName = menuItem.itemName
+            
+                                // Get ratings for each items and push into new line 
+                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                    newLine.ratings = ratings
+                                })
+            
+                                // Push newline into allRatings
+                                allRatings.push(newLine)
+                            }
+                        }
+                        else{
+                            newLine = {}
+
+                            //Push ID and Item Name into new line
+                            newLine.id = menuItem.id
+                            newLine.itemName = menuItem.itemName
+        
+                            // Get ratings for each items and push into new line 
+                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                newLine.ratings = ratings
+                            })
+        
+                            // Push newline into allRatings
+                            allRatings.push(newLine)
+                        }
+
                     }
                 }
 
         })
 
-        // res.send(allRatings)
-    
+        // res.send(items)
+
         res.render('../views/stallOwner/ratingsView', {
-            allRatings, title
+            allRatings, title, menu_items, item_filter, rating_filter
         })
 
     }

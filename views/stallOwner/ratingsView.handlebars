@@ -9,7 +9,8 @@
                         <h1>{{title}}</h1>
                     </div>
                 </div>
-
+                
+                {{!-- Filter --}}
                 <div class="row mb-4">
                     <div class="col">
                         <div class="card bg-light">
@@ -30,11 +31,17 @@
                                             <div class="row">
                                                 <div class="col">
 
-                                                    <select class="custom-select" name="hello">
-                                                        <option selected>Open this select menu</option>
-                                                        <option value="1">One</option>
-                                                        <option value="2">Two</option>
-                                                        <option value="3">Three</option>
+                                                    <select class="custom-select" name="item_filter" id="item_filter">
+                                                        <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}}>Filter by menu item</option>
+                                                        {{#each menu_items as |item|}}
+
+                                                            {{#ifCondition @root.item_filter "==" item.id}}
+                                                                <option value="{{item.id}}" selected>{{item.itemName}}</option>
+                                                            {{else}}
+                                                                <option value="{{item.id}}">{{item.itemName}}</option>
+                                                            {{/ifCondition}}
+
+                                                        {{/each}}
                                                     </select>
 
                                                 </div>
@@ -53,8 +60,7 @@
                                             <div class="row">
                                                 <div class="col">
                                                     <span class="rating" style="font-size: 2em"></span>
-                                                    <input type="hidden" name="rating" id="rating">
-                                                    <!--{{> rating}}-->        
+                                                    <input type="hidden" name="rating_filter" id="rating_filter">      
                                                 </div>
                                             </div>
                                             
@@ -158,9 +164,11 @@
 </div>
 <script>
     $('.rating').mdbRate();
+
     $('.rating').children().on('click', function(){
         var index = $(this).data("index")
-        $('#rating').val(index)  
+        $('#rating').val(index)
+        $('#rating_filter').val(index+1)
         console.log(index)
     })
 </script>

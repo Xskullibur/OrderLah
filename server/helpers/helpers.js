@@ -35,6 +35,13 @@ module.exports = {
      */
     ifCondition(input1, operator, input2, options){
         switch (operator) {
+
+            case "||":
+                if (input1 || input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+
             case "==":
                 if (input1 === input2) {
                     return options.fn(this)
