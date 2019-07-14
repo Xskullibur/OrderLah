@@ -8,13 +8,19 @@
 
 <div class="container" style="position: relative; top: 5vh; width:">
 
-    {{!-- Filter --}}
-    <div class="row mb-4">
-        <div class="col">
-            {{>stallowner_items/all_orders_filter}}
+    <div class="row">
+        <div class="col text-center">
+            <h1>Order Details</h1>
         </div>
     </div>
 
+    <nav class="breadcrumb justify-content-center mb-4">
+        <a class="breadcrumb-item" href="/stallOwner/allOrders/1/">Orders</a>
+        <a class="breadcrumb-item" href="/stallOwner/ratings/">Ratings</a>
+        <span class="breadcrumb-item active">Charts</span>
+    </nav>
+
+    {{!-- Charts --}}
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="pb-md-5 pb-sm-3" style="width: 100%;">
@@ -125,6 +131,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <script>

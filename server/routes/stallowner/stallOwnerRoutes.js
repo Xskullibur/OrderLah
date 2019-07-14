@@ -477,21 +477,29 @@ router.get('/orderDetails/', (req, res) =>{
 
 router.get('/ratings/', (req, res) => {
 
-    title = "Ratings (All Time)"
+    title = "Ratings"
     allRatings = []
     menu_items = {}
     item_filter = null
     rating_filter = null
 
     function getFilters() {
+
+        filters = false
+
         if (req.query.item_filter) {
             item_filter = parseInt(req.query.item_filter)
+            filters = true
         }
 
         if (req.query.rating_filter) {
             rating_filter = parseInt(req.query.rating_filter)  
-            console.log(rating_filter);
+            filters = true
         }
+
+        if (filters == true) {
+            title += " (Filtered)"
+        } 
     }
 
     async function main() {
