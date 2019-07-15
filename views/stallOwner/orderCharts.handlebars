@@ -8,17 +8,48 @@
 
 <div class="container" style="position: relative; top: 5vh; width:">
 
+    {{!-- Title --}}
     <div class="row">
         <div class="col text-center">
             <h1>Order Details</h1>
         </div>
     </div>
 
+    {{!-- Sub-Nav --}}
     <nav class="breadcrumb justify-content-center mb-4">
         <a class="breadcrumb-item" href="/stallOwner/allOrders/1/">Orders</a>
         <a class="breadcrumb-item" href="/stallOwner/ratings/">Ratings</a>
         <span class="breadcrumb-item active">Charts</span>
     </nav>
+
+    {{!-- Filter --}}
+    <div class="row mb-4">
+        <div class="col">
+        
+            <div class="form">
+                <div class="row">
+
+                    <div class="col text-right">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="filter_date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Filter Date
+                                    </button>
+                            <div class="dropdown-menu" aria-labelledby="filter_date">
+                                <a class="dropdown-item" href="/All_Time">All Time</a>
+                                <a class="dropdown-item disabled" href="#">Disabled action</a>
+                                <h6 class="dropdown-header">Section header</h6>
+                                <a class="dropdown-item" href="#">Action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">After divider action</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     {{!-- Charts --}}
     <div class="row justify-content-center">

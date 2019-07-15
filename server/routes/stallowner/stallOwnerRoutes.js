@@ -467,7 +467,7 @@ router.get('/orderDetails/', (req, res) =>{
         EachItemRating = await getEachItemRating(StallOwner)
 
         // res.send(EachItemRating)
-        res.render('../views/stallOwner/orderDetails', {
+        res.render('stallOwner/orderCharts', {
             OrdersPerItem, AvgRatingPerItem, EachItemRating
         });
     }
