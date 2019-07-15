@@ -77,6 +77,22 @@ var bcrypt = require('bcrypt');
 
 const LocalStrategy = require('passport-local').Strategy;
 
+router.post('/resetpassword/:id', (req, res) =>{
+    console.log('reset post works for user: ', req.params.id)
+    let password = req.body.newpassword;
+    
+    User.update({
+        password
+    }, {
+        where: {
+            id: req.params.id
+        }
+    }).then(() => {
+        res.redirect('/login');
+        console.log('reser password success!')
+    }).catch((err) => console.error(err));
+})
+
 passport.use(new LocalStrategy({usernameField: 'email',},
     function(email, password, done) {
       User.findOne({ where:{email} }).then(user => {
@@ -205,7 +221,7 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        text: session.token
+        html: 'Your Orderlah verfication code is: ' + session.token
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -345,7 +361,8 @@ router.post('/forgotPassword', (req, res) =>{
                 from:'Orderlah Team',
                 to: req.body.email,
                 subject: 'Reset password',
-                text: 'looks like you wanted to reset your password...'
+                text: 'Here is the link to reset your password: localhost:3000/resetpassword/'+user.id,
+                html: '<p>Click <a href="http://localhost:3000/resetpassword/' + user.id + '">here</a> to reset your password</p>'
             };
         
             transporter.sendMail(mailOptions, function(err, data){
@@ -354,6 +371,24 @@ router.post('/forgotPassword', (req, res) =>{
                 } else {
                     console.log('reset password email sent to user id:', user.id)
                 }
+            })
+        }
+    })
+})
+
+router.get('/resetpassword/:id', (req, res) =>{
+    User.findOne({
+        where:{
+            id: req.params.id
+        }
+    }).then( user =>{
+        if(!user){
+            console.log('Error! Account not found...')
+        }
+        else{
+            res.render('resetpassword2', {
+                user,
+                layout: 'blank_layout'
             })
         }
     })

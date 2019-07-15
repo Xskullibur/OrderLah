@@ -47,7 +47,7 @@ h1 { font-size: 1.5em; margin: 10px; }
     <div class="card card-body">
         <h4>Review Page</h4>
         <br>
-        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}?_method=POSTT" method="post" onload="getstars()">
+        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}?_method=POSTT" method="post" onload="getstars()" enctype="multipart/form-data">
 			<input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
