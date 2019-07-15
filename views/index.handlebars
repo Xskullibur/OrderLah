@@ -3,15 +3,13 @@
 <link rel="stylesheet" type="text/css" href="/css/menu_item.css"/>
 <div style="min-height: 1000px; width: 100vw; max-width: 100%;">
     <div class="container-fluid p-5">
-        <div class="row d-md-none">
+        <div class="row d-md-none mb-5">
             <div class="col">
-                <ul class="menu-list list-group list-group-horizontal text-center" >
-                    <li class="category-list-item list-group-item"><div>Item 1</div></li>
-                    <li class="category-list-item list-group-item"><div>Item 2</div></li>
-                    <li class="category-list-item list-group-item"><div>Item 3</div></li>
-                    <li class="category-list-item list-group-item"><div>Item 4</div></li>
-                    <li class="category-list-item list-group-item"><div>Item 5</div></li>
-                </ul>
+                <select class="form-control">
+                    {{#each cusines}}
+                        <option onclick="generateMenuCardItem('{{cusineType}}')">{{cusineType}}</option>
+                    {{/each}}
+                </select>
             </div>
         </div>
         <div class="row">
@@ -52,7 +50,7 @@
                         <div class="col">
                             <h2>Recommended</h2>
                             <br>
-                            <div id="all-recommended-menu-container">
+                            <div id="all-recommended-menu-container" class="container-scroll">
                             </div>
                             <hr>
                         </div>

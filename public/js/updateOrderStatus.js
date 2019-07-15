@@ -1,20 +1,75 @@
 // Init Web Socket
 var socket = null;
 
-// Save session id to redis
-$(document).ready(function (){                          
+$(document).ready(function (){
+
+    //generate qrcode
+    var orderid = getOrderId();
+
+    var qrcode = new QRCode(document.getElementById("orderid-qr"), {
+        text: orderid,
+        width: 128,
+        height: 128,
+        colorDark : "#0044ff",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+
+    //setup notifications
+    askPermissionForNotifications();
+
     var sid = subStrCookie(getCookie('connect.sid'))
-    console.log(sid)
     //Connect to websocket
-    socket = io('http://' + window.location.hostname +':4000/');
+    var socket = io('http://' + window.location.hostname +':4000/');
     socket.on('connect', () => {
-    console.log(socket.connected); // true
+    console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
-        socket.on('reply', function(reply){
-            console.log(reply);
+        socket.on('update-status', function({updatedStatus}){
+            console.log(updatedStatus);
+            $('#order-status').text(updatedStatus)
+            notify(updatedStatus);
         })
     });
+    socket.on('disconnect', () => {
+        console.log('Stopped listening for updates');
+    })
 })
+
+/**
+ * Parsed the web url and get the last path which indicate the order id
+ */
+function getOrderId(){  
+    var url = window.location.href;
+    return url.substr(url.lastIndexOf('/') + 1);
+}
+
+// Send notification
+function notify(msg){
+    // Check if browser has notifications
+    if (("Notification" in window)) {
+        // if already granted
+        if (Notification.permission === "granted") {
+            // create notification
+            var notification = new Notification(msg);
+        }
+    }
+}
+
+// Check and ask for permission
+function askPermissionForNotifications(){
+    // Check if browser has notifications
+    if (("Notification" in window)) {
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission().then(function (permission) {
+                // If the user accepts
+                if (permission === "granted") {
+                    console.log("Notifications enabled");
+                }
+            });
+        }
+    }
+}
 
 // Get Session ID from Cookie
 function getCookie(cname) {
@@ -42,20 +97,20 @@ function subStrCookie(cookie){
 // Update Status
 function updateStatus(orderID) {
 
-    const STATUS = {
+    var STATUS = {
         OrderPending: 'Order Pending',
         PreparingOrder: 'Preparing Order',
         ReadyForCollection: 'Ready for Collection',
         CollectionConfirmed: 'Collection Confirmed'
     }
 
-    let updateBtn = document.getElementById(`updateStatusBtn_${orderID}`)
-    let currentStatusCtx = document.getElementById(`currentStatusTxt_${orderID}`)       // Update Send
-    let updateStatusCtx = document.getElementById(`updateStatusTxt_${orderID}`)         // Next status aft current status
-    let orderCard = document.getElementById(`orderCard_${orderID}`)
+    var updateBtn = document.getElementById(`updateStatusBtn_${orderID}`)
+    var currentStatusCtx = document.getElementById(`currentStatusTxt_${orderID}`)       // Update Send
+    var updateStatusCtx = document.getElementById(`updateStatusTxt_${orderID}`)         // Next status aft current status
+    var orderCard = document.getElementById(`orderCard_${orderID}`)
 
-    let updatedStatus = null
-    let nxtStatus = null
+    var updatedStatus = null
+    var nxtStatus = null
 
     //Update Status
     switch (updateBtn.innerText) {

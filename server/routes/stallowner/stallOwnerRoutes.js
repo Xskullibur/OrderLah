@@ -267,7 +267,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                         }
                     }
 
-                    res.render('../views/stallOwner/monthlySummary',{
+                    res.render('stallOwner/monthlySummary',{
                         month, formatedOrder, title, selectedDate, stallOwner
                     })
                 })
@@ -398,64 +398,6 @@ router.get('/orderDetails/', (req, res) =>{
             
         })
 
-
-        // return new Promise(function(resolve, reject) {
-        //     // Get Stall's Items
-        //     db.query(`SELECT menuItems.id, menuItems.itemName
-        //     FROM menuItems
-        //     WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
-    
-        //         EachItemRating = []
-    
-        //         for (const key in allItems) {
-        //             if (allItems.hasOwnProperty(key)) {
-        //                 const item = allItems[key];
-
-        //                 line = {}
-
-        //                 line.id = item.id
-        //                 line.itemName = item.itemName
-        
-        //                 rating5 = await getRatingCount(item.id, 5)
-        //                 rating4 = await getRatingCount(item.id, 4)
-        //                 rating3 = await getRatingCount(item.id, 3)
-        //                 rating2 = await getRatingCount(item.id, 2)
-        //                 rating1 = await getRatingCount(item.id, 1)
-        
-        //                 line.rating = [
-        //                     {
-        //                         label: "5 Stars",
-        //                         count: rating5
-        //                     },
-        //                     {
-        //                         label: "4 Stars",
-        //                         count: rating4
-        //                     },
-        //                     {
-        //                         label: "3 Stars",
-        //                         count: rating3
-        //                     },
-        //                     {
-        //                         label: "2 Stars",
-        //                         count: rating2
-        //                     },
-        //                     {
-        //                         label: "1 Stars",
-        //                         count: rating1
-        //                     },
-        //                 ]
-        
-        //                 EachItemRating.push(line)
-        //             }
-        //         }
-
-        //         resolve(EachItemRating)
-
-        //     }).catch(err => {
-        //         reject(err)
-        //     })
-        // })
-
     }
 
     async function main() {
@@ -467,7 +409,7 @@ router.get('/orderDetails/', (req, res) =>{
         EachItemRating = await getEachItemRating(StallOwner)
 
         // res.send(EachItemRating)
-        res.render('../views/stallOwner/orderDetails', {
+        res.render('stallOwner/orderDetails', {
             OrdersPerItem, AvgRatingPerItem, EachItemRating
         });
     }
@@ -561,7 +503,7 @@ router.get('/ratings/', (req, res) => {
 
         // res.send(items)
 
-        res.render('../views/stallOwner/ratingsView', {
+        res.render('stallOwner/ratingsView', {
             allRatings, title, menu_items, item_filter, rating_filter
         })
 

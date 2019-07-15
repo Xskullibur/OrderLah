@@ -1,45 +1,6 @@
+<script src="/js/updateOrderstatus.js" type="text/javascript"></script>
 <script src="/js/vendor/socket.io/socket.io.js" type="text/javascript"></script>
-<script>
-
-    function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    function subStrCookie(cookie){
-        var pattern = /:(.+)\./;
-        return pattern.exec(cookie)[1];
-    }
-
-    $(document).ready(function (){
-        var sid = subStrCookie(getCookie('connect.sid'))
-        //Connect to websocket
-        var socket = io('http://' + window.location.hostname +':4000/');
-        socket.on('connect', () => {
-        console.log('Listening for updates'); // true
-            socket.emit('sessionid', sid)
-            socket.on('update-status', function({updatedStatus}){
-                console.log(updatedStatus);
-                $('#order-status').text(updatedStatus)
-            })
-        });
-        socket.on('disconnect', () => {
-            console.log('Stopped listening for updates');
-        })
-    })
-</script>
-
+<script src="/js/vendor/qrcode/qrcode.min.js" type="text/javascript"></script>
 <link href="/css/order-status.css" rel="stylesheet" type="text/css">
 <script>
     function setCircleProgress(val){
@@ -63,6 +24,11 @@
 </script>
 <div class="container">
     <div class="row justify-content-center pt-5">
+        <div class="col-5 col-lg-7 mx-auto">
+            
+        </div>
+    </div>
+    <div class="row justify-content-center pt-2">
         <div class="col-5 col-lg-7 text-center">
             <h2>Order Status: <span id="order-status">{{order.status}}</span></h2>
         </div>
@@ -75,10 +41,16 @@
                     <circle cx="50%" cy="50%" r="180"  stroke-width="3"/>
                     <circle class="order-progress-circle" cx="50%" cy="50%" r="180" stroke-dasharray="1130.973355" stroke-width="13"/>
                  </g>
-                <text x="50%" y="50%" text-anchor="middle" dy=".3em">
+                 <foreignObject x="50%" y="50%"  width="128" height="128" style="transform:translate(-14%,-30%)">
+                    <div id="orderid-qr" class="mx-auto" style="max-width: 128px; max-height: 128px;">
+
+                    </div>
+                 </foreignObject>
+                
+                <text x="50%" y="50%" text-anchor="middle" dy="1.3em">
                     <tspan class="order-text">Estimated time:</tspan>
                 </text>
-                <text  x="50%" y="50%" text-anchor="middle" dy="2.5em">
+                <text  x="50%" y="50%" text-anchor="middle" dy="3.3em">
                     <tspan id="order-est-time" class="order-sub-text"><tspan class="plain">1</tspan> h <tspan class="plain">20</tspan> min</tspan>
                 </text>
             </svg> 
