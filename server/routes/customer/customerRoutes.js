@@ -18,9 +18,11 @@ const auth_login = require('../../libs/auth_login')
 const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
+const Payment = globalHandle.get('payments')
 
 //Sequelize
 const Sequelize = require('sequelize')
+const db = globalHandle.get('db')
 
 //Get App
 const app = globalHandle.get('app')
@@ -297,8 +299,6 @@ router.get('/payment', auth_login.auth, (req, res) => {
 })
 
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
-    //var paymentID = req.body.paymentID
-    //var payerID = req.body.payerID
     var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)
@@ -315,7 +315,12 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         console.error(err);
         return res.send(500);
     }
-    if (order.result.purchase_units[0].amount.status == 'COMPLETED') {
+    var showStatus = order.result.status
+    var payerID = order.result.payer.payer_id
+    if (showStatus == 'COMPLETED') {
+        Payment.create({orderID, payerName, payerID, status: showStatus}).then(function(){
+        console.log('transaction details saved to database')
+        }).catch(err => console.log(err))
         console.log('transaction confrimed')
     }
 

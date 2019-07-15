@@ -55,6 +55,7 @@ const OrderItem = db.OrderItem
 const MenuItem = db.MenuItem
 const Cusine = db.Cusine
 const sequelize_db = db.db
+const Payments = db.Payments
 
 const RememberMe = db.RememberMe
 
@@ -68,6 +69,7 @@ globalHandle.put('cusine', Cusine)
 globalHandle.put('db', sequelize_db)
 
 globalHandle.put('rememberme', RememberMe)
+globalHandle.put('payments', Payments)
 
 //connect to db
 const dummy = require('./dummy')

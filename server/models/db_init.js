@@ -43,6 +43,7 @@ const MenuItem = require('./menuItem').model(Sequelize, db)
 const Order = require('./order').model(Sequelize, db)
 const OrderItem = require('./orderItem').model(Sequelize, db)
 const Cusine = require('./cusine').model(Sequelize, db)
+const Payments = require('./payments').model(Sequelize, db)
 
 //Others
 const RememberMe = require('./rememberme').model(Sequelize, db)
@@ -61,7 +62,7 @@ User.hasMany(RememberMe)
 
 module.exports = {
     //Models
-    User, Stall, MenuItem, Order, OrderItem, Cusine, RememberMe,
+    User, Stall, MenuItem, Order, OrderItem, Cusine, RememberMe, Payments,
 
     connect: function (drop = false, done) {
         //Init database connections
