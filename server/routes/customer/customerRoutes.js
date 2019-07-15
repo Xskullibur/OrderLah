@@ -293,6 +293,10 @@ const payPalClient = require('./ppClient')
 
 router.get('/payment', auth_login.auth, (req, res) => {
    
+    for(var orderline of req.cart.items){
+        console.log(orderline.itemId)
+    }
+
     var totalAmount = 7
     res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
 
