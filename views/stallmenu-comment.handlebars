@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="/css/stallowner.css">
+
+<br>
+<center>
+    <form method="GET" action="/stallowner/showMenu">
+        <h1>Showing reviews for {{menu.itemName}}</h1>
+        <br>
+        <button type="submit" class="green-btn">Return</button>
+    </form>
+<center>
+
+<br><br>
+<div class="row" style="padding-left: 5em">
+    {{#if items}}
+            {{#each items}}
+                <div class="col-xs-6">
+                    <div class="column">
+                        <div class="container">
+                            <div class="card">                            
+                                <div class="card__content">
+                                    <br>
+                                    <center>
+                                         <h6 class="card__title">Order ID: {{this.orderId}}</h6>
+                                         <h6 class="card__title">Rating: {{this.rating}}</h6>
+                                         <h6 class="card__title">Quantity: {{this.quantity}}</h6>
+                                         <h6 class="card__title">{{this.comments}}</h6>                                                                            
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>  
+        {{/each}}
+    {{/if}}
+</div>
+

@@ -1,11 +1,28 @@
 {{!-- Styling for profile.handlebars --}}
 <link rel="stylesheet" type="text/css" href="/css/profile.css"/>
+{{#if displayAlert}}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <center><strong>{{this.displayAlert}}</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+{{#if failAlert}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center><strong>{{this.failAlert}}</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+<br>
 <div class="container my-5">
     <div class="row justify-content-md-center" align="center">
         <div class="col-md-8 col-12">
             <div class="card">
                 <div class="card-header mb-2"><h3>Profile</h3></div>
-                <img class="card-img-top profile-img border border-danger" src="/img/profiles/{{user.id}}.png" alt="Profile Picture">
+                <img class="card-img-top profile-img border border-danger" src="/uploads/{{UserID}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" alt="Profile Picture">
                 {{!-- Hidden form to update image --}}
                 <form>
                     <input type="text" hidden>
@@ -36,7 +53,8 @@
                                     <div class="row">
                                         <div class="col-3"><h5>Birthday:</h5></div>
                                         <div class="col-auto"><p class="font-weight-light">{{birthday}}</p></div>
-                                    </div>
+                                    </div>                                   
+                                         <center><button class="btn btn-outline-success" data-toggle="modal" data-target="#updateProfile">Change</button></center>
                                 </div>
                                 </div>
                             </div>
@@ -51,15 +69,19 @@
 
                                 <div id="collapse-password" class="collapse" aria-labelledby="heading-password" data-parent="#accordion">
                                 <div class="card-body">
-                                    <form action="/changePassword">
+                                    <form method="POST" action="/changePass" class="needs-validation" novalidate>
                                             <div class="form-group form-row">
                                                 <div class="col">
                                                     <label for="password">New Password:</label>
-                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required> 
+                                                    <div class="valid-feedback">Valid!</div>
+                                                    <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
                                                 </div>
                                                 <div class="col">
                                                     <label for="confirm_password">Confirm Password:</label>
-                                                    <input type="password" class="form-control" id="comfir,_password" placeholder="Confirm Password">
+                                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+                                                    <div class="valid-feedback">Valid!</div>
+                                                    <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
                                                 </div>
                                             </div>
                                         <button type="submit" class="btn btn-outline-success">Apply</button>
@@ -73,3 +95,101 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="updateProfile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add menu item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="/updateProfile" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <br>
+                    <div class="form-group row">
+                        <label for="itemName" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">email required!</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">Phone</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" value="{{user.phone}}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, 8-10 numbers</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="birthday" class="col-sm-2 col-form-label">Birthday</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" name="birthday" id="birthday" value="{{birthday}}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required!</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2 imgUp">
+                            <div class="imagePreview"style="background: url(/uploads/{{UserID}}.jpeg); background-size: 140px 140px;"></div>                            
+                                <input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg">
+                            </div>
+                    </div>                  
+                    <div class="modal-footer">
+                         <button type="submit" class="btn btn-outline-success">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".imgAdd").click(function () {
+            $(this).closest(".row").find('.imgAdd').before('<div class="col-sm-2 imgUp"><div class="imagePreview"></div><label class="btn btn-primary">Upload<input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg" style="width:0px;height:0px;overflow:hidden;"></label><i class="fa fa-times del"></i></div>');
+        });
+        $(document).on("click", "i.del", function () {
+            $(this).parent().remove();
+        });
+        $(function () {
+            $(document).on("change", ".uploadFile", function () {
+                var uploadFile = $(this);
+                var files = !!this.files ? this.files : [];
+                if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
+
+                if (/^image/.test(files[0].type)) { // only image file
+                    var reader = new FileReader(); // instance of the FileReader
+                    reader.readAsDataURL(files[0]); // read the local file
+
+                    reader.onloadend = function () { // set image data as background of div
+                        //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
+                        uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
+                    }
+                }
+            });
+        });
+</script>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

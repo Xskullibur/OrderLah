@@ -117,9 +117,11 @@ app.use(express.static('public'))
 const mainRoutes = require('./server/routes/mainRoutes')
 const customerRoutes = require('./server/routes/customer/customerRoutes')
 const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
+const adminRoutes = require('./server/routes/administrator/adminRoutes');
 app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
+app.use('/admin', adminRoutes)
 
 //Websocket setup
 require('./server/libs/orderlah_websocket/orderlah_websocket')

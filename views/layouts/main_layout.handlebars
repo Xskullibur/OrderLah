@@ -21,7 +21,12 @@
 
 </head>
 <body>
-
+    {{#if isDev}}
+            <span style="color:red;">Warning! you are running dev build, login authentications are disabled in this build. Run using production scripts for testing authentications</span>
+            {{#if autoLogin}}
+                <br><span style="color:blue;">Automatic Login As: {{autoLoginAs}}</span>
+            {{/if}}
+    {{/if}}
     {{> loading}}
     {{> nav}}
     {{{body}}}

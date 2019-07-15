@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "name": "Launch Firefox",
+            "url": "http://localhost:3000/",
+            "webRoot": "${workspaceFolder}"
+        },
+
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
@@ -37,5 +46,6 @@
             ],
             "internalConsoleOptions": "openOnSessionStart"
         }
+
     ]
 }

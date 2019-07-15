@@ -6,7 +6,7 @@ $(document).ready(function (){
     var sid = subStrCookie(getCookie('connect.sid'))
     console.log(sid)
     //Connect to websocket
-    socket = io('http://localhost:4000/');
+    socket = io('http://' + window.location.hostname +':4000/');
     socket.on('connect', () => {
     console.log(socket.connected); // true
         socket.emit('sessionid', sid)

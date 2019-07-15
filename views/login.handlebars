@@ -1,4 +1,14 @@
 <link href="/css/login.css" rel="stylesheet" type="text/css">
+
+{{#if displayAlert}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center><strong>{{this.displayAlert}}</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+
 <div class="card-fullcontent">
     <div class="container-fluid">
     <div class="row justify-content-center">

@@ -52,10 +52,12 @@ io.on('connection', function(socket){
         status.updateOrderStatus({
             orderID, updatedStatus
         }).then((result) => {
-            console.log(`Success: ${result}`)
+            console.log(`Updating order id of ${orderID} to ${updatedStatus}`)
             transactions.getCustomerByOrderID(orderID).then(orderCust => {
                 getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
                     const socketid = getSocketIDBySessionID(sessionid)
+                    console.log(`Sending order update to socket id of ${socketid} which equate to session id: ${sessionid}`);
+                    
                     io.to(socketid).emit('update-status', {updatedStatus})
                 })
             })

@@ -34,7 +34,6 @@
           <li class="nav-item active">
             <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
-
           {{#if isCustomer}}
             {{!-- CUSTOMER NAV --}}
             <li class="nav-item">
@@ -43,6 +42,10 @@
 
             <li class="nav-item">
               <a class="nav-link" href="/pastOrders">Past Orders</a>
+            </li>
+          {{else if isAdmin}}
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/adminPanel">Manage Stalls</a>
             </li>
           {{else}}
             {{!-- STALL OWNER NAV --}}
@@ -56,6 +59,10 @@
 
             <li class="nav-item">
               <a class="nav-link" href="/stallOwner/monthlySummary/">Monthly Summary</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/stallOwner/showMenu">Manage Menu</a>
             </li>
           {{/if}}
 
@@ -109,5 +116,5 @@
 {{!-- Popup --}}
 {{> alerts/top-popup}}
 </div>
-<script type="text/javascript" src="js/nav.js"></script>
+<script type="text/javascript" src="/js/nav.js"></script>
 
