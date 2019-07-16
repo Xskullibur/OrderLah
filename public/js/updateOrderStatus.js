@@ -5,14 +5,14 @@ $(document).ready(function (){
 
     var sid = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
-    var socket = io('http://' + window.location.hostname +':4000/');
+    socket = io('http://' + window.location.hostname +':4000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
         socket.on('update-status', function({updatedStatus}){
             console.log(updatedStatus);
             $('#order-status').text(updatedStatus)
-            notify(updatedStatus);
+            if(typeof notify === "function") notify(updatedStatus);
         })
     });
     socket.on('disconnect', () => {

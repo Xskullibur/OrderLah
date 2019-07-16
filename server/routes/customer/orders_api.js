@@ -35,7 +35,11 @@ router.get('/orderStatus/:orderId', async (req, res) => {
     
     if(valid){
         order.getOrderId(orderId).then((order => {
-            res.render('order-status', {order})
+            res.render('order-status', {order, helpers: {
+                substringTo5(text){
+                    return text.substring(0, 5)
+                }
+            }})
         }))
     }else res.redirect('/orderStatus')
 

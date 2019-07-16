@@ -1,6 +1,33 @@
 <script src="/js/vendor/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/js/updateOrderStatus.js" type="text/javascript"></script>
 
+<script type="module">
+    import QrScanner from "/js/vendor/qrscanner/qr-scanner.min.js";
+    QrScanner.WORKER_PATH = '/js/vendor/qrscanner/qr-scanner-worker.min.js';
+
+    const video = document.getElementById('qr-video');
+
+    function setResult(result) {
+        console.log(result)
+    }
+
+    // ####### Web Cam Scanning #######
+    QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
+
+    const scanner = new QrScanner(video, result => setResult(result));
+
+    function startScanning(){
+        scanner.start();
+        scanner.setInversionMode('both');
+    }
+
+    
+</script>
+<script nomodule>
+    console.log('Module not suppoted by browser, consider using lastest version of chrome.');
+</script>
+
+{{!-- Main --}}
 <div class="container" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
         <div class="col-md-12 mb-4">
@@ -14,6 +41,13 @@
                         <div class="col">
                             <h1>Current Orders</h1> 
                         </div>
+                    </div>
+
+                    {{!-- Scanner --}}
+                    <div>
+                        <video id="qr-video"></video>
+
+                        <p id="scannerOutput"></p>
                     </div>
 
                     {{!-- Body --}}
