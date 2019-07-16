@@ -291,13 +291,18 @@ const payPalClient = require('./ppClient')
 
 //hsien xiang's route - done by hsienxiang and ziheng
 
-router.get('/payment', auth_login.auth, (req, res) => {
-   
+router.get('/payment', auth_login.auth, async (req, res) => {
+    var totalAmount = 0
+
     for(var orderline of req.cart.items){
         console.log(orderline.itemId)
+        await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
+            //console.log(setPrice.price)
+            totalAmount = totalAmount + parseInt(setPrice.price)
+        })
     }
 
-    var totalAmount = 7
+    console.log('total amount: ' + totalAmount)
     res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
 
 })
