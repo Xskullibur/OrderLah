@@ -289,7 +289,7 @@ const payPalClient = require('./ppClient')
  * Payment stage for ordering items
  */
 
-//hsien xiang's route - done by hsienxiang and ziheng
+//hsien xiang's route -cart done by ziheng
 
 router.get('/payment', auth_login.auth, async (req, res) => {
     var totalAmount = 0
@@ -298,7 +298,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
         console.log(orderline.itemId)
         await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
             //console.log(setPrice.price)
-            totalAmount = totalAmount + parseInt(setPrice.price)
+            totalAmount = totalAmount + parseFloat(setPrice.price)
         })
     }
 
