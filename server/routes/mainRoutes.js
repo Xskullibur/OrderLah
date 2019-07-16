@@ -75,22 +75,36 @@ app.use((req, res, next)=>{
 
 var bcrypt = require('bcrypt');
 
+const salt_rounds = 10
+
 const LocalStrategy = require('passport-local').Strategy;
 
 router.post('/resetpassword/:id', (req, res) =>{
     console.log('reset post works for user: ', req.params.id)
     let password = req.body.newpassword;
-    
-    User.update({
-        password
-    }, {
-        where: {
-            id: req.params.id
-        }
-    }).then(() => {
-        res.redirect('/login');
-        console.log('reser password success!')
-    }).catch((err) => console.error(err));
+    bcrypt.hash(password, salt_rounds, function(err, hash) {
+        // Store hash in your password DB.
+        User.update({
+            password: hash
+        }, {
+            where: {
+                id: req.params.id
+            }
+        }).then(() => {
+            res.redirect('/login');
+            console.log('reset password success! New password is: ', hash)
+        }).catch((err) => console.error(err));
+      });
+    // User.update({
+    //     password
+    // }, {
+    //     where: {
+    //         id: req.params.id
+    //     }
+    // }).then(() => {
+    //     res.redirect('/login');
+    //     console.log('reset password success! New password is: ', password)
+    // }).catch((err) => console.error(err));
 })
 
 passport.use(new LocalStrategy({usernameField: 'email',},
