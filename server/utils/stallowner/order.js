@@ -7,6 +7,9 @@ const Order = globalHandle.get('order')
 const User = globalHandle.get('user')
 const Stall = globalHandle.get('stall')
 
+//Secure Random 
+const uuidv4 = require('uuid/v4')
+
 /**
  * Order
  * @typedef {Object} Order
@@ -32,11 +35,17 @@ module.exports = {
      * @return {Promise} 
      */
     createOrder: function({status, userId, stallId, orderTiming = new Date}){
+        const buffer = Buffer.allocUnsafe(16);
+        uuidv4(null, buffer, 0)
+
+        const publicOrderID = buffer.toString('hex').toUpperCase()
+
         return Order.create({
             status: status,
             orderTiming: orderTiming,
             userId: userId,
-            stallId: stallId
+            stallId: stallId,
+            publicOrderID
         })
     },
 
