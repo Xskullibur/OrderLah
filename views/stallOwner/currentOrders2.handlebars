@@ -6,9 +6,17 @@
     QrScanner.WORKER_PATH = '/js/vendor/qrscanner/qr-scanner-worker.min.js';
 
     const video = document.getElementById('qr-video');
+    video.addEventListener('leavepictureinpicture', function(){
+        stopScanning()
+    })
+
+    video.onloadeddata = function(){
+        requestPIP()
+        console.log("close")
+    }
 
     function setResult(result) {
-        console.log(result)
+        alert(result)
     }
 
     // ####### Web Cam Scanning #######
@@ -16,13 +24,45 @@
 
     const scanner = new QrScanner(video, result => setResult(result));
 
+    let isScanning = false;
+
     function startScanning(){
-        scanner.start();
+        isScanning = true;
         scanner.setInversionMode('both');
+        scanner.start();
     }
 
-    
+    function stopScanning(){
+        isScanning = false;
+        scanner.stop();
+        if(document.pictureInPictureEnabled){document.exitPictureInPicture();}
+    }
+
+    async function requestPIP(){
+        if(document.pictureInPictureEnabled){
+            //PIP is enabled
+            //Request 
+            await video.requestPictureInPicture()
+        }
+        else{
+            video.removeAttribute('hidden')
+            
+        }
+    }
+
+    function toggleScanning(){
+        if(isScanning){
+            stopScanning();
+        }else{
+            startScanning();
+        }
+    }
+
+    window.toggleScanning = toggleScanning
+    window.startScanning = startScanning
+    window.requestPIP = requestPIP
 </script>
+
 <script nomodule>
     console.log('Module not suppoted by browser, consider using lastest version of chrome.');
 </script>
@@ -45,7 +85,9 @@
 
                     {{!-- Scanner --}}
                     <div>
-                        <video id="qr-video"></video>
+
+                        <button onclick="toggleScanning()"><i class="fa fa-qrcode" aria-hidden="true"></i></button>
+                        <video id="qr-video" width="230" height="160" hidden></video>
 
                         <p id="scannerOutput"></p>
                     </div>
