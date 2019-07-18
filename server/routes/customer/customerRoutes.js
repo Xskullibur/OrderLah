@@ -273,7 +273,6 @@ router.use(orders_api_routes)
 
 //Define main 'customer' paths
 
-//Payment PAYPAL
 const paypal = require('paypal-rest-sdk')
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
@@ -284,12 +283,8 @@ paypal.configure({
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
 const payPalClient = require('./ppClient')
 
-/**
- * GET '/payment' 
- * Payment stage for ordering items
- */
 
-//hsien xiang's route -cart done by ziheng
+//hsien xiang's route - done by hsien xiang and ziheng
 
 router.get('/payment', auth_login.auth, async (req, res) => {
     var totalAmount = 0
