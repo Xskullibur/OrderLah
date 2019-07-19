@@ -336,8 +336,11 @@ router.get('/recommendedMenuItems', (req, res) => {
     
         Promise.all(menuItemsIds).then(menuItems => {
             menuItems = menuItems.filter((e) => e != null)
-            res.type('json')
-            res.send(JSON.stringify(menuItems))
+            //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+            includeMenuItemsWithRating(menuItems, () => {
+                res.type('json')
+                res.send(formatMenuItemsToIndexHandlebars(menuItems))
+            })
         })
     })
 
