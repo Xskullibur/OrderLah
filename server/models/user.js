@@ -1,13 +1,14 @@
 /**
  * This class define the 'user' model for the database definition
  * Definition:
- *  username: varchar(255) NN U
- *  firstName: varchar(255) NN
- *  lastName: varchar(255) NN
- *  email: varchar(255) NN U
- *  birthday: DATE NN
- *  password: varchar(255) NN
- *  birthday: varchar(10) NN
+ *  username: varchar(255) U
+ *  firstName: varchar(255) 
+ *  lastName: varchar(255) 
+ *  email: varchar(255) U
+ *  birthday: DATE 
+ *  password: varchar(255) 
+ *  phone: varchar(10) 
+ *  role: enum ('Customer', 'Admin', 'Stallowner', 'Inactive'), default to Customer
  * Hooks:
  *  beforeCreate: password will be hashed before storing to database
  *  

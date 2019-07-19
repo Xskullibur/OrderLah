@@ -119,16 +119,6 @@ passport.deserializeUser(function(id, done) {
 
 //Define main 'route' path
 
-
-/**
- * Get all menu items inside the database as JSON
- */
-router.get('/menuItems', auth_login.auth, (req, res) => {
-   MenuItem.findAll({}).then( menuItems => {
-       res.send(JSON.stringify(menuItems))
-   })
-})
-
 const profile_gen = require('../libs/profile_img_generator')
 /**
  * Register GET '/register' path

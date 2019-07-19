@@ -8,7 +8,7 @@ SET REDIS_PORT=6379
 SET REDIS_HOST=192.168.99.100
 
 :: Auto login
-set AUTO_LOGIN=YES
+set AUTO_LOGIN=NO
 set LOGIN_AS=john@customer
 
 :: SET 'orderlah' database environment
