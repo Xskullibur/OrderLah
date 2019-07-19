@@ -39,10 +39,13 @@ function loadContent(menuItemDoc, menuItem){
     title.text(menuItem.foodTitle);
     price.text(menuItem.price);
 
-    for (let index = 0; index < menuItem.rating; index++) {
-        //Add the star
-        rating.append("<i class=\"fas fa-star text-danger\"></i>");
-    }
+    //Add the stars
+    rating.mdbRate(menuItem.rating, true);
+
+    // for (let index = 0; index < menuItem.rating; index++) {
+    //     //Add the star
+    //     rating.append("<i class=\"fas fa-star text-danger\"></i>");
+    // }
 
     if(img != null){
         //Once the img finished loading we show the element

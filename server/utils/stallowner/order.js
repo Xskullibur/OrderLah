@@ -10,6 +10,9 @@ const Stall = globalHandle.get('stall')
 //Secure Random 
 const uuidv4 = require('uuid/v4')
 
+
+//Sequelize
+const Sequelize = require('sequelize')
 /**
  * Order
  * @typedef {Object} Order
@@ -144,15 +147,16 @@ module.exports = {
      * Get all ratings based on menu item id
      * @param {number} menuItemId 
      */
-    getMenuItemRatings: function (menuItemId, item_filter, rating_filter) {
+    getMenuItemRatings: function (menuItemId, item_filter = null, rating_filter = null) {
 
-        query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
         INNER JOIN users ON orders.userId = users.id
         WHERE orders.status = 'Collection Confirmed'
-        AND menuItems.id = ${menuItemId}`
+        AND menuItems.id = ${menuItemId}
+        `
 
         if (item_filter) {
             query += ` AND menuItems.id = ${item_filter}`
@@ -165,6 +169,22 @@ module.exports = {
         query += ' ORDER BY 2 DESC'
 
         return db.query(query)
+    },
+
+    /**
+     * Get average rating for a given menu item id
+     * @param {number} menuItemId 
+     * @return {Promise}
+     */
+    getMenuItemRating: function(menuItemId){
+        return db.query(`
+        SELECT CEIL(AVG(orderItems.rating) - 1) AVG
+        FROM orders
+        INNER JOIN orderItems ON orderItems.orderId = orders.id
+        WHERE orders.status = 'Collection Confirmed' 
+        AND orderItems.menuItemId = ${menuItemId}
+        
+        `, { type: Sequelize.QueryTypes.SELECT })
     }
 
 }
