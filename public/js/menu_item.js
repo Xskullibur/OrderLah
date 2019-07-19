@@ -50,17 +50,23 @@ function loadContent(menuItemDoc, menuItem){
     if(img != null){
         //Once the img finished loading we show the element
         img.on('load', function(){
-            //Hide all shine
-            menuItemDoc.find('.shine').each(function(index) {
-                $(this).attr('hidden', '');
-            });
+
+            //Add delay
+            setTimeout(() => {
     
-            //Show all elements
-            img.removeAttr('hidden');
-            title.removeAttr('hidden');
-            price.removeAttr('hidden');
-            rating.removeAttr('hidden');
-    
+                //Hide all shine
+                menuItemDoc.find('.shine').each(function(index) {
+                    $(this).attr('hidden', '');
+                });
+        
+                //Show all elements
+                img.removeAttr('hidden');
+                title.removeAttr('hidden');
+                price.removeAttr('hidden');
+                rating.removeAttr('hidden');
+        
+
+            }, 1000)
         });        
     }else{
         //If img is not available for loading

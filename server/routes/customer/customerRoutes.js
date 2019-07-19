@@ -335,7 +335,7 @@ router.get('/recommendedMenuItems', (req, res) => {
         menuItemsIds = menuItemsIds.map(v => menu_item_util.getMenuItemByID(v))
     
         Promise.all(menuItemsIds).then(menuItems => {
-            menuItems = menuItems.filter((e) => e != null)
+            menuItems = menuItems.filter((e) => e != null && e.active)
             //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
             includeMenuItemsWithRating(menuItems, () => {
                 res.type('json')
