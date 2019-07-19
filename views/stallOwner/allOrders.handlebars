@@ -8,123 +8,124 @@
                 {{!-- Title --}}
                 <div class="row">
                     <div class="col text-center">
-                        <h1>All Orders</h1> 
+                        <h1>{{title}}</h1> 
                     </div>
                 </div>
 
-                <nav class="breadcrumb justify-content-center mb-4">
-                    <span class="breadcrumb-item active">Orders</span>
-                    <a class="breadcrumb-item" href="/stallOwner/ratings/">Ratings</a>
-                    <a class="breadcrumb-item" href="/stallOwner/orderDetails">Charts</a>
-                </nav>
+                {{>stallowner_items/orderDetails_nav title}}
 
-                {{!-- Filter --}}
-                <div class="row mb-3">
-                    <div class="col">
-                        {{>stallowner_items/all_orders_filter}}
+                <div class="p-3">
+
+                    {{!-- Filter --}}
+                    <div class="row mb-3">
+                        <div class="col">
+                            {{>stallowner_items/all_orders_filter}}
+                        </div>
                     </div>
-                </div>
 
 
-                {{#if allOrders}} 
-                    {{!-- Body --}}
-                    <div class="card container p-5">
+                    {{#if allOrders}} 
+                        {{!-- Body --}}
+                        <div class="card container p-5">
 
-                        {{#ifCondition pages ">" 1}}
-                            {{!-- Pagination Start --}}
-                            <div class="row mb-3">
-                                <div class="col p-0">
-                                    {{> stallowner_items/allOrders_pagination}}
-                                </div>
-                            </div>
-                        {{/ifCondition}}
-
-                        {{!-- Order Details --}}
-                        {{#each allOrders as |order|}}                            
-                        <div class="row mb-3">
-                            <div class="card col p-0 shadow">
-
-                                {{!-- Card Header --}}
-                                <div class="card-header bg-danger text-white">
-                                    <div class="row">
-                                        <div class="col">
-                                            Order ID: {{order.id}}
-                                        </div>
-                                        <div class="col text-right">
-                                            {{formatDate order.orderTiming "DD/MM/YYYY, HH:MM:SS"}}
-                                        </div>
+                            {{#ifCondition pages ">" 1}}
+                                {{!-- Pagination Start --}}
+                                <div class="row mb-3">
+                                    <div class="col p-0">
+                                        {{> stallowner_items/allOrders_pagination}}
                                     </div>
                                 </div>
+                            {{/ifCondition}}
 
-                                {{!-- Card Body --}}
-                                <div class="card-body px-5">
+                            {{!-- Order Details --}}
+                            {{#each allOrders as |order|}}                            
+                            <div class="row mb-3">
+                                <div class="card col p-0 shadow">
 
-                                    {{!-- Inner Card / Individual Orders --}}
-                                    {{#each order.menuItems as |item|}}
-                                    <div class="card mb-3 row bg-light">
-                                        <div class="col p-3">
-                                            <div class="row">
-                                                <div class="col-2">
-                                                    <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}/img/no-image.jpg{{/if}}" alt"">
-                                                </div>
-                                                <div class="col">
-                                                    <div class="row font-weight-bold mb-3">
-                                                        <div class="col">
-                                                            {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
-                                                        </div>
-                                                        <div class="col" style="text-align: right;">
-                                                            ${{calcItemPrice item}}
-                                                        </div>
+                                    {{!-- Card Header --}}
+                                    <div class="card-header bg-danger text-white">
+                                        <div class="row">
+                                            <div class="col">
+                                                Order ID: {{order.id}}
+                                            </div>
+                                            <div class="col text-right">
+                                                {{formatDate order.orderTiming "DD/MM/YYYY, HH:MM:SS"}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{!-- Card Body --}}
+                                    <div class="card-body px-5">
+
+                                        {{!-- Inner Card / Individual Orders --}}
+                                        {{#each order.menuItems as |item|}}
+                                        <div class="card mb-3 row bg-light">
+                                            <div class="col p-3">
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}/img/no-image.jpg{{/if}}" alt"">
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            Rating:
-                                                            {{#for item.orderItem.rating}}
-                                                            <i class="fas fa-star text-danger"></i>
-                                                            {{/for}}
+                                                    <div class="col">
+                                                        <div class="row font-weight-bold mb-3">
+                                                            <div class="col">
+                                                                {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                                                            </div>
+                                                            <div class="col" style="text-align: right;">
+                                                                ${{calcItemPrice item}}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col">Comments: 
-                                                            <p class="font-weight-light">{{item.orderItem.comments}}</p>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                Rating:
+                                                                {{#for item.orderItem.rating}}
+                                                                <i class="fas fa-star text-danger"></i>
+                                                                {{/for}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">Comments: 
+                                                                <p class="font-weight-light">{{item.orderItem.comments}}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {{/each}}
+                                        {{/each}}
 
-                                    {{!-- Total Amount --}}
-                                    <div class="row text-right">
-                                        <div class="col">
-                                            <b>Total Amount: ${{calcOrderTotal order}}</b>   
+                                        {{!-- Total Amount --}}
+                                        <div class="row text-right">
+                                            <div class="col">
+                                                <b>Total Amount: ${{calcOrderTotal order}}</b>   
+                                            </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
-                                
                             </div>
+                            {{/each}}
+
+                            {{#ifCondition pages ">" 1}}
+                                {{!-- Pagination End --}}
+                                <div class="row">
+                                    <div class="col">
+                                        {{> stallowner_items/allOrders_pagination}}
+                                    </div>
+                                </div>
+                            {{/ifCondition}}
+
                         </div>
-                        {{/each}}
+                    {{else}}
+                        {{!-- No Data Found --}}
+                        <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">No Orders Found!</h4>
+                        <p>If there are supposed to be orders please contact the Administrator.</p>
+                        <p class="mb-0"></p>
+                        </div>
+                    {{/if}}
 
-                        {{#ifCondition pages ">" 1}}
-                            {{!-- Pagination End --}}
-                            <div class="row">
-                                <div class="col">
-                                    {{> stallowner_items/allOrders_pagination}}
-                                </div>
-                            </div>
-                        {{/ifCondition}}
+                </div>
 
-                    </div>
-                {{else}}
-                    {{!-- No Data Found --}}
-                    <div class="alert alert-danger" role="alert">
-                      <h4 class="alert-heading">No Orders Found!</h4>
-                      <p>If there are supposed to be orders please contact the Administrator.</p>
-                      <p class="mb-0"></p>
-                    </div>
-                {{/if}}
 
             </div>
         </div>

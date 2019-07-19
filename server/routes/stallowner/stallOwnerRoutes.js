@@ -74,101 +74,6 @@ router.get('/', (req, res, next) => {
 
 });
 
-//All Orders Route
-router.get('/allOrders/:pageNo/', (req, res, next) => {
-
-
-    //Check for filters
-    let orderFilter = req.query.orderNo
-    let dateFilter = req.query.orderDate
-    let filter = false
-    let error
-
-    if (orderFilter && dateFilter) {
-        error = "Only one filter is allowed to be applied..."
-    }
-    else if (orderFilter){
-        if (isNaN(orderFilter)) {
-            error = "Please input a valid Order Number"
-        }
-        filterCondition = { id: orderFilter }
-        filter = true
-    }
-    else if (dateFilter) {
-        if (!Date.parse(dateFilter)) {
-            error = "Please input a valid Order Date"
-        }
-        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
-        filter = true
-    }
-
-    //Get StallID of logged in stallowner
-    order_util.getStallInfo(req.user.id).then(stallOwner => {
-
-        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
-
-        if (filter) {
-            whereCondition.push(filterCondition)
-        }
-
-        //Get total number of orders for the Stall
-        Order.count({ where: whereCondition }).then(orderCount => {
-
-            let currentPage = req.params.pageNo;                // Current page user is on
-            let offset = 0;                                     // Starting index of items
-            let limit = 5;                                      // Number of items per page
-            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
-
-    
-            /**
-             * If user is not on 1st page,
-             * calculate offset based on
-             * currentPage * limit (number of items per page)
-             */
-            if (currentPage !== 1) {
-                offset = (currentPage - 1) * limit
-            }
-
-            // Get paginated orders
-            Order.findAll({
-                where: whereCondition,                          // Filtered based on Status and Stall
-                offset,
-                limit,
-                order: Sequelize.col('orderTiming'),
-                include: [{
-                    model: MenuItem
-                }]
-            }).then(allOrders => {
-    
-                currentPage = parseInt(currentPage)
-    
-                res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter, error,
-                     helpers: {
-    
-                        //Pagination previous button Helper
-                        getPrevious(currentPg){
-                            if (currentPg > 1) {
-                                return currentPg - 1
-                            }
-                         },
-    
-                         //Pagination next button Helper
-                         getNext(currentPg){
-                             if (currentPg < pages) {
-                                 return currentPg + 1
-                             }
-                         }, 
-                    }
-                })
-            })
-    
-    
-        })
-    })
-
-});
-
 //Monthly Summary
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
@@ -278,6 +183,102 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
     })
 
 })
+
+//All Orders Route
+router.get('/allOrders/:pageNo/', (req, res, next) => {
+
+
+    //Check for filters
+    let orderFilter = req.query.orderNo
+    let dateFilter = req.query.orderDate
+    let title = "Orders"
+    let filter = false
+    let error
+
+    if (orderFilter && dateFilter) {
+        error = "Only one filter is allowed to be applied..."
+    }
+    else if (orderFilter){
+        if (isNaN(orderFilter)) {
+            error = "Please input a valid Order Number"
+        }
+        filterCondition = { id: orderFilter }
+        filter = true
+    }
+    else if (dateFilter) {
+        if (!Date.parse(dateFilter)) {
+            error = "Please input a valid Order Date"
+        }
+        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
+        filter = true
+    }
+
+    //Get StallID of logged in stallowner
+    order_util.getStallInfo(req.user.id).then(stallOwner => {
+
+        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
+
+        if (filter) {
+            whereCondition.push(filterCondition)
+        }
+
+        //Get total number of orders for the Stall
+        Order.count({ where: whereCondition }).then(orderCount => {
+
+            let currentPage = req.params.pageNo;                // Current page user is on
+            let offset = 0;                                     // Starting index of items
+            let limit = 5;                                      // Number of items per page
+            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
+
+    
+            /**
+             * If user is not on 1st page,
+             * calculate offset based on
+             * currentPage * limit (number of items per page)
+             */
+            if (currentPage !== 1) {
+                offset = (currentPage - 1) * limit
+            }
+
+            // Get paginated orders
+            Order.findAll({
+                where: whereCondition,                          // Filtered based on Status and Stall
+                offset,
+                limit,
+                order: Sequelize.col('orderTiming'),
+                include: [{
+                    model: MenuItem
+                }]
+            }).then(allOrders => {
+    
+                currentPage = parseInt(currentPage)
+    
+                res.render('stallOwner/allOrders',{
+                     pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
+                     helpers: {
+    
+                        //Pagination previous button Helper
+                        getPrevious(currentPg){
+                            if (currentPg > 1) {
+                                return currentPg - 1
+                            }
+                         },
+    
+                         //Pagination next button Helper
+                         getNext(currentPg){
+                             if (currentPg < pages) {
+                                 return currentPg + 1
+                             }
+                         }, 
+                    }
+                })
+            })
+    
+    
+        })
+    })
+
+});
 
 // Order Details
 router.get('/orderDetails/', (req, res) =>{
@@ -408,9 +409,11 @@ router.get('/orderDetails/', (req, res) =>{
         AvgRatingPerItem = await getAvgRatingPerItem(StallOwner)
         EachItemRating = await getEachItemRating(StallOwner)
 
+        title = "Charts"
+
         // res.send(EachItemRating)
-        res.render('stallOwner/orderDetails', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating
+        res.render('stallOwner/orderCharts', {
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title
         });
     }
 

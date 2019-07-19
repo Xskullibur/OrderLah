@@ -10,153 +10,154 @@
                     </div>
                 </div>
 
-                <nav class="breadcrumb justify-content-center mb-4">
-                    <a class="breadcrumb-item" href="/stallOwner/allOrders/1/">Orders</a>
-                    <span class="breadcrumb-item active">Ratings</span>
-                    <a class="breadcrumb-item" href="/stallOwner/orderDetails/">Charts</a>
-                </nav>
-                
-                {{!-- Filter --}}
-                <div class="row mb-4">
-                    <div class="col">
-                        <div class="card bg-light">
-                            <div class="card-body container p-4">
-                                <form id="filter">
+                {{>stallowner_items/orderDetails_nav title}}
 
-                                    <div class="row">
+                <div class="p-3">
 
-                                        {{!-- Item --}}
-                                        <div class="col-4">
+                    {{!-- Filter --}}
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="card bg-light">
+                                <div class="card-body container p-4">
+                                    <form id="filter">
 
-                                            <div class="row">
-                                                <div class="col">
-                                                    <h6>Items:</h6>
+                                        <div class="row">
+
+                                            {{!-- Item --}}
+                                            <div class="col-4">
+
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <h6>Items:</h6>
+                                                    </div>
                                                 </div>
+
+                                                <div class="row">
+                                                    <div class="col">
+
+                                                        <select class="custom-select" name="item_filter" id="item_filter">
+                                                            <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}} id="item_filter_default">Filter by menu item</option>
+                                                            {{#each menu_items as |item|}}
+                                                                <option value="{{item.id}}" {{#ifCondition @root.item_filter "==" item.id}}selected{{/ifCondition}}>{{item.itemName}}</option>
+                                                            {{/each}}
+                                                        </select>
+
+                                                    </div>
+                                                </div>
+
                                             </div>
 
-                                            <div class="row">
-                                                <div class="col">
+                                            {{!-- Rating --}}
+                                            <div class="col-4">
 
-                                                    <select class="custom-select" name="item_filter" id="item_filter">
-                                                        <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}} id="item_filter_default">Filter by menu item</option>
-                                                        {{#each menu_items as |item|}}
-                                                            <option value="{{item.id}}" {{#ifCondition @root.item_filter "==" item.id}}selected{{/ifCondition}}>{{item.itemName}}</option>
-                                                        {{/each}}
-                                                    </select>
-
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <h6 class="m-0">Rating:</h6>
+                                                    </div>
                                                 </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <span class="rating" style="font-size: 2em"></span>
+                                                        <input type="hidden" name="rating_filter" id="rating_filter">      
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
 
                                         </div>
 
-                                        {{!-- Rating --}}
-                                        <div class="col-4">
-
-                                            <div class="row">
-                                                <div class="col">
-                                                    <h6 class="m-0">Rating:</h6>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <span class="rating" style="font-size: 2em"></span>
-                                                    <input type="hidden" name="rating_filter" id="rating_filter">      
-                                                </div>
-                                            </div>
-                                            
-                                        </div>
-
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col text-right">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <a href="/stallOwner/ratings/" class="btn btn-outline-danger">Reset</a>
-                                                    <button class="btn btn-outline-danger">Filter</button>
+                                        <div class="row">
+                                            <div class="col text-right">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <a href="/stallOwner/ratings/" class="btn btn-outline-danger">Reset</a>
+                                                        <button class="btn btn-outline-danger">Filter</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{!-- Accordion --}}
-                <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
-                    {{#each allRatings as |item|}}
+                    {{!-- Accordion --}}
+                    <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+                        {{#each allRatings as |item|}}
 
-                        <!-- Accordion card -->
-                        <div class="card">
+                            <!-- Accordion card -->
+                            <div class="card">
 
-                            <!-- Card header -->
-                            <div class="card-header" role="tab" id='heading_{{item.id}}'>
-                                <a data-toggle="collapse" data-parent="#accordionEx" href="#collapse_{{item.id}}" aria-expanded="true" aria-controls="collapse_{{item.id}}">
+                                <!-- Card header -->
+                                <div class="card-header" role="tab" id='heading_{{item.id}}'>
+                                    <a data-toggle="collapse" data-parent="#accordionEx" href="#collapse_{{item.id}}" aria-expanded="true" aria-controls="collapse_{{item.id}}">
 
-                                    <div class="container">
-                                        <div class="row">
-                                            <h5 class="col-11 mb-0">
-                                                {{item.itemName}}
-                                            </h5>
-                                            <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
-                                        </div>
-                                    </div>
-
-                                </a>
-                            </div>
-
-                            <!-- Card body -->
-                            <div id="collapse_{{item.id}}" class="collapse {{#ifCondition @index "==" 0}}show{{/ifCondition}}" role="tabpanel" aria-labelledby='heading_{{item.id}}' data-parent="#accordionEx">
-                                <div class="card-body">
-
-                                    {{#if item.ratings}}
-
-                                        {{!-- Ratings --}}
-                                        <div class="card-columns">
-
-                                            {{!-- Each Rating --}}
-                                            {{#each item.ratings as |itemRating|}}                                            
-                                                <div class="card d-inline-block">
-
-                                                    <img class="card-img-top" src="holder.js/100x180/" alt="">
-
-                                                    <blockquote class="blockquote mb-0 card-body">
-                                                        <h5 class="card-title font-weight-bold">
-                                                            Rating: {{#for itemRating.rating}}<i class="fa fa-star text-warning" aria-hidden="true"></i>{{/for}}
-                                                        </h5>
-                                                        <p>{{itemRating.comments}}</p>
-                                                        <footer class="blockquote-footer">
-                                                            <small class="text-muted">
-                                                                Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
-                                                            </small>
-                                                        </footer>
-                                                    </blockquote>
-
-                                                </div>
-                                            {{/each}}
-
+                                        <div class="container">
+                                            <div class="row">
+                                                <h5 class="col-11 mb-0">
+                                                    {{item.itemName}}
+                                                </h5>
+                                                <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                            </div>
                                         </div>
 
-                                    {{else}}
-                                        
-                                        <div class="alert alert-info" role="alert">
-                                            <strong>Ratings Not Found</strong>
-                                        </div>
-
-                                    {{/if}}
-
-                                    
+                                    </a>
                                 </div>
+
+                                <!-- Card body -->
+                                <div id="collapse_{{item.id}}" class="collapse {{#ifCondition @index "==" 0}}show{{/ifCondition}}" role="tabpanel" aria-labelledby='heading_{{item.id}}' data-parent="#accordionEx">
+                                    <div class="card-body">
+
+                                        {{#if item.ratings}}
+
+                                            {{!-- Ratings --}}
+                                            <div class="card-columns">
+
+                                                {{!-- Each Rating --}}
+                                                {{#each item.ratings as |itemRating|}}                                            
+                                                    <div class="card d-inline-block">
+
+                                                        <img class="card-img-top" src="holder.js/100x180/" alt="">
+
+                                                        <blockquote class="blockquote mb-0 card-body">
+                                                            <h5 class="card-title font-weight-bold">
+                                                                Rating: {{#for itemRating.rating}}<i class="fa fa-star text-warning" aria-hidden="true"></i>{{/for}}
+                                                            </h5>
+                                                            <p>{{itemRating.comments}}</p>
+                                                            <footer class="blockquote-footer">
+                                                                <small class="text-muted">
+                                                                    Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
+                                                                </small>
+                                                            </footer>
+                                                        </blockquote>
+
+                                                    </div>
+                                                {{/each}}
+
+                                            </div>
+
+                                        {{else}}
+                                            
+                                            <div class="alert alert-info" role="alert">
+                                                <strong>Ratings Not Found</strong>
+                                            </div>
+
+                                        {{/if}}
+
+                                        
+                                    </div>
+                                </div>
+
                             </div>
+                            <!-- Accordion card -->
 
-                        </div>
-                        <!-- Accordion card -->
+                        {{/each}}
+                    </div>
 
-                    {{/each}}
                 </div>
+
 
             </div>
         </div>
