@@ -4,7 +4,12 @@ FROM node:latest
 # Create /app directory
 WORKDIR /app
 # Copy files to /app directory
-COPY public sass server test views *.js package*.json ./
+COPY public/ ./public
+COPY sass/ ./sass
+COPY server/ ./server
+COPY test/ ./test
+COPY views/ ./views
+COPY *.js package*.json ./
 
 # Install modules
 RUN npm install
@@ -13,4 +18,4 @@ RUN npm install
 EXPOSE 3000 4000
 
 # Start the node server
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:nocompilesass"]

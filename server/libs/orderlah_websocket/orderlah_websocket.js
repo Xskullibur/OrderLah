@@ -1,7 +1,9 @@
 // const Server = require('socket.io');
 // const io = new Server();
 
-const server = require('http').createServer();
+const globalHandle = require('../global/global')
+
+const server = globalHandle.get('app');
 
 const io = require('socket.io')(server, {
     // serveClient: false,
@@ -22,10 +24,4 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
       });
-});
-  
-
-server.listen(4000,() => {
-    console.log('Websocket listening on 4000');
-    
 });
