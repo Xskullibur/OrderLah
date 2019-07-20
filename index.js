@@ -46,12 +46,8 @@ let redisStore = new RedisStore({
 //Setup express
 const app = express()
 
-const http = require('http')
-const server = http.createServer(app)
-
 //Put app inside global
 globalHandle.put('app', app)
-globalHandle.put('server', server)
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout', helpers}))
@@ -134,7 +130,26 @@ app.use('/admin', adminRoutes)
 require('./server/libs/orderlah_websocket/orderlah_websocket')
 
 
+// process.on('SIGTERM', () => {
+//     close()
+// });
+
+// process.on('SIGINT', () => {
+//     close()
+// });
+
+// process.on('exit', () => {
+//     close()
+// });
+
+// function close(){
+//     console.log('Closing http server.');
+//     server.close(() => {
+//         console.log('Http server closed.');
+//     });
+// }
+
 app.set('port', port);
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server is listening ${port}`);
 })

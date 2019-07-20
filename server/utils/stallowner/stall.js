@@ -3,6 +3,9 @@ const globalHandle = require('../../libs/global/global')
 //models
 const Stall = globalHandle.get('stall')
 
+//Sequelize
+const Sequelize = require('sequelize')
+
 /**
 * Stall object
 * @typedef {Object} Stall
@@ -37,5 +40,35 @@ module.exports = {
                 cusineId
             }
         })
+    },
+
+    /**
+     * Get all pending customer id for a particular stall 
+     * @param {number} stallId 
+     * @return {Promise}
+     */
+    getAllPendingCustomersIDByStallID(stallId){
+        return db.query(`
+            SELECT orders.userId
+            FROM orders
+            WHERE orders.stallId = ${stallId}
+            AND orders.status != "Collection Confirmed"
+            AND DATE(orders.orderTiming) = current_date()
+        `, { type: Sequelize.QueryTypes.SELECT })
+    },
+    
+    /**
+     * Get stall id from order id
+     * @param {number} stallId
+     * @return {Promise}
+     */
+    getStallIDFromOrderID(orderId){
+        return db.query(`
+            SELECT orders.stallId
+            FROM orders
+            WHERE orders.id = ${orderId}
+        `, { type: Sequelize.QueryTypes.SELECT })
     }
+    
+
 }

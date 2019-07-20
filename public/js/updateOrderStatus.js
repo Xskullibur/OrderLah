@@ -5,19 +5,46 @@ $(document).ready(function (){
 
     var sid = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
-    socket = io.connect('http://' + window.location.hostname +':3000/');
+    socket = io.connect('http://' + window.location.hostname +':4000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
+
+        if(typeof getOrderId === "function"){
+            //Is a customer on a order status page
+            var orderId = getOrderId();
+            socket.emit('customer-init', {orderId});
+        }
+
+
+        //Customers events
         socket.on('update-status', function({updatedStatus}){
             console.log(updatedStatus);
+
+            if(updateStatus == 'Collection Confirmed'){
+                setCircleProgress(100);
+                setTime(0);
+            }
+
             $('#order-status').text(updatedStatus)
             if(typeof notify === "function") notify(updatedStatus);
+        })
+    
+        socket.on('update-timing', function({timing}){
+            console.log("Timing: " + timing);
+            setTime(timing);
+            setCircleProgress((60 - timing) / 60 * 100);
         })
     });
     socket.on('disconnect', () => {
         console.log('Stopped listening for updates');
     })
+
+
+    
+
+    setTimeout(0);
+
 })
 
 // Get Session ID from Cookie

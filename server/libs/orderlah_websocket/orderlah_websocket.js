@@ -4,18 +4,21 @@
 const status = require('../../utils/stallowner/update_status')
 const transactions = require('../../utils/main/order_transactions')
 const globalHandle = require('../global/global')
+const order_util = require('../../utils/stallowner/order')
+const stall_util = require('../../utils/stallowner/stall')
 
-const server = globalHandle.get('server')
+const server = require('http').createServer();
 
 const io = require('socket.io')(server);
 
 // , {
-//     // serveClient: false,
+//     // serveClient: true,
 //     // below are engine.IO options
 //     pingInterval: 10000,
 //     pingTimeout: 5000,
 //     cookie: false
 // }
+
 
 RedisStore = globalHandle.get('redis')
 
@@ -34,7 +37,33 @@ io.on('connection', function(socket){
         //Store session id with socket id
         sessionIDs[socket.id] = sessionId
         //io.to(socket.id) get socket
+
         
+    
+    })
+
+    /**
+     * Customer will send the order id upon connecting to socket
+     */
+    socket.on('customer-init', function({orderId}) {
+
+        let sessionid = sessionIDs[socket.id]
+
+        getSessionBySessionID(sessionid, async (err, session) => {
+            if(session.passport.user){
+                let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
+                
+                stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
+            
+                    if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+                    
+                })
+
+                
+            }
+        })
+
+
     })
     
     // On User Disconnect
@@ -50,7 +79,19 @@ io.on('connection', function(socket){
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', function({orderID, updatedStatus}) {
+    socket.on('update-status', async function({orderID, updatedStatus}) {
+
+        //Update customer timing
+        getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
+            let stallownerId = stallownerSession.passport.user
+            let stallOwner = await order_util.getStallInfo(stallownerId)
+
+            let stallId = stallOwner.stall.id
+
+            sendTiming(stallId)
+            
+
+        })
 
         status.updateOrderStatus({
             orderID, updatedStatus
@@ -71,7 +112,40 @@ io.on('connection', function(socket){
     })
 
 });
-  
+
+function sendTiming(stallId){
+    //Update customer timing
+    stall_util.getAllPendingCustomersIDByStallID(stallId).then(custIds => {
+        custIds.forEach(custId => {
+
+            let userID = custId.userId
+
+            getSessionsFromCustomerID(userID, (session) => {
+                let socketids = getSocketIDsBySessionID(session)
+
+                order_util.getOrderIDFromUserId(userID).then(orderId => {
+                    
+                    getOrderTimingForOrder(orderId[0].id, (timing => {
+                        socketids.forEach(socketId => {
+                            io.to(socketId).emit('update-timing', {timing})
+                        })
+                    }))
+
+                })
+
+            })
+
+        })            
+    })
+}
+
+
+function getOrderTimingForOrder(orderid, cb){
+    const timingForEachOrder = 2
+    order_util.getNumberOfOrdersBeforeOrder(orderid).then(count => {
+        cb(count[0].ordersCount * timingForEachOrder)
+    })
+}
 
 function getSocketIDBySessionID(sessionId){
     for (let socketId in sessionIDs) {
@@ -79,6 +153,14 @@ function getSocketIDBySessionID(sessionId){
         if(sessionId == tsessionId)return socketId
     }
     return null
+}
+
+function getSocketIDsBySessionID(sessionId){
+    let socketIds = []
+    for(let socketId in sessionIDs){
+        if(sessionIDs[socketId] == sessionId)socketIds.push(socketId)
+    }
+    return socketIds
 }
 
 function getSessionsFromCustomerID(custId, yieldCB){
@@ -91,6 +173,7 @@ function getSessionsFromCustomerID(custId, yieldCB){
         })
     }
 }
+
 
 function getSessionBySessionID(sessionId, cb){
     //Retrieve the session store inside redis
@@ -112,3 +195,8 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
+
+server.listen(4000, () => {
+    console.log("Web socket is listening on port 4000");
+    
+})

@@ -251,7 +251,7 @@ async function createTestData() {
         //Orders (Pending Status)
         let order = await order_util.createOrder({
             status: 'Order Pending',
-            orderTiming: previousDate,
+            orderTiming: new Date,
             userId: customer.id,
             stallId: stall.id
         })
@@ -263,8 +263,8 @@ async function createTestData() {
 
         let order2 = await order_util.createOrder({
             status: 'Order Pending',
-            orderTiming: previousDate,
-            userId: 1,
+            orderTiming: new Date,
+            userId: 5,
             stallId: stall.id
         })
         await order_util.createOrderItem({
@@ -276,7 +276,7 @@ async function createTestData() {
         let order3 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
-            userId: 2,
+            userId: 7,
             stallId: stall.id
         })
         await order_util.createOrderItem({
@@ -288,7 +288,7 @@ async function createTestData() {
         let order4 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
-            userId: 3,
+            userId: 5,
             stallId: stall.id
         })
         await order_util.createOrderItem({

@@ -22,6 +22,24 @@
         else $('.order-progress-circle, .order-pulsing-circle').removeClass('complete')
 
     }
+
+    function setTime(totalMins){
+        var mins = totalMins % 60;
+        var hours = Math.floor(totalMins / 60);
+
+        var timer ='<tspan id="order-est-time" class="order-sub-text"> ';
+
+        if(hours != 0){
+            timer += `<tspan class="plain">${hours}</tspan> hr`;
+        }
+
+
+        timer += ` <tspan class="plain">${mins}</tspan> mins</tspan>`;
+
+        $('#est-timer').html(timer)
+
+    }
+
 </script>
 <div class="container">
     <div class="row justify-content-center pt-2">
@@ -51,8 +69,8 @@
                 <text x="50%" y="50%" text-anchor="middle" dy="1.3em">
                     <tspan class="order-text">Estimated time:</tspan>
                 </text>
-                <text  x="50%" y="50%" text-anchor="middle" dy="3.3em">
-                    <tspan id="order-est-time" class="order-sub-text"><tspan class="plain">1</tspan> h <tspan class="plain">20</tspan> min</tspan>
+                <text id="est-timer" x="50%" y="50%" text-anchor="middle" dy="3.3em">
+                    
                 </text>
             </svg> 
         </div>

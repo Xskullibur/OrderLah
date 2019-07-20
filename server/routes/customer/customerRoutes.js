@@ -107,7 +107,7 @@ router.get('/pastOrders', (req, res) => {
 
     }).then((currentOrders) => {
         // res.send(currentOrders);
-
+        currentOrders = currentOrders.filter(order => order.userId == req.user.id)
         const testImg = process.cwd() + '/public/img/no-image'
         res.render('customer/pastorders', {
             helpers: {

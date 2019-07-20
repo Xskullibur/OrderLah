@@ -185,6 +185,35 @@ module.exports = {
         AND orderItems.menuItemId = ${menuItemId}
         
         `, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    /**
+     * Get the number of orders before given order
+     * @param {number} orderId 
+     * @return {Promise}
+     */
+    getNumberOfOrdersBeforeOrder: function(orderId){
+        return db.query(`SELECT COUNT(*) AS "ordersCount"
+        FROM orders, (
+            SELECT id, stallId, orderTiming
+            FROM orders
+            WHERE orders.id = ${orderId}
+        ) as a
+        WHERE orders.stallId = a.stallId
+        AND orders.status != 'Collection Confirmed'
+        AND orders.id <= a.id
+        AND DATE(orders.orderTiming) = current_date()
+        AND a.orderTiming >= orders.orderTiming;`, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    getOrderIDFromUserId(userId){
+        return db.query(`
+            SELECT orders.id
+            FROM orders
+            WHERE orders.userId = ${userId}
+            AND orders.status != "Collection Confirmed"
+            LIMIT 1
+        `, { type: Sequelize.QueryTypes.SELECT })
     }
 
 }
