@@ -1,5 +1,5 @@
 # Pull lastest node image
-FROM node:lastest
+FROM node:latest
 
 # Create /app directory
 WORKDIR /app
