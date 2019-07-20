@@ -4,7 +4,7 @@ FROM node:latest
 # Create /app directory
 WORKDIR /app
 # Copy files to /app directory
-COPY public sass server test views *.js package*.json /
+COPY public sass server test views *.js package*.json
 
 # Install modules
 RUN npm install
