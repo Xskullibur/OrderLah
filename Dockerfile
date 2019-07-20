@@ -18,4 +18,4 @@ RUN npm install
 EXPOSE 3000 4000
 
 # Start the node server
-CMD ["npm", "run", "start:nocompilesass"]
+CMD ["npm", "start"]
