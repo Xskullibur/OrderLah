@@ -110,13 +110,23 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4 class="card-title">Number of Items Bought:</h4>
-                                                <canvas id="OrdersPerItem"></canvas>
+
+                                                {{#if OrdersPerItem}}
+                                                    <canvas id="OrdersPerItem"></canvas>
+                                                {{else}}
+                                                    {{> stallowner_items/no_orders_found_ALERT}}
+                                                {{/if}}
+
                                             </div>
                                         </div>
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4 class="card-title">Average Rating Per Item</h4>
-                                                <canvas id="ARPI"></canvas>
+                                                {{#if AvgRatingPerItem}}
+                                                    <canvas id="ARPI"></canvas>
+                                                {{else}}
+                                                    {{> stallowner_items/no_orders_found_ALERT}}
+                                                {{/if}}
                                             </div>
                                         </div>
                                     </div>
