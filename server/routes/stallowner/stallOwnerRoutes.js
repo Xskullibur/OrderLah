@@ -370,6 +370,14 @@ router.use(auth_login.auth)
 
 var displayAlert = []
 
+function toCap(str) {
+    var splitStr = str.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+    }
+    return splitStr.join(' ')
+ }
+
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
@@ -394,7 +402,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     const currentUser = req.user.id
 
     Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-        const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")     
+        const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
         const price = req.body.itemPrice
         const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
         const owner = req.user.id
@@ -426,7 +434,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
 
 router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
     const currentUser = req.user.id
-    const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
+    const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
