@@ -13,7 +13,6 @@ module.exports = {
     auth: function(req, res, next){
         //Dev
         if(process.env.NODE_ENV === 'dev') {
-
             if(process.env.AUTO_LOGIN  === 'YES'){
                 console.warn("Warning: you are auto login as a customer, to disable auto login. Set the Environment variable 'AUTO_LOGIN' to other values then 'YES'");
                 
@@ -55,9 +54,9 @@ module.exports = {
     authStallOwner: function(req, res, next){
         //Dev
         if(process.env.NODE_ENV === 'dev') {
-
             //Auto login
             if(process.env.AUTO_LOGIN  === 'YES' && process.env.LOGIN_AS === 'stallowner'){
+
                 console.warn("Warning: you are auto login as a stallowner, to disable auto login. Set the Environment variable 'AUTO_LOGIN' to other values then 'YES'");
                 const globalHandle = require('./global/global')
                 const User = globalHandle.get('user')

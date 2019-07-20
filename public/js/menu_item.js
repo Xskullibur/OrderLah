@@ -39,25 +39,34 @@ function loadContent(menuItemDoc, menuItem){
     title.text(menuItem.foodTitle);
     price.text(menuItem.price);
 
-    for (let index = 0; index < menuItem.rating; index++) {
-        //Add the star
-        rating.append("<i class=\"fas fa-star text-danger\"></i>");
-    }
+    //Add the stars
+    rating.mdbRate(menuItem.rating, true);
+
+    // for (let index = 0; index < menuItem.rating; index++) {
+    //     //Add the star
+    //     rating.append("<i class=\"fas fa-star text-danger\"></i>");
+    // }
 
     if(img != null){
         //Once the img finished loading we show the element
         img.on('load', function(){
-            //Hide all shine
-            menuItemDoc.find('.shine').each(function(index) {
-                $(this).attr('hidden', '');
-            });
+
+            //Add delay
+            setTimeout(() => {
     
-            //Show all elements
-            img.removeAttr('hidden');
-            title.removeAttr('hidden');
-            price.removeAttr('hidden');
-            rating.removeAttr('hidden');
-    
+                //Hide all shine
+                menuItemDoc.find('.shine').each(function(index) {
+                    $(this).attr('hidden', '');
+                });
+        
+                //Show all elements
+                img.removeAttr('hidden');
+                title.removeAttr('hidden');
+                price.removeAttr('hidden');
+                rating.removeAttr('hidden');
+        
+
+            }, 1000)
         });        
     }else{
         //If img is not available for loading

@@ -14,6 +14,9 @@ const auth_login = require('../../libs/auth_login')
 //MomentJS
 const moment = require('moment')
 
+// Utils
+const order_util = require('../../utils/stallowner/order')
+
 //Global
 //Models
 const globalHandle = require('../../libs/global/global')
@@ -36,44 +39,11 @@ router.use(auth_login.authStallOwner)
  * ALSON ROUTES 
  */
 
-//Get StallID based on logged in Stall Owner ID
-function getStallInfo(userID) {
-    let promise = new Promise((resolve, reject)=>{
-
-        User.findOne({
-            where: {
-                id: userID
-            },
-            include: [{
-                model: Stall
-            }]
-        }).then(stall => {
-            resolve(stall)
-        }).catch((err) => {
-            console.log(`ERROR: ${err}`)
-        })
-
-        // Stall.findOne({
-        //     where: {
-        //         userId: userID
-        //     },
-        //     include: [{
-        //         model: User
-        //     }]
-        // }).then(stall => {
-        //     resolve(stall)
-        // }).catch((err) => {
-        //     console.log(`ERROR: ${err}`)
-        // })
-    })
-    return promise
-}
-
 //Current Orders Route
 router.get('/', (req, res, next) => {
     
     //Get Stall ID
-    getStallInfo(req.user.id).then((stallOwner) => {
+    order_util.getStallInfo(req.user.id).then((stallOwner) => {
 
         /**
         * Get Current Orders
@@ -104,106 +74,11 @@ router.get('/', (req, res, next) => {
 
 });
 
-//All Orders Route
-router.get('/allOrders/:pageNo/', (req, res, next) => {
-
-
-    //Check for filters
-    let orderFilter = req.query.orderNo
-    let dateFilter = req.query.orderDate
-    let filter = false
-    let error
-
-    if (orderFilter && dateFilter) {
-        error = "Only one filter is allowed to be applied..."
-    }
-    else if (orderFilter){
-        if (isNaN(orderFilter)) {
-            error = "Please input a valid Order Number"
-        }
-        filterCondition = { id: orderFilter }
-        filter = true
-    }
-    else if (dateFilter) {
-        if (!Date.parse(dateFilter)) {
-            error = "Please input a valid Order Date"
-        }
-        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
-        filter = true
-    }
-
-    //Get StallID of logged in stallowner
-    getStallInfo(req.user.id).then(stallOwner => {
-
-        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
-
-        if (filter) {
-            whereCondition.push(filterCondition)
-        }
-
-        //Get total number of orders for the Stall
-        Order.count({ where: whereCondition }).then(orderCount => {
-
-            let currentPage = req.params.pageNo;                // Current page user is on
-            let offset = 0;                                     // Starting index of items
-            let limit = 5;                                      // Number of items per page
-            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
-
-    
-            /**
-             * If user is not on 1st page,
-             * calculate offset based on
-             * currentPage * limit (number of items per page)
-             */
-            if (currentPage !== 1) {
-                offset = (currentPage - 1) * limit
-            }
-
-            // Get paginated orders
-            Order.findAll({
-                where: whereCondition,                          // Filtered based on Status and Stall
-                offset,
-                limit,
-                order: Sequelize.col('orderTiming'),
-                include: [{
-                    model: MenuItem
-                }]
-            }).then(allOrders => {
-    
-                currentPage = parseInt(currentPage)
-    
-                res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter, error,
-                     helpers: {
-    
-                        //Pagination previous button Helper
-                        getPrevious(currentPg){
-                            if (currentPg > 1) {
-                                return currentPg - 1
-                            }
-                         },
-    
-                         //Pagination next button Helper
-                         getNext(currentPg){
-                             if (currentPg < pages) {
-                                 return currentPg + 1
-                             }
-                         }, 
-                    }
-                })
-            })
-    
-    
-        })
-    })
-
-});
-
 //Monthly Summary
 router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
     //Get StallID based onlogged in user
-    getStallInfo(req.user.id).then(stallOwner => {
+    order_util.getStallInfo(req.user.id).then(stallOwner => {
 
         const inputMonthYear = `${req.params.monthYear}`                // Get submitted Month-Year from paramaters
         let title = `Monthly Summary`                                   // Default Title
@@ -297,7 +172,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                         }
                     }
 
-                    res.render('../views/stallOwner/monthlySummary',{
+                    res.render('stallOwner/monthlySummary',{
                         month, formatedOrder, title, selectedDate, stallOwner
                     })
                 })
@@ -309,12 +184,108 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
+//All Orders Route
+router.get('/allOrders/:pageNo/', (req, res, next) => {
+
+
+    //Check for filters
+    let orderFilter = req.query.orderNo
+    let dateFilter = req.query.orderDate
+    let title = "Orders"
+    let filter = false
+    let error
+
+    if (orderFilter && dateFilter) {
+        error = "Only one filter is allowed to be applied..."
+    }
+    else if (orderFilter){
+        if (isNaN(orderFilter)) {
+            error = "Please input a valid Order Number"
+        }
+        filterCondition = { id: orderFilter }
+        filter = true
+    }
+    else if (dateFilter) {
+        if (!Date.parse(dateFilter)) {
+            error = "Please input a valid Order Date"
+        }
+        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
+        filter = true
+    }
+
+    //Get StallID of logged in stallowner
+    order_util.getStallInfo(req.user.id).then(stallOwner => {
+
+        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
+
+        if (filter) {
+            whereCondition.push(filterCondition)
+        }
+
+        //Get total number of orders for the Stall
+        Order.count({ where: whereCondition }).then(orderCount => {
+
+            let currentPage = req.params.pageNo;                // Current page user is on
+            let offset = 0;                                     // Starting index of items
+            let limit = 5;                                      // Number of items per page
+            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
+
+    
+            /**
+             * If user is not on 1st page,
+             * calculate offset based on
+             * currentPage * limit (number of items per page)
+             */
+            if (currentPage !== 1) {
+                offset = (currentPage - 1) * limit
+            }
+
+            // Get paginated orders
+            Order.findAll({
+                where: whereCondition,                          // Filtered based on Status and Stall
+                offset,
+                limit,
+                order: Sequelize.col('orderTiming'),
+                include: [{
+                    model: MenuItem
+                }]
+            }).then(allOrders => {
+    
+                currentPage = parseInt(currentPage)
+    
+                res.render('stallOwner/allOrders',{
+                     pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
+                     helpers: {
+    
+                        //Pagination previous button Helper
+                        getPrevious(currentPg){
+                            if (currentPg > 1) {
+                                return currentPg - 1
+                            }
+                         },
+    
+                         //Pagination next button Helper
+                         getNext(currentPg){
+                             if (currentPg < pages) {
+                                 return currentPg + 1
+                             }
+                         }, 
+                    }
+                })
+            })
+    
+    
+        })
+    })
+
+});
+
 // Order Details
 router.get('/orderDetails/', (req, res) =>{
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
-            getStallInfo(req.user.id).then(stallOwner => {
+            order_util.getStallInfo(req.user.id).then(stallOwner => {
                 resolve(stallOwner);
             }).catch(err => {
                 reject(err)
@@ -376,11 +347,7 @@ router.get('/orderDetails/', (req, res) =>{
     function getEachItemRating(stallOwner) {
 
         return new Promise(function(resolve, reject) {
-            // Get Stall's Items
-            db.query(`SELECT menuItems.id, menuItems.itemName
-            FROM menuItems
-            WHERE menuItems.stallId = ${stallOwner.stall.id};`).then(async ([allItems, metadata]) => {
-    
+            order_util.getStallOwnerMenuItems(stallOwner.stall.id).then(async ([allItems, metadata]) => {
                 EachItemRating = []
     
                 for (const key in allItems) {
@@ -426,10 +393,10 @@ router.get('/orderDetails/', (req, res) =>{
                 }
 
                 resolve(EachItemRating)
-
             }).catch(err => {
                 reject(err)
             })
+            
         })
 
     }
@@ -442,9 +409,11 @@ router.get('/orderDetails/', (req, res) =>{
         AvgRatingPerItem = await getAvgRatingPerItem(StallOwner)
         EachItemRating = await getEachItemRating(StallOwner)
 
+        title = "Charts"
+
         // res.send(EachItemRating)
-        res.render('../views/stallOwner/orderDetails', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating
+        res.render('stallOwner/orderCharts', {
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title
         });
     }
 
@@ -452,57 +421,100 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
-/**
- * ALSON LOGIC ROUTES
- */
-const STATUS = {
-    OrderPending: 'Order Pending',
-    PreparingOrder: 'Preparing Order',
-    ReadyForCollection: 'Ready for Collection',
-    CollectionConfirmed: 'Collection Confirmed'
-}
+router.get('/ratings/', (req, res) => {
 
-function getUpdateStatus(status) {
-    switch (status) {
+    title = "Ratings"
+    allRatings = []
+    menu_items = {}
+    item_filter = null
+    rating_filter = null
 
-        case STATUS.OrderPending:
-            return STATUS.PreparingOrder
+    function getFilters() {
 
-        case STATUS.PreparingOrder:
-            return STATUS.ReadyForCollection
+        filters = false
 
-        case STATUS.ReadyForCollection:
-            return STATUS.CollectionConfirmed
-
-    }
-}
-
-router.post('/updateStatus/:orderID', (req, res) => {
-    
-    const orderID =  req.params.orderID
-
-    //Get Order
-    Order.findOne({
-        where: {
-            id: orderID
+        if (req.query.item_filter) {
+            item_filter = parseInt(req.query.item_filter)
+            filters = true
         }
-    }).then(order => {
 
-        let status = getUpdateStatus(order.status)
+        if (req.query.rating_filter) {
+            rating_filter = parseInt(req.query.rating_filter)  
+            filters = true
+        }
 
-        Order.update({
-            status
-        }, 
-        { 
-            where: { id: orderID } 
-        }).then(() => {
-            res.redirect('/stallOwner/')
+        if (filters == true) {
+            title += " (Filtered)"
+        } 
+    }
+
+    async function main() {
+
+        await getFilters()
+
+        // Get logged in stall owner
+        let stallOwner = await order_util.getStallInfo(req.user.id)
+
+        // Get menu items belonging to stall owner
+        await order_util.getStallOwnerMenuItems(stallOwner.stall.id)
+            .then( async ([menuItems, metadata]) => {
+
+                menu_items = menuItems
+
+                for (const item in menuItems) {
+                    if (menuItems.hasOwnProperty(item)) {
+                        const menuItem = menuItems[item];
+    
+                        // If filter exist
+                        if (item_filter) {
+                            if (item_filter == menuItem.id) {
+                                newLine = {}
+
+                                //Push ID and Item Name into new line
+                                newLine.id = menuItem.id
+                                newLine.itemName = menuItem.itemName
+            
+                                // Get ratings for each items and push into new line 
+                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                    newLine.ratings = ratings
+                                })
+            
+                                // Push newline into allRatings
+                                allRatings.push(newLine)
+                            }
+                        }
+                        else{
+                            newLine = {}
+
+                            //Push ID and Item Name into new line
+                            newLine.id = menuItem.id
+                            newLine.itemName = menuItem.itemName
+        
+                            // Get ratings for each items and push into new line 
+                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                newLine.ratings = ratings
+                            })
+        
+                            // Push newline into allRatings
+                            allRatings.push(newLine)
+                        }
+
+                    }
+                }
+
         })
 
-    })
+        // res.send(items)
+
+        res.render('stallOwner/ratingsView', {
+            allRatings, title, menu_items, item_filter, rating_filter
+        })
+
+    }
+
+    main()
 
 })
-
 
 /**
  * HSIEN XIANG ROUTES

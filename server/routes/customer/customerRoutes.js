@@ -209,11 +209,13 @@ router.get('/profile', (req, res) => {
 /**
  * Get '/menuItem' all menu items inside the database as JSON
  */
-router.get('/menuItems/', (req, res) => {
-    res.type('json')
+router.get('/menuItems', (req, res) => {
     menu_item_util.getAllMenuItem().then( menuItems => {
-        res.type('json')
-        res.send(JSON.stringify(menuItems))
+        //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+        includeMenuItemsWithRating(menuItems, () => {
+            res.type('json')
+            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+        })
     })
 
 })
@@ -223,9 +225,12 @@ router.get('/menuItems/', (req, res) => {
 router.get('/menuItems/:cusine', async (req, res) => {
     let cusine = req.params.cusine
     cusine = await cusine_util.getCusineByCusineType(cusine)
-    res.type('json')
     menu_item_util.getMenuItemByCusine(cusine.id).then( menuItems => {
-            res.send(JSON.stringify(menuItems))
+        //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+        includeMenuItemsWithRating(menuItems, () => {
+            res.type('json')
+            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+        })
     })
 
 })
@@ -236,8 +241,11 @@ router.get('/menuItems/:cusine', async (req, res) => {
  */
 router.get('/menuItemId/:menuItemId', (req, res) =>{
     menu_item_util.getMenuItemByID(req.params.menuItemId).then((menuItem) => {
-        res.type('json')
-        res.send(JSON.stringify(menuItem))
+        //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+        includeMenuItemWithRating(menuItem, () => {
+            res.type('json')
+            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+        })
     })
 })
 
@@ -248,10 +256,64 @@ router.get('/menuItemId/:menuItemId', (req, res) =>{
  */
 router.get('/menuItemSearch/:item_name', (req, res) => {
     menu_item_util.getMenuItemByName(req.params.item_name).then((menuItems) => {
-        res.type('json')
-        res.send(JSON.stringify(menuItems))
+        //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+        includeMenuItemsWithRating(menuItems, () => {
+            res.type('json')
+            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+        })
+
     })
 })
+
+const order_util = require('../../utils/stallowner/order')
+/**
+ * Add a new ratings field into each menu item
+ * @param menuItems - array of menu items
+ */
+function includeMenuItemsWithRating(menuItems, done){
+    let promises = menuItems.map(menuItem => order_util.getMenuItemRating(menuItem.id))
+
+    Promise.all(promises).then(ratings => {
+        menuItems.forEach((menuItem, index) => {
+            menuItem.rating = ratings[index][0]['AVG']
+        })
+        done()
+    })
+}
+
+/**
+ * Add a new ratings field into the menu item
+ * @param menuItem - the menu item of the object to have a new field added
+ */
+function includeMenuItemWithRating(menuItem, done){
+    order_util.getMenuItemRating(menuItem.id).then(rating => {
+            menuItem.rating = rating[0]['AVG']
+        done()
+    })
+}
+
+/**
+
+/**
+ * Format menu items array to json string
+ * this function only includes the following property when converting:
+ *  [image], [itemName], [rating], [price] 
+ * 
+ * @param menuItems - array of menu items
+ * @return {string} json string of the menu items array
+ */
+function formatMenuItemsToIndexHandlebars(menuItems){
+    return JSON.stringify(menuItems.map(menuItem => {
+        return {
+            image: menuItem.image,
+            itemName: menuItem.itemName,
+            rating: menuItem.rating,
+            price: menuItem.price
+        }
+    }
+    ))
+}
+
 
 const getRatingMatrix = require('../../ratings/ratings')
 const SVD_Optimizer = require('../../libs/ml/svd_sgd')
@@ -273,9 +335,12 @@ router.get('/recommendedMenuItems', (req, res) => {
         menuItemsIds = menuItemsIds.map(v => menu_item_util.getMenuItemByID(v))
     
         Promise.all(menuItemsIds).then(menuItems => {
-            menuItems = menuItems.filter((e) => e != null)
-            res.type('json')
-            res.send(JSON.stringify(menuItems))
+            menuItems = menuItems.filter((e) => e != null && e.active)
+            //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
+            includeMenuItemsWithRating(menuItems, () => {
+                res.type('json')
+                res.send(formatMenuItemsToIndexHandlebars(menuItems))
+            })
         })
     })
 
