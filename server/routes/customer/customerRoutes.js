@@ -321,8 +321,9 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     }
     var showStatus = order.result.status
     var payerID = order.result.payer.payer_id
+    userID = req.user.id
     if (showStatus == 'COMPLETED') {
-        Payment.create({orderID, payerName, payerID, status: showStatus}).then(function(){
+        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){
             console.log('transaction details saved to database')
             req.cart.clearOrderLine()
         }).catch(err => console.log(err))

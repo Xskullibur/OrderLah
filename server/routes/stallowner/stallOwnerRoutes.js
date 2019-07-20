@@ -441,12 +441,6 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     const id = req.body.itemID
     var imageName = req.body.imgName
 
-    // if (!fs.existsSync('./public/uploads')){
-    //     fs.mkdirSync('./public/uploads');
-    // }
-
-    
-
     MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
         //res.render('./successErrorPages/updateSuccess')
         fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
