@@ -7,8 +7,6 @@ variables:
 
 stages:
   - build
-  only:
-  - master
 
   
 docker-build:
