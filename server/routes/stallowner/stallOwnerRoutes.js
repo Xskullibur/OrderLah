@@ -184,9 +184,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 
 })
 
-//All Orders Route
-router.get('/allOrders/:pageNo/', (req, res, next) => {
-
+// Orders
+router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
 
     //Check for filters
     let orderFilter = req.query.orderNo
@@ -220,6 +219,7 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 
         if (filter) {
             whereCondition.push(filterCondition)
+            title += " (Filtered)"
         }
 
         //Get total number of orders for the Stall
@@ -280,8 +280,8 @@ router.get('/allOrders/:pageNo/', (req, res, next) => {
 
 });
 
-// Order Details
-router.get('/orderDetails/', (req, res) =>{
+// Charts
+router.get('/orderDetails/charts/', (req, res) =>{
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
@@ -479,7 +479,8 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
-router.get('/ratings/', (req, res) => {
+// Ratings
+router.get('/orderDetails/ratings/', (req, res) => {
 
     title = "Ratings"
     allRatings = []
