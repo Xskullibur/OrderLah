@@ -3,7 +3,7 @@
 @ECHO OFF
 
 :: Auto login
-set AUTO_LOGIN=YES
+set AUTO_LOGIN=NO
 set LOGIN_AS=john@customer
 
 :: SET 'orderlah' database environment
@@ -11,7 +11,7 @@ set LOGIN_AS=john@customer
 :: set Development
 set NODE_ENV=dev
 
-SET DB_HOST=localhost
+SET DB_HOST=192.168.99.100
 SET DB_USERNAME=orderlah_web_user
 SET DB_PASSWORD=mysecurepassword
 

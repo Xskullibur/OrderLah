@@ -289,7 +289,19 @@ router.post('/register', (req, res) => {
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
-    res.render('login', {layout: 'blank_layout'})
+    if(req.query.error){
+        res.render('login', {
+            layout: 'blank_layout',
+            error: req.query.error
+        })
+    }else if(req.query.success){
+        res.render('login', {
+            layout: 'blank_layout',
+            success: req.query.success
+        })
+    }else{
+        res.render('login', {layout: 'blank_layout'})
+    }
 })
 
 /**
@@ -298,7 +310,7 @@ router.get('/login', (req, res) => {
  */
 router.post('/login', 
     passport.authenticate('local', { 
-        failureRedirect: '/login' 
+        failureRedirect: '/login?error=Incorrect Credientials!' 
     }),
     (req, res, next) => {
         // issue a remember me cookie if the option was checked
@@ -350,7 +362,19 @@ router.get('/guestLogin',(req, res) =>{
 })
 
 router.get('/forgotPassword', (req, res) =>{
-    res.render('resetpassword1', {layout: 'blank_layout'})
+    if(req.query.error){
+        res.render('resetpassword1', {
+            layout: 'blank_layout',
+            error: req.query.error
+        })
+    }else if(req.query.success){
+        res.render('resetpassword1', {
+            layout: 'blank_layout',
+            success: req.query.success
+        })
+    }else{
+        res.render('resetpassword1', {layout: 'blank_layout'})
+    }
 })
 
 router.post('/forgotPassword', (req, res) =>{
@@ -361,6 +385,7 @@ router.post('/forgotPassword', (req, res) =>{
     }).then( user =>{
       if (!user){
           console.log('Error! Account not found...')
+          res.redirect('/forgotPassword?error=Account Not Found!')
       }else{
             console.log('Ok, up and runnning...')
             let transporter = nodemailer.createTransport({
@@ -382,8 +407,10 @@ router.post('/forgotPassword', (req, res) =>{
             transporter.sendMail(mailOptions, function(err, data){
                 if (err) {
                     console.log('error occured: ', err)
+                    res.redirect('/forgotPassword?error=' + err)
                 } else {
                     console.log('reset password email sent to user id:', user.id)
+                    res.redirect('/forgotPassword?success=Email sent!')
                 }
             })
         }
