@@ -5,17 +5,18 @@ const status = require('../../utils/stallowner/update_status')
 const transactions = require('../../utils/main/order_transactions')
 const globalHandle = require('../global/global')
 
-const server = globalHandle.get('app');
+const server = globalHandle.get('server')
 
-const io = require('socket.io')(server, {
-    // serveClient: false,
-    // below are engine.IO options
-    pingInterval: 10000,
-    pingTimeout: 5000,
-    cookie: false
-});
+const io = require('socket.io')(server);
 
-const globalHandle = require('../global/global')
+// , {
+//     // serveClient: false,
+//     // below are engine.IO options
+//     pingInterval: 10000,
+//     pingTimeout: 5000,
+//     cookie: false
+// }
+
 RedisStore = globalHandle.get('redis')
 
 const sessionIDs = {}
@@ -81,8 +82,8 @@ function getSocketIDBySessionID(sessionId){
 }
 
 function getSessionsFromCustomerID(custId, yieldCB){
-    for(var socketId in sessionIDs){
-        var sessionId = sessionIDs[socketId]
+    for(let socketId in sessionIDs){
+        let sessionId = sessionIDs[socketId]
         getSessionBySessionID(sessionId, (err, session) => {
             if(!err && session.passport.user === custId){
                 yieldCB(sessionId, session);
@@ -111,5 +112,3 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
-      });
-});
