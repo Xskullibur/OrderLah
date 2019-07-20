@@ -19,7 +19,7 @@
             <br>
         </div>
         <div class="col-sm-1">
-            <button type="button" class="red-btn" data-toggle="modal" data-target="#createStall">Add</button>
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
         </div>
         <div class="col-sm-5">
         </div>
@@ -36,21 +36,14 @@
                             <div class="card">
                                 <br>                 
                                 <div class="card__image-container">
-                                    <center><img class="card__image" src="/img/profiles/{{this.id}}.png" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" style="max-width: 65%; border-radius: 50%;"></center>
+                                    <center><img class="card__image" src="/img/profiles/{{this.id}}.png" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
                                 </div>
                                 <br>
                                 <div class="card__content">
                                     <center><h4 class="card__title">{{this.username}}</h4></center>
-                                    <center>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
-                                            <font size="1">Edit</font>
-                                        </button>                                                                    
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#freeze{{this.id}}">
-                                            <font size="1">Lock</font>
-                                        </button> 
-                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#reset{{this.id}}" title="comments and rating">
-                                            <font size="1">Reset</font>
-                                        </button>                                        
+                                    <center>                                                                                                         
+                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#freeze{{this.id}}">Lock</button> 
+                                        <button type="submit" class="btn btn-outline-danger" data-toggle="modal" data-target="#reset{{this.id}}" title="comments and rating">Reset</button>                                        
                                     </center>
                                 </div>
                             </div>
@@ -78,8 +71,8 @@
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
                             <center>
-                                <button type="submit" class="red-btn">Yes</button>
-                                <button data-dismiss="modal" class="red-btn">No</button>  
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
                             </center>
                         </div>            
                     </form>
@@ -105,8 +98,8 @@
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
                             <center>
-                                <button type="submit" class="red-btn">Yes</button>
-                                <button data-dismiss="modal" class="red-btn">No</button>  
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
                             </center>
                         </div>            
                     </form>
@@ -194,7 +187,7 @@
                     </div>                                                     
                     <input type="hidden" id="holder" name="holder"  value="">
                     <div class="modal-footer">
-                        <button type="submit" class="red-btn">Create</button>
+                        <button type="submit" class="btn btn-outline-danger">Create</button>
                     </div>
             </form>
         </div>
