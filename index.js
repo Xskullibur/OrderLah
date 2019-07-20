@@ -2,7 +2,7 @@
 //Hyper parameters
 
 //Server will be listening on port 3000
-const port = 3000
+const port = process.env.PORT || 3000
 
 //Global
 const globalHandle = require('./server/libs/global/global')

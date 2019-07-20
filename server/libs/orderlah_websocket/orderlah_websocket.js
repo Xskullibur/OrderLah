@@ -1,9 +1,11 @@
 // const Server = require('socket.io');
 // const io = new Server();
 
-const status =require('../../utils/stallowner/update_status')
+const status = require('../../utils/stallowner/update_status')
 const transactions = require('../../utils/main/order_transactions')
-const server = require('http').createServer();
+const globalHandle = require('../global/global')
+
+const server = globalHandle.get('app');
 
 const io = require('socket.io')(server, {
     // serveClient: false,
@@ -70,11 +72,6 @@ io.on('connection', function(socket){
 });
   
 
-server.listen(4000,() => {
-    console.log('Websocket listening on 4000');
-    
-});
-
 function getSocketIDBySessionID(sessionId){
     for (let socketId in sessionIDs) {
         let tsessionId = sessionIDs[socketId]
@@ -114,3 +111,5 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
+      });
+});
