@@ -292,7 +292,6 @@ router.get('/payment', auth_login.auth, async (req, res) => {
     for(var orderline of req.cart.items){
         console.log(orderline.itemId)
         await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
-            //console.log(setPrice.price)
             totalAmount = totalAmount + parseFloat(setPrice.price)
         })
     }
