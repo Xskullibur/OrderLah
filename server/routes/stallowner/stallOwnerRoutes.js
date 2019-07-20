@@ -282,6 +282,18 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
 
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
+    
+    toDate = req.query.toDate
+    frDate = req.query.frDate
+    filter = false
+    title = "Charts"
+    fitlerStatement = ""
+
+    if (toDate && frDate) {
+        filter = true
+        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN '${frDate}' AND '${toDate}' `    
+    }   
+
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
@@ -302,6 +314,7 @@ router.get('/orderDetails/charts/', (req, res) =>{
             INNER JOIN orderlah_db.orders ON orderlah_db.orderItems.orderId = orders.id
             WHERE orders.stallId = ${stallOwner.stall.id}
             AND orders.status = 'Collection Confirmed'
+            ${fitlerStatement}
             GROUP BY orderlah_db.orderItems.menuItemId`).then(([result, metadata]) => {
                 resolve(result)
             }).catch(err => {
@@ -320,6 +333,7 @@ router.get('/orderDetails/charts/', (req, res) =>{
             INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
             WHERE orders.stallId = ${stallOwner.stall.id}
             AND orders.status = 'Collection Confirmed'
+            ${fitlerStatement}
             GROUP BY menuItems.id`).then(([result, metadata]) => {
                 resolve(result)
             }).catch(err => {
@@ -329,13 +343,17 @@ router.get('/orderDetails/charts/', (req, res) =>{
         })
     }
 
+
+    // Get Rating Count
     function getRatingCount(menuItemId, rating) {
 
         return new Promise(function(resolve, reject) {
             db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating
-            FROM orderItems
+			FROM orders
+            INNER JOIN orderItems ON orders.id = orderItems.orderId
             WHERE orderItems.menuItemId = ${menuItemId}
-            AND orderItems.rating  = '${rating}';`).then(([result, metadata]) => {
+            AND orderItems.rating  = '${rating}'
+            AND orders.status = 'Collection Confirmed' ${fitlerStatement}`).then(([result, metadata]) => {
                 resolve(result[0].Rating)
             }).catch(err => {
                 reject(err)
@@ -344,6 +362,7 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
     }
 
+    // Get Ratings for each item
     function getEachItemRating(stallOwner) {
 
         return new Promise(function(resolve, reject) {
@@ -467,11 +486,13 @@ router.get('/orderDetails/charts/', (req, res) =>{
         AvgRatingPerItem = await getAvgRatingPerItem(StallOwner)
         EachItemRating = await getEachItemRating(StallOwner)
 
-        title = "Charts"
+        if (filter == true) {
+            title += " (Filtered)"
+        }
 
         // res.send(EachItemRating)
         res.render('stallOwner/orderCharts', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating, title
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate
         });
     }
 
