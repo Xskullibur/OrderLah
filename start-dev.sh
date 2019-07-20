@@ -14,6 +14,7 @@ export LOGIN_AS="john@customer"
 export NODE_ENV='dev'
 
 export DB_HOST="localhost"
+export DB_NAME="orderlah_db"
 export DB_USERNAME="orderlah_web_user"
 export DB_PASSWORD="mysecurepassword"
 
