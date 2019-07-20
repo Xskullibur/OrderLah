@@ -7,13 +7,16 @@ variables:
 
 stages:
   - build
+  only:
+  - master
+
   
 docker-build:
   stage: build
   script:
-  - docker build -f Dockerfile --iidfile imageid.txt -t orderlah .
+  - docker build -f Dockerfile --iidfile imageid.txt -t registry.heroku.com/orderlah/orderlah .
   - docker login -u _ -p $HEROKU_TOKEN registry.heroku.com
-  - docker push orderlah
+  - docker push registry.heroku.com/orderlah/orderlah
   - apk add --no-cache curl
   - echo "Docker Image ID is $(cat imageid.txt)"
   - |-
