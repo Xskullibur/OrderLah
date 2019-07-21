@@ -7,7 +7,7 @@ const globalHandle = require('../global/global')
 const order_util = require('../../utils/stallowner/order')
 const stall_util = require('../../utils/stallowner/stall')
 
-const server = require('http').createServer();
+const server = globalHandle.get('server')
 
 const io = require('socket.io')(server);
 
@@ -195,8 +195,3 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
-
-server.listen(4000, () => {
-    console.log("Web socket is listening on port 4000");
-    
-})

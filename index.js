@@ -48,6 +48,9 @@ const app = express()
 
 //Put app inside global
 globalHandle.put('app', app)
+const server = require('http').createServer(app)
+globalHandle.put('server', server)
+
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout', helpers}))
@@ -150,6 +153,6 @@ require('./server/libs/orderlah_websocket/orderlah_websocket')
 // }
 
 app.set('port', port);
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is listening ${port}`);
 })
