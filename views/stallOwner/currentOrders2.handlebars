@@ -61,12 +61,14 @@
     window.toggleScanning = toggleScanning
     window.startScanning = startScanning
     window.requestPIP = requestPIP
+
+    export toggleScanning
+
 </script>
 
 <script nomodule>
     console.log('Module not suppoted by browser, consider using lastest version of chrome.');
 </script>
-
 {{!-- Main --}}
 <div class="container" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
@@ -188,3 +190,12 @@
         </div>
     </div>
 </div>
+{{!-- FAB QR code --}}
+{{> fixed_button icon='fas fa-qrcode icon-default'}}
+<script>
+    $(document).ready(function() {
+        $('#bottom_btn').on('click', function(){
+            toggleScanning();
+        });
+    })
+</script>
