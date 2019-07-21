@@ -320,12 +320,21 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     }
     var showStatus = order.result.status
     var payerID = order.result.payer.payer_id
-    userID = req.user.id
+    var userID = req.user.id
+    var orderStatus = 'Order Pending'
+    var orderTiming = moment()
+
     if (showStatus == 'COMPLETED') {
-        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){
-            console.log('transaction details saved to database')
-            req.cart.clearOrderLine()
+        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
+            console.log('transaction details saved to database')           
         }).catch(err => console.log(err))
+
+        for(var orderline of req.cart.items){
+            await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
+                Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
+            })
+        }
+        req.cart.clearOrderLine()
         console.log('transaction confrimed')
     }
 
