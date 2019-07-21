@@ -153,6 +153,9 @@ router.get('/pastOrders', (req, res) => {
                     }
 
                     return updatedStatus;
+                },
+                substringTo5(text){
+                    return text.substring(0, 5)
                 }
             },
             currentOrders
