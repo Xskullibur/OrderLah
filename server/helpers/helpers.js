@@ -168,5 +168,9 @@ module.exports = {
         }
 
         return updatedStatus;
+    },
+    
+    inc(value, options) {
+        return parseInt(value) + 1
     }
 }

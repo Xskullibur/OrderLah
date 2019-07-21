@@ -233,6 +233,19 @@ module.exports = {
         })
 
         return promise
+    },
+    
+    /** 
+     * Returns the order using the public order id
+     * @param {number} publicOrderID - public order id of the order
+     * @return {Promise}
+     */
+    getOrderFromPublicOrderID(publicOrderID){
+        return Order.findOne({
+            where: {
+                publicOrderID
+            }
+        })
     }
 
 }

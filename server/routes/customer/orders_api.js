@@ -24,27 +24,27 @@ const order_track = require('../../libs/order_track')
 //create cart, res.locals.cart_items, req.cart
 router.use(order_track.register)
 
-const order = require('../../utils/stallowner/order')
-router.get('/orderStatus/:orderId', async (req, res) => {
+const order_util = require('../../utils/stallowner/order')
+router.get('/orderStatus/:pubOrderId', async (req, res) => {
 
     //Check user is authorised to access order id 
-    const orderId = req.params.orderId
+    const pubOrderId = req.params.pubOrderId
     const userId = req.user.id
 
-    let valid = await order.checkOrderIsInUser(userId, orderId)
+    order_util.getOrderFromPublicOrderID(pubOrderId).then(async (order) => {
+
+        const orderId = order.id
+
+        let valid = await order_util.checkOrderIsInUser(userId, orderId)
     
-    if(valid){
-        order.getOrderId(orderId).then((order => {
+        if(valid){
             res.render('order-status', {order, helpers: {
                 substringTo5(text){
                     return text.substring(0, 5)
                 }
             }})
-        }))
-    }else res.redirect('/orderStatus')
-
-
-
+        }else res.redirect('/orderStatus')
+    })
 })
 
 /**
@@ -58,9 +58,15 @@ router.post('/addOrder', (req, res) => {
 
         const orderline = new order_track.orderline(req.body.menuItemId)
 
-        req.cart.addOrderLine(orderline)
-        res.type('json')
-        res.send(JSON.stringify(orderline))
+        menu_item_util.getMenuItemByID(req.body.menuItemId).then((menuItem) => {
+            if(menuItem != null){
+                req.cart.addOrderLine(orderline)
+                res.type('json')
+                res.send(JSON.stringify(orderline))
+            }
+        })
+
+
     }
 })
 

@@ -153,6 +153,9 @@ router.get('/pastOrders', (req, res) => {
                     }
 
                     return updatedStatus;
+                },
+                substringTo5(text){
+                    return text.substring(0, 5)
                 }
             },
             currentOrders
@@ -244,7 +247,7 @@ router.get('/menuItemId/:menuItemId', (req, res) =>{
         //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
         includeMenuItemWithRating(menuItem, () => {
             res.type('json')
-            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+            res.send(formatMenuItemToIndexHandlebars(menuItem))
         })
     })
 })
@@ -292,7 +295,28 @@ function includeMenuItemWithRating(menuItem, done){
     })
 }
 
+
+
 /**
+ * Format menu item to json string
+ * this function only includes the following property when converting:
+ *  [image], [itemName], [rating], [price] 
+ * 
+ * @param menuItem - menu item
+ * @return {string} json string of the menu item
+ */
+function formatMenuItemToIndexHandlebars(menuItem){
+    return JSON.stringify({
+            id: menuItem.id,
+            image: menuItem.image,
+            itemName: menuItem.itemName,
+            rating: menuItem.rating,
+            price: menuItem.price
+        }
+    )
+}
+
+
 
 /**
  * Format menu items array to json string
@@ -305,6 +329,7 @@ function includeMenuItemWithRating(menuItem, done){
 function formatMenuItemsToIndexHandlebars(menuItems){
     return JSON.stringify(menuItems.map(menuItem => {
         return {
+            id: menuItem.id,
             image: menuItem.image,
             itemName: menuItem.itemName,
             rating: menuItem.rating,
