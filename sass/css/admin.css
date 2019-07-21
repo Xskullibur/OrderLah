@@ -8,7 +8,7 @@
 
 .card {
     position: relative;
-    background: #f4f4f4;
+    background: #dc3545;
     width: 265px;
     height: 350px;
     border-radius: 6px;
@@ -70,8 +70,8 @@
 }
 
 .card__title {
-    color: black;
-    margin-top: 0;
+    color: #fff;
+    font-family: "Montserrat", sans-serif;
     font-weight: 400;
     letter-spacing: 0.01em;
 }
