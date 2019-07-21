@@ -128,3 +128,11 @@ function updateStatus(orderID) {
     }
 
 }
+
+function qrUpdateStatus(pOrderId) {
+    $.ajax({
+        type: "PUT",
+        dataType: 'Substring',
+        data: pOrderId
+    })
+}

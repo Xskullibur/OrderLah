@@ -5,16 +5,19 @@
     import QrScanner from "/js/vendor/qrscanner/qr-scanner.min.js";
     QrScanner.WORKER_PATH = '/js/vendor/qrscanner/qr-scanner-worker.min.js';
 
+    // Get video to show cam
     const video = document.getElementById('qr-video');
     video.addEventListener('leavepictureinpicture', function(){
         stopScanning()
     })
 
+    // Show Picture in Picture when video loaded
     video.onloadeddata = function(){
         requestPIP()
         console.log("close")
     }
 
+    // Alert scanned Value
     function setResult(result) {
         alert(result)
     }
