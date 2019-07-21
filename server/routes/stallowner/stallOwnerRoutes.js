@@ -474,12 +474,12 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
 })
 
 router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
-    var filterName = req.body.filterName
+    var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
-                MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: '%' + filterName + '%'}}}).then((item) =>{
+                MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
                     res.render('stallowner-menu', {
                         item:item,
                         stall: myStall,
