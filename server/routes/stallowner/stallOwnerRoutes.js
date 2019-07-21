@@ -452,18 +452,26 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
+    var checkName = req.body.checkName
     var imageName = req.body.imgName
 
-    MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-        //res.render('./successErrorPages/updateSuccess')
-        fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-            if(err){
-                console.log(err)
-            }
-        })
-        displayAlert.push('Item updated!')
-        res.redirect('/stallOwner/showMenu')
-    }).catch(err => console.log(err))
+    checkUnique(itemName).then(isUnique => {
+        if(isUnique || (checkName === itemName)){
+            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+                    if(err){
+                        console.log(err)
+                    }
+                })
+                displayAlert.push('Item updated!')
+                res.redirect('/stallOwner/showMenu')
+            }).catch(err => console.log(err))
+        }else{
+            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')
+            res.redirect('/stallOwner/showMenu')
+        }
+    })
+
 })
 
 router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
