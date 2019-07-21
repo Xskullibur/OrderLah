@@ -19,7 +19,7 @@ const Sequelize = require('sequelize')
  * @property {string} status - 'Order Pending', 'Preparing Order', 'Ready for Collection', 'Collection Confirmed'
  * @property {int} userId - user whom paid for the order as id
  * @property {int} stallId - stall whom will prepare the order as id
- * @property {Date=} orderTiming - date of the transaction (default current date)
+ * @property {Date} orderTiming - date of the transaction (default current date)
  */
 /**
  * OrderItem

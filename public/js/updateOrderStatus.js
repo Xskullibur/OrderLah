@@ -5,7 +5,7 @@ $(document).ready(function (){
 
     var sid = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
-    socket = io.connect('http://' + window.location.hostname +':4000/');
+    socket = io.connect('http://' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
@@ -21,7 +21,7 @@ $(document).ready(function (){
         socket.on('update-status', function({updatedStatus}){
             console.log(updatedStatus);
 
-            if(updateStatus == 'Collection Confirmed'){
+            if(updatedStatus.valueOf() == 'Collection Confirmed'){
                 setCircleProgress(100);
                 setTime(0);
             }
