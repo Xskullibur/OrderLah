@@ -369,6 +369,7 @@ router.post('/updateStatus/:orderID', (req, res) => {
 router.use(auth_login.auth)
 
 var displayAlert = []
+var errorAlert = []
 
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
@@ -377,6 +378,15 @@ function toCap(str) {
     }
     return splitStr.join(' ')
  }
+
+function checkUnique(theName){
+    return MenuItem.count({where: {itemName: theName}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
 
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
@@ -387,9 +397,11 @@ router.get('/showMenu', (req, res) => {
                     res.render('stallowner-menu', {
                         item:item,
                         stall: myStall,
-                        displayAlert: displayAlert
+                        displayAlert: displayAlert,
+                        errorAlert: errorAlert
                     })
                     displayAlert = []
+                    errorAlert = []
                 })    
             })
         }else{
@@ -400,25 +412,26 @@ router.get('/showMenu', (req, res) => {
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
     const currentUser = req.user.id
-
-    Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-        const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
-        const price = req.body.itemPrice
-        const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
-        const owner = req.user.id
-        const active = true
-        const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-        const stallId = theStall.id
-
-        // if (!fs.existsSync('./public/uploads')){
-        //     fs.mkdirSync('./public/uploads');
-        // }
-
-        MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
-            //res.render('./successErrorPages/createSuccess')
-            displayAlert.push('Item successfully added')
+    const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
+    const price = req.body.itemPrice
+    const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
+    const owner = req.user.id
+    const active = true
+    const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
+    checkUnique(itemName).then(isUnique => {
+        if(isUnique){
+            Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                const stallId = theStall.id
+        
+                MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
+                    displayAlert.push('Item successfully added')
+                    res.redirect('/stallOwner/showMenu')
+                }).catch(err => console.log(err))
+            })
+        }else{
+            errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
             res.redirect('/stallOwner/showMenu')
-        }).catch(err => console.log(err))
+        }
     })
 })
 

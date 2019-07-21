@@ -9,6 +9,15 @@
         </div>
 {{/if}}
 
+{{#if errorAlert}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center><strong>{{this.errorAlert}}</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+
 <br>
 <center>   
     <h2>{{stall.stallName}}</h2>
