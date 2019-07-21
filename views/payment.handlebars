@@ -29,6 +29,9 @@
 </div>
 
 <script>
+    if({{totalAmount}} === 0){
+        alert('Cart is empty, items payable by paypal, visa, mastercard, amex')
+    }else{
         paypal.Buttons({
             createOrder: function(data, actions) {
                 return actions.order.create({
@@ -55,4 +58,5 @@
                 })                                                                  
             }
         }).render('#paypal-button-container');
+    }
 </script>
