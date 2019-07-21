@@ -10,12 +10,12 @@ img {
 
 .card {
   position: relative;
-  background: #f4f4f4;
+  background: #dc3545;
   width: 265px;
   height: 350px;
   border-radius: 6px;
   padding: 2rem;
-  color: black;
+  font-family: "Montserrat", sans-serif;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   overflow: hidden;
 }
@@ -65,7 +65,8 @@ img {
   animation: ImageFadeIn .4s 0.7s forwards;
 }
 .card__title {
-  color: black;
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
   margin-top: 0;
   font-weight: 400;
   letter-spacing: 0.01em;
