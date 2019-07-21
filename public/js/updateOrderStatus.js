@@ -5,7 +5,7 @@ $(document).ready(function (){
 
     var sid = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
-    socket = io.connect('http://' + window.location.hostname +':3000/');
+    socket = io.connect('https://' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
@@ -71,7 +71,9 @@ function subStrCookie(cookie){
 }
 
 // Update Status
-function updateStatus(orderID) {
+function updateStatus(pOrderId) {
+
+    console.log("Order Update: " + pOrderId)
 
     var STATUS = {
         OrderPending: 'Order Pending',
@@ -80,10 +82,10 @@ function updateStatus(orderID) {
         CollectionConfirmed: 'Collection Confirmed'
     }
 
-    var updateBtn = document.getElementById(`updateStatusBtn_${orderID}`)
-    var currentStatusCtx = document.getElementById(`currentStatusTxt_${orderID}`)       // Update Send
-    var updateStatusCtx = document.getElementById(`updateStatusTxt_${orderID}`)         // Next status aft current status
-    var orderCard = document.getElementById(`orderCard_${orderID}`)
+    var updateBtn = document.getElementById(`updateStatusBtn_${pOrderId}`)
+    var currentStatusCtx = document.getElementById(`currentStatusTxt_${pOrderId}`)       // Update Send
+    var updateStatusCtx = document.getElementById(`updateStatusTxt_${pOrderId}`)         // Next status aft current status
+    var orderCard = document.getElementById(`orderCard_${pOrderId}`)
 
     var updatedStatus = null
     var nxtStatus = null
@@ -115,7 +117,7 @@ function updateStatus(orderID) {
     currentStatusCtx.innerHTML = updatedStatus
 
     // Send websocket (update-status)
-    socket.emit('update-status', {orderID, updatedStatus})
+    socket.emit('update-status', {pOrderId, updatedStatus})
 
     // Check order container for any orders
     orderContainer = document.getElementById("orderContainer")
@@ -130,9 +132,17 @@ function updateStatus(orderID) {
 }
 
 function qrUpdateStatus(pOrderId) {
+
+    console.log(pOrderId)
+
     $.ajax({
-        type: "PUT",
-        dataType: 'Substring',
-        data: pOrderId
+        url: `/stallOwner/updateStatus/${pOrderId}/1`,
+        type: 'PUT',
+        success: function () {  
+            console.log("Success");  
+        },  
+        error: function () {  
+            console.log('Error in Operation');  
+        } 
     })
 }

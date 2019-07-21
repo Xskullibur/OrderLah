@@ -3,6 +3,7 @@
 <script src="/js/vendor/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/js/vendor/qrcode/qrcode.min.js" type="text/javascript"></script>
 <link href="/css/order-status.css" rel="stylesheet" type="text/css">
+
 <script>
     function setCircleProgress(val){
 
@@ -39,7 +40,6 @@
         $('#est-timer').html(timer)
 
     }
-
 </script>
 {{!-- Set progress to 100 if status is already completed --}}
 {{#ifCondition order.status '==' 'Collection Confirmed'}}
@@ -49,6 +49,9 @@
     })
 </script>
 {{/ifCondition}}
+
+<input type="hidden" id="pOrderId" value="{{order.publicOrderID}}">
+
 <div class="container">
     <div class="row justify-content-center pt-2">
         <div class="col-5 col-lg-7 text-center">

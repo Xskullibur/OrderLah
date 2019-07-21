@@ -2,6 +2,7 @@
 $(document).ready(function() {
     //generate qrcode
     var orderid = getOrderId();
+    console.log(orderid)
 
     var qrcode = new QRCode(document.getElementById("orderid-qr"), {
         text: orderid,
@@ -21,8 +22,10 @@ $(document).ready(function() {
  * Parsed the web url and get the last path which indicate the order id
  */
 function getOrderId(){  
-    var url = window.location.href;
-    return url.substr(url.lastIndexOf('/') + 1);
+    // var url = window.location.href;
+    // return url.substr(url.lastIndexOf('/') + 1);
+
+    return document.getElementById('pOrderId').value
 }
 
 // Send notification

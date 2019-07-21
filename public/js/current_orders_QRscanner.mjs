@@ -1,4 +1,3 @@
-
 import QrScanner from "./vendor/qrscanner/qr-scanner.min.js";
 QrScanner.WORKER_PATH = '../js/vendor/qrscanner/qr-scanner-worker.min.js';
 
@@ -13,6 +12,7 @@ video.onloadeddata = function(){
 }
 
 function setResult(result) {
+    qrUpdateStatus(result)
     alert(result)
 }
 

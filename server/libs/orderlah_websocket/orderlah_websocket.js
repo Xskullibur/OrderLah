@@ -80,7 +80,7 @@ io.on('connection', function(socket){
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', async function({orderID, updatedStatus}) {
+    socket.on('update-status', async function({pOrderId, updatedStatus}) {
 
         //Update customer timing
         getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
@@ -92,10 +92,13 @@ io.on('connection', function(socket){
             sendTiming(stallId)
         })
 
+        // Get Order Id from Public Order Id
+        let orderID = await order_util.getOrderIdFromPublicId(pOrderId)
+
         status.updateOrderStatus({
             orderID, updatedStatus
         }).then((result) => {
-            console.log(`Updating order id of ${orderID} to ${updatedStatus}`)
+            console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
             transactions.getCustomerByOrderID(orderID).then(orderCust => {
                 getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
                     const socketid = getSocketIDBySessionID(sessionid)

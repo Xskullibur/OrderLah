@@ -1,16 +1,18 @@
 <script src="/js/vendor/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/js/updateOrderStatus.js" type="text/javascript"></script>
+
 <script type="module">
     import {toggleScanning} from '/js/current_orders_QRscanner.mjs'
 
     $('#bottom_btn').on('click', function(){
-            toggleScanning();
+        toggleScanning();
     });
 
 </script>
 <script nomodule>
     console.log('Module not suppoted by browser, consider using lastest version of chrome.');
 </script>
+
 {{!-- Main --}}
 <div class="container" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
@@ -46,14 +48,14 @@
 
                                     {{#if currentOrders}}
                                         {{#each currentOrders as |order|}}
-                                            <div id="orderCard_{{order.id}}" class="card d-inline-block m-4" style="width: 15rem">
+                                            <div id="orderCard_{{order.publicOrderID}}" class="card d-inline-block m-4" style="width: 15rem">
                                                 <div class="card shadow-sm">
 
                                                     {{!-- Card Header --}}
                                                     <div class="card-header font-weight-bold bg-danger text-white">
                                                         <div class="row justify-content-between">
                                                             <div class="col-md-auto">
-                                                                Order: {{order.id}}
+                                                                Order: {{order.publicOrderID}}
                                                             </div>
                                                             <div class="col text-right">
                                                                 {{formatDate order.orderTiming "HH:MM:SS"}}
@@ -71,7 +73,7 @@
                                                                     <u class="mx-auto">Current Status:</u>
                                                                 </div>
                                                                 <div class="row">
-                                                                    <b class="mx-auto" id="currentStatusTxt_{{order.id}}">{{order.status}}</b>
+                                                                    <b class="mx-auto" id="currentStatusTxt_{{order.publicOrderID}}">{{order.status}}</b>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -103,10 +105,10 @@
                                                     {{!-- Card Footer / Update Status --}}
                                                     <div class="card-footer text-muted">
                                                         <div class="row">
-                                                            <form action="./updateStatus/{{order.id}}" method="post" class="mx-auto">
+                                                            <form action="./updateStatus/{{order.publicOrderID}}" method="post" class="mx-auto">
 
-                                                                <button type="button" onclick="updateStatus('{{{order.id}}}');" id="updateStatusBtn_{{order.id}}" class="btn btn-sm btn-outline-primary mx-auto">
-                                                                    <b id="updateStatusTxt_{{order.id}}">{{getNextStatus order.status}}</b>
+                                                                <button type="button" onclick="updateStatus('{{{order.publicOrderID}}}');" id="updateStatusBtn_{{order.publicOrderID}}" class="btn btn-sm btn-outline-primary mx-auto">
+                                                                    <b id="updateStatusTxt_{{order.publicOrderID}}">{{getNextStatus order.status}}</b>
                                                                 </button>
                                                                 
                                                             </form>

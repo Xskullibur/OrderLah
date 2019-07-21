@@ -214,6 +214,25 @@ module.exports = {
             AND orders.status != "Collection Confirmed"
             LIMIT 1
         `, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    /**
+     * Get Order Id from Public Order Id
+     * @param {number} pOrderId 
+     */
+    getOrderIdFromPublicId(pOrderId){
+        let promise = new Promise((resolve, reject) => {
+            Order.findOne({
+                where: { publicOrderID: pOrderId },
+                attributes: ['id']
+            }).then(order => {
+                resolve(order.id)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+
+        return promise
     }
 
 }

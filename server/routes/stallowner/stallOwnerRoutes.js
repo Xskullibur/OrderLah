@@ -16,6 +16,7 @@ const moment = require('moment')
 
 // Utils
 const order_util = require('../../utils/stallowner/order')
+const update_util = require('../../utils/stallowner/update_status')
 
 //Global
 //Models
@@ -421,6 +422,7 @@ router.get('/orderDetails/', (req, res) =>{
 
 })
 
+// Ratings
 router.get('/ratings/', (req, res) => {
 
     title = "Ratings"
@@ -513,6 +515,74 @@ router.get('/ratings/', (req, res) => {
     }
 
     main()
+
+})
+
+
+var STATUS = {
+    OrderPending: 'Order Pending',
+    PreparingOrder: 'Preparing Order',
+    ReadyForCollection: 'Ready for Collection',
+    CollectionConfirmed: 'Collection Confirmed'
+}
+
+// Update Order Status
+router.put('/updateStatus/:pOrderId/:fromQR?/', async (req, res) => {
+
+    const pOrderId = req.params.pOrderId
+    updatedStatus = null
+    error = ""
+
+    // Get Order Id from Public Id
+    let orderId = await order_util.getOrderIdFromPublicId(pOrderId).catch(err => {
+        error = err
+    })
+
+    // Get Current Status from Order Id
+    let currentStatus = await update_util.getCurrentStatus(orderId)
+
+    // Check if called from QR Code (Inital Status = 'Ready for Collection')
+    if (req.params.fromQR) {
+        if (currentStatus != STATUS.ReadyForCollection) {
+            error = "Order not ready for collection!"
+        }
+    }
+
+    // Get updated status
+    switch (currentStatus) {
+        case STATUS.OrderPending:
+            updateStatus = STATUS.PreparingOrder
+            break;
+
+        case STATUS.PreparingOrder:
+            updateStatus = STATUS.ReadyForCollection
+            break;
+
+        case STATUS.ReadyForCollection:
+            updateStatus = STATUS.CollectionConfirmed
+            break;
+    
+        default:
+            error = "Invalid Order Status!"
+            break;
+    }
+
+    // Update and redirect if no error
+    if (error == "") {
+        update_util.updateOrderStatus({ orderId, updatedStatus }).then(() =>{
+            res.redirect('/stallOwner/')
+        }).catch(error => {
+            res.render('/stallOwner/', {
+                error
+            })
+        })
+    }
+    else{
+        // Redirect if error found
+        res.render('/stallOwner/', {
+            error
+        })
+    }
 
 })
 
