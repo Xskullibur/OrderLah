@@ -90,8 +90,6 @@ io.on('connection', function(socket){
             let stallId = stallOwner.stall.id
 
             sendTiming(stallId)
-            
-
         })
 
         status.updateOrderStatus({
