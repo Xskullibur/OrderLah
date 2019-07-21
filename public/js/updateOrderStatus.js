@@ -5,15 +5,15 @@ $(document).ready(function (){
 
     var sid = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
-    socket = io.connect('https://' + window.location.hostname +':3000/');
+    socket = io.connect(window.location.protocol + '//' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
         socket.emit('sessionid', sid)
 
-        if(typeof getOrderId === "function"){
+        if(typeof getPublicOrderId === "function"){
             //Is a customer on a order status page
-            var orderId = getOrderId();
-            socket.emit('customer-init', {orderId});
+            var publicOrderId = getPublicOrderId();
+            socket.emit('customer-init', {publicOrderId});
         }
 
 
@@ -22,6 +22,8 @@ $(document).ready(function (){
             console.log(updatedStatus);
 
             if(updatedStatus.valueOf() == 'Collection Confirmed'){
+                $('#while-order').addClass('d-none');
+                $(".trigger").toggleClass("drawn");
                 setCircleProgress(100);
                 setTime(0);
             }
@@ -39,9 +41,6 @@ $(document).ready(function (){
     socket.on('disconnect', () => {
         console.log('Stopped listening for updates');
     })
-
-
-    
 
     setTimeout(0);
 
@@ -71,9 +70,7 @@ function subStrCookie(cookie){
 }
 
 // Update Status
-function updateStatus(pOrderId) {
-
-    console.log("Order Update: " + pOrderId)
+function updateStatus(publicOrderId, qrcode=false) {
 
     var STATUS = {
         OrderPending: 'Order Pending',
@@ -82,10 +79,10 @@ function updateStatus(pOrderId) {
         CollectionConfirmed: 'Collection Confirmed'
     }
 
-    var updateBtn = document.getElementById(`updateStatusBtn_${pOrderId}`)
-    var currentStatusCtx = document.getElementById(`currentStatusTxt_${pOrderId}`)       // Update Send
-    var updateStatusCtx = document.getElementById(`updateStatusTxt_${pOrderId}`)         // Next status aft current status
-    var orderCard = document.getElementById(`orderCard_${pOrderId}`)
+    var updateBtn = document.getElementById(`updateStatusBtn_${publicOrderId}`)
+    var currentStatusCtx = document.getElementById(`currentStatusTxt_${publicOrderId}`)       // Update Send
+    var updateStatusCtx = document.getElementById(`updateStatusTxt_${publicOrderId}`)         // Next status aft current status
+    var orderCard = document.getElementById(`orderCard_${publicOrderId}`)
 
     var updatedStatus = null
     var nxtStatus = null
@@ -117,7 +114,7 @@ function updateStatus(pOrderId) {
     currentStatusCtx.innerHTML = updatedStatus
 
     // Send websocket (update-status)
-    socket.emit('update-status', {pOrderId, updatedStatus})
+    socket.emit('update-status', {publicOrderId, qrcode})
 
     // Check order container for any orders
     orderContainer = document.getElementById("orderContainer")
@@ -129,20 +126,4 @@ function updateStatus(pOrderId) {
         </div>`
     }
 
-}
-
-function qrUpdateStatus(pOrderId) {
-
-    console.log(pOrderId)
-
-    $.ajax({
-        url: `/stallOwner/updateStatus/${pOrderId}/1`,
-        type: 'PUT',
-        success: function () {  
-            console.log("Success");  
-        },  
-        error: function () {  
-            console.log('Error in Operation');  
-        } 
-    })
 }

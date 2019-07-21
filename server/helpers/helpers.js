@@ -169,8 +169,12 @@ module.exports = {
 
         return updatedStatus;
     },
-    
+
     inc(value, options) {
         return parseInt(value) + 1
+    },
+    
+    substringTo5(text){
+        return text.substring(0, 5)
     }
 }

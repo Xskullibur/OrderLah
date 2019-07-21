@@ -1,11 +1,12 @@
 // const Server = require('socket.io');
 // const io = new Server();
 
-const status = require('../../utils/stallowner/update_status')
 const transactions = require('../../utils/main/order_transactions')
 const globalHandle = require('../global/global')
+
 const order_util = require('../../utils/stallowner/order')
 const stall_util = require('../../utils/stallowner/stall')
+const update_util = require('../../utils/stallowner/update_status')
 
 const server = globalHandle.get('server')
 
@@ -37,33 +38,34 @@ io.on('connection', function(socket){
         //Store session id with socket id
         sessionIDs[socket.id] = sessionId
         //io.to(socket.id) get socket
-
-        
-    
     })
 
     /**
      * Customer will send the order id upon connecting to socket
      */
-    socket.on('customer-init', function({orderId}) {
+    socket.on('customer-init', function({publicOrderId}) {
 
-        let sessionid = sessionIDs[socket.id]
 
-        getSessionBySessionID(sessionid, async (err, session) => {
-            if(session.passport.user){
-                let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
-                
-                stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
-            
-                    if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+        order_util.getOrderFromPublicOrderID(publicOrderId).then(order =>{
+
+            let orderId = order.id
+
+            let sessionid = sessionIDs[socket.id]
+
+            getSessionBySessionID(sessionid, async (err, session) => {
+                if(session.passport.user){
+                    let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
                     
-                })
-
+                    stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
                 
-            }
-        })
-        
+                        if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+                        
+                    })
 
+                    
+                }
+            })
+        })
 
     })
     
@@ -74,13 +76,18 @@ io.on('connection', function(socket){
     });
 
     // Customers events
-    socket.on('', function(){
+    socket.on('', function(){ })
 
-    })
+    var STATUS = {
+        OrderPending: 'Order Pending',
+        PreparingOrder: 'Preparing Order',
+        ReadyForCollection: 'Ready for Collection',
+        CollectionConfirmed: 'Collection Confirmed'
+    }
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', async function({pOrderId, updatedStatus}) {
+    socket.on('update-status', async function({publicOrderId, qrcode}) {
 
         //Update customer timing
         getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
@@ -93,23 +100,63 @@ io.on('connection', function(socket){
         })
 
         // Get Order Id from Public Order Id
-        let orderID = await order_util.getOrderIdFromPublicId(pOrderId)
+        let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
+        let orderID = order.id
+        updatedStatus = null
+        error = ""
+    
+        // Get Current Status from Order Id
+        let currentStatus = await update_util.getCurrentStatus(orderID)
+    
+        // Check if called from QR Code (Inital Status = 'Ready for Collection')
+        if (qrcode) {
+            if (currentStatus != STATUS.ReadyForCollection) {
+                error = "Order not ready for collection!"
+            }
+        }
+    
+        // Get updated status
+        switch (currentStatus) {
+            case STATUS.OrderPending:
+                updatedStatus = STATUS.PreparingOrder
+                break;
+    
+            case STATUS.PreparingOrder:
+                updatedStatus = STATUS.ReadyForCollection
+                break;
+    
+            case STATUS.ReadyForCollection:
+                updatedStatus = STATUS.CollectionConfirmed
+                break;
+        
+            default:
+                error = "Invalid Order Status!"
+                break;
+        }
+    
+        // Update and redirect if no error
+        if (error == "") {
 
-        status.updateOrderStatus({
-            orderID, updatedStatus
-        }).then((result) => {
-            console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
-            transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
-                    const socketid = getSocketIDBySessionID(sessionid)
-                    console.log(`Sending order update to socket id of ${socketid} which equate to session id: ${sessionid}`);
-                    
-                    io.to(socketid).emit('update-status', {updatedStatus})
+            update_util.updateOrderStatus({
+                orderID, updatedStatus
+            }).then((result) => {
+                console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
+                transactions.getCustomerByOrderID(orderID).then(orderCust => {
+                    getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
+                        const socketid = getSocketIDBySessionID(sessionid)
+                        console.log(`Sending order update to socket id of ${socketid} which equate to session id: ${sessionid}`);
+                        
+                        io.to(socketid).emit('update-status', {updatedStatus})
+                    })
                 })
-            })
-        }).catch((err) => {
-            console.log(`Error: ${err}`)
-        });
+            }).catch((err) => {
+                console.log(`Error: ${err}`)
+            });
+
+        }
+        else{
+            console.log(error)
+        }
 
     })
 
