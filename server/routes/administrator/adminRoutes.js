@@ -76,17 +76,17 @@ router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
         length: 15,
         numbers: true
     })
-    const username = req.body.username
-    const firstName = req.body.firstName
-    const lastName = req.body.lastName
-    const email = req.body.email
+    const username = toCap(req.body.username.replace(/\s/g, ""))
+    const firstName = toCap(req.body.firstName.replace(/\s/g, ""))
+    const lastName = toCap(req.body.lastName.replace(/\s/g, ""))
+    const email = req.body.email.replace(/\s/g, "")
     const birthday = req.body.birthday
     const password = passGen
-    const phone = req.body.phone
+    const phone = req.body.phone.replace(/\s/g, "")
     const role = 'Stallowner'
 
-    const stallName = req.body.stallName
-    const description = req.body.description
+    const stallName = toCap(req.body.stallName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
+    const description = req.body.description.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
 
     User.create({
         username, firstName, lastName, email, birthday, password, phone, role
