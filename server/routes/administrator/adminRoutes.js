@@ -33,6 +33,8 @@ const saltRounds = 10
 
 var displayAlert = []
 
+const op = Sequelize.Op
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -40,6 +42,24 @@ var transporter = nodemailer.createTransport({
       pass: 'feifi@85@#*#vjslrfieefe'
     }
   });
+
+function toCap(str) {
+    var splitStr = str.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+    }
+    return splitStr.join(' ')
+}
+
+function checkUnique(theName){
+    return MenuItem.count({where: {itemName: theName}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
+
 
 router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
@@ -50,21 +70,6 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
         displayAlert = []
     })
 })
-
-// router.get('/showMenu', (req, res) => {
-//     const id = req.user.id
-//     User.findOne({ where: id }).then(user => {
-//          if(user.role === 'Admin'){
-//             MenuItem.findAll({where: {active: true}}).then((item) =>{
-//                 res.render('stallowner-menu', {
-//                     item:item
-//                 })
-//             })      
-//         }else{
-//             res.render('./successErrorPages/error')
-//         }      
-//       })
-// })
 
 router.post('/submitStall', auth_login.authAdmin, (req, res) =>{
     var passGen = generator.generate({
@@ -142,7 +147,6 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                     })   
                     displayAlert.push("successully locked account!")
                     res.redirect('/admin/adminPanel')
-                    //res.render('./successErrorPages/lockSuccess')
                 })
             })            
         })
@@ -178,13 +182,19 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
                     })   
                 })
                 displayAlert.push("account password reset!")
-                res.redirect('/admin/adminPanel')
-                //res.render('./successErrorPages/resetSuccess')
+                res.redirect('/admin/adminPanel')              
             })          
         })
-    })
-    
-    
+    })   
+})
+
+router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
+    var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
+    User.findAll({where: {role: "Stallowner", username:{[op.like]: filterName}}}).then((stallowner) =>{
+        res.render('admin', {
+            displayStallowner: stallowner,
+        })
+    })  
 })
 
 module.exports = router;

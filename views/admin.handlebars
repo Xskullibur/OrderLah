@@ -12,17 +12,22 @@
 
 <center>
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-lg-4">
         </div>
-        <div class="col-sm-2">
-            <input type="text" class="form-control" aria-describedby="" placeholder="Search Menu" style="width: 200px;">
-            <br>
+        <div class="col-lg-2">
+            <form method="POST" action="/admin/filterItem" class="form-inline">
+                <input type="text" class="form-control" name="filterName" id="filterName" placeholder="Search StallOwner" style="width: 200px;">
+                <button type="submit" class="btn btn-outline-success" style="margin-left: 15px;">Search</button>
+            </form>
         </div>
-        <div class="col-sm-1">
+        <div class="col-lg-1">
+            <form method="GET" action="/admin/adminPanel">
+                <button type="submit" class="btn btn-outline-success">Show All</button>
+            </form>
+        </div>
+        <div class="col-lg-1">
             <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
-        </div>
-        <div class="col-sm-5">
-        </div>
+        </div>      
     </div>
 </center>
 
