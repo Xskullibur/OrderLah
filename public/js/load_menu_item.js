@@ -1,10 +1,22 @@
 $(document).ready(function() {
   //Register search field
   $('#searchBtn').click(function() {
+
+    //Remove all other class selected
+    $('ul.menu-list > li.category-list-item').removeClass('selected');
+
     var query = $('#searchField').val();
     generateSearchMenuCardItem(query);
 
   });
+
+  $('ul.menu-list > li.category-list-item > div').on('click', function(){
+    //Remove all other class selected
+    $('ul.menu-list > li.category-list-item').removeClass('selected');
+    
+    $(this).parent().addClass('selected');
+  });
+
 });
 
 //CSS Selectors
@@ -35,7 +47,6 @@ function generateMenuCardItem(cusine = ''){
         registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
     });
 }
-
 
 function generateSearchMenuCardItem(query){
   var route = 'menuItemSearch/' + query;

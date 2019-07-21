@@ -21,7 +21,7 @@ $(document).ready(function (){
         socket.on('update-status', function({updatedStatus}){
             console.log(updatedStatus);
 
-            if(updateStatus == 'Collection Confirmed'){
+            if(updatedStatus.valueOf() == 'Collection Confirmed'){
                 setCircleProgress(100);
                 setTime(0);
             }
