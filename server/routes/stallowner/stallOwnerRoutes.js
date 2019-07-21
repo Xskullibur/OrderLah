@@ -367,7 +367,7 @@ router.post('/updateStatus/:orderID', (req, res) => {
  */
 
 router.use(auth_login.auth)
-
+const op = Sequelize.Op
 var displayAlert = []
 var errorAlert = []
 
@@ -471,7 +471,27 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
             res.redirect('/stallOwner/showMenu')
         }
     })
+})
 
+router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
+    var filterName = req.body.filterName
+    const id = req.user.id
+    User.findOne({ where: id }).then(user => {
+         if(user.role === 'Stallowner'){
+            Stall.findOne({where: {userId: id}}).then(myStall => {
+                MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: '%' + filterName + '%'}}}).then((item) =>{
+                    res.render('stallowner-menu', {
+                        item:item,
+                        stall: myStall,
+                        errorAlert: errorAlert
+                    })
+                    errorAlert = []
+                })    
+            })
+        }else{
+            res.render('./successErrorPages/error')
+        }      
+      })
 })
 
 router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
