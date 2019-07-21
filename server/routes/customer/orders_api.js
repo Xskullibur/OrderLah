@@ -58,9 +58,15 @@ router.post('/addOrder', (req, res) => {
 
         const orderline = new order_track.orderline(req.body.menuItemId)
 
-        req.cart.addOrderLine(orderline)
-        res.type('json')
-        res.send(JSON.stringify(orderline))
+        menu_item_util.getMenuItemByID(req.body.menuItemId).then((menuItem) => {
+            if(menuItem != null){
+                req.cart.addOrderLine(orderline)
+                res.type('json')
+                res.send(JSON.stringify(orderline))
+            }
+        })
+
+
     }
 })
 
