@@ -19,6 +19,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/index.js",
             "env": {
+                "HTTPS": "NO",
                 "REDIS_HOST": "192.168.99.100",
                 "REDIS_PORT": "6379",
                 "NODE_ENV":"dev",

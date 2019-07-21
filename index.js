@@ -48,7 +48,28 @@ const app = express()
 
 //Put app inside global
 globalHandle.put('app', app)
-const server = require('http').createServer(app)
+
+//Import self signed cert (for dev only)
+const fs = require('fs')
+const crypto = require('crypto')
+
+const signedCert = './.cert/dev-server.cert'
+const signedKey = './.cert/dev-server.key'
+
+let server = null
+
+if(process.env.HTTPS == 'YES' && fs.existsSync(signedCert) && fs.existsSync(signedKey)){
+    console.log('Using HTTPS connections')
+    //Self-signed cert exists
+    server = require('https').createServer({
+        key: fs.readFileSync(signedKey).toString(),
+        cert: fs.readFileSync(signedCert).toString()
+    }, app)
+}else{
+    server = require('http').createServer(app)
+}
+
+
 globalHandle.put('server', server)
 
 

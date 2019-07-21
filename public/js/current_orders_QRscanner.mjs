@@ -1,6 +1,6 @@
 
-import QrScanner from "/js/vendor/qrscanner/qr-scanner.min.js";
-QrScanner.WORKER_PATH = '/js/vendor/qrscanner/qr-scanner-worker.min.js';
+import QrScanner from "./vendor/qrscanner/qr-scanner.min.js";
+QrScanner.WORKER_PATH = '../js/vendor/qrscanner/qr-scanner-worker.min.js';
 
 const video = document.getElementById('qr-video');
 video.addEventListener('leavepictureinpicture', function(){
@@ -21,6 +21,7 @@ function setResult(result) {
 // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
 
 const scanner = new QrScanner(video, result => setResult(result));
+scanner.start()
 
 let isScanning = false;
 
