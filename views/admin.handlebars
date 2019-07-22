@@ -20,33 +20,33 @@
     {{/each}}    
 {{/if}}
 <br>
-
-<center>
-    <div class="row">
-        <div class="col-lg-4">
-        </div>
-        <div class="col-lg-2">
-            <form method="POST" action="/admin/filterItem" class="form-inline">
-                <input type="text" class="form-control" name="filterName" id="filterName" placeholder="Search StallOwner" style="width: 200px;">
-                <button type="submit" class="btn btn-outline-success" style="margin-left: 15px;">Search</button>
-            </form>
-        </div>
-        <div class="col-lg-1">
-            <form method="GET" action="/admin/adminPanel">
-                <button type="submit" class="btn btn-outline-success">Show All</button>
-            </form>
-        </div>
-        <div class="col-lg-1">
-            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
-        </div>      
-    </div>
-</center>
-
-<br><br>
 <div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <form method="POST" action="/admin/filterItem" class="form-inline">
+                <input type="text" class="form-control" name="filterName" id="filterName" placeholder="Search StallOwner" style="width: 180px;">
+                <button type="submit" class="btn btn-outline-success" style="margin-left: 15px;">Search</button>
+            </form>          
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-4">
+            <center>
+                <form method="GET" action="/admin/adminPanel">
+                    <button type="submit" class="btn btn-outline-success">Show All</button>
+                </form>
+            </center>
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-4">
+            <center>
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
+            </center>
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
             <div class="card border-secondary" style="background-color: #fff;  width: 100% !important; height: 100% !important;">
+                <center><h2>Stall Management</h2></center>
+                <br>
                 <div class="row">
                         {{#if displayStallowner}}
                             {{#each displayStallowner}}
