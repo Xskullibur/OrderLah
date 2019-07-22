@@ -57,6 +57,7 @@ const Cusine = db.Cusine
 const sequelize_db = db.db
 
 const RememberMe = db.RememberMe
+const ResetPass = db.ResetPass
 
 //Put User model inside global
 globalHandle.put('user', User)
@@ -68,6 +69,8 @@ globalHandle.put('cusine', Cusine)
 globalHandle.put('db', sequelize_db)
 
 globalHandle.put('rememberme', RememberMe)
+
+globalHandle.put('resetpass', ResetPass)
 
 //connect to db
 const dummy = require('./dummy')

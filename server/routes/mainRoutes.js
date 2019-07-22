@@ -7,6 +7,7 @@ const globalHandle = require('../libs/global/global')
 
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../libs/uuid_middleware')
+const uuidv4 = require('uuid/v4');
 
 //Login authentication middleware
 const auth_login = require('../libs/auth_login')
@@ -353,6 +354,7 @@ router.get('/forgotPassword', (req, res) =>{
     res.render('resetpassword1', {layout: 'blank_layout'})
 })
 
+const resetpassword = require ('../utils/main/reset_password')
 router.post('/forgotPassword', (req, res) =>{
     User.findOne({
         where:{
@@ -362,6 +364,11 @@ router.post('/forgotPassword', (req, res) =>{
       if (!user){
           console.log('Error! Account not found...')
       }else{
+            resetpassword.createResetPass({
+                token: uuidv4(),
+                tokenTiming: Date.now(), 
+                userId: user.id
+            })
             console.log('Ok, up and runnning...')
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
