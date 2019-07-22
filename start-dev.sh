@@ -1,7 +1,7 @@
 # Unix Bourne-Again shell script
 
 # Auto login
-export AUTO_LOGIN="YES"
+export AUTO_LOGIN="NO"
 export LOGIN_AS="john@customer"
 
 # SET 'orderlah' database environment
@@ -9,7 +9,7 @@ export LOGIN_AS="john@customer"
 # set Development
 export NODE_ENV='dev'
 
-export DB_HOST="localhost"
+export DB_HOST="192.168.99.100"
 export DB_USERNAME="orderlah_web_user"
 export DB_PASSWORD="mysecurepassword"
 
