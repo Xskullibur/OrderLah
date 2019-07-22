@@ -103,7 +103,8 @@ io.on('connection', function(socket){
         let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
         let orderID = order.id
         updatedStatus = null
-        error = ""
+        nxtStatus = null
+        errorMsg = ""
     
         // Get Current Status from Order Id
         let currentStatus = await update_util.getCurrentStatus(orderID)
@@ -111,7 +112,7 @@ io.on('connection', function(socket){
         // Check if called from QR Code (Inital Status = 'Ready for Collection')
         if (qrcode) {
             if (currentStatus != STATUS.ReadyForCollection) {
-                error = "Order not ready for collection!"
+                errorMsg = "Order not ready for collection!"
             }
         }
     
@@ -119,10 +120,12 @@ io.on('connection', function(socket){
         switch (currentStatus) {
             case STATUS.OrderPending:
                 updatedStatus = STATUS.PreparingOrder
+                nxtStatus = STATUS.ReadyForCollection
                 break;
     
             case STATUS.PreparingOrder:
                 updatedStatus = STATUS.ReadyForCollection
+                nxtStatus = STATUS.CollectionConfirmed
                 break;
     
             case STATUS.ReadyForCollection:
@@ -130,37 +133,55 @@ io.on('connection', function(socket){
                 break;
         
             default:
-                error = "Invalid Order Status!"
+                errorMsg = "Invalid Order Status!"
                 break;
         }
     
-        // Update and redirect if no error
-        if (error == "") {
+        // Update and redirect if no errorMsg
+        if (errorMsg == "") {
 
             update_util.updateOrderStatus({
                 orderID, updatedStatus
             }).then((result) => {
                 console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
                 transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                    getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
-                        const socketid = getSocketIDBySessionID(sessionid)
-                        console.log(`Sending order update to socket id of ${socketid} which equate to session id: ${sessionid}`);
-                        
-                        io.to(socketid).emit('update-status', {updatedStatus})
+                    getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
+                        getSocketIDsBySessionID(sessionid, (socketId) => {
+                            console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
+                            
+                            io.to(socketId).emit('update-status', {updatedStatus})
+
+                        })
                     })
                 })
             }).catch((err) => {
-                console.log(`Error: ${err}`)
+                console.log(`errorMsg: ${err}`)
             });
 
         }
         else{
-            console.log(error)
+            console.log(errorMsg)
         }
+        
+        socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
 
     })
 
 });
+
+function sendOrderToStallOwner(stallId, order){
+    getSessionsFromUserID(stallId, (sessionId, session)  => {
+        getSocketIDsBySessionID(sessionId, (socketId) => {
+            socketIds.forEach(socketId => {
+                io.to(socketId).emit('add-order', {
+                    order: JSON.stringify(order)
+                })
+                
+            });
+
+        })
+    })
+}
 
 function sendTiming(stallId){
     //Update customer timing
@@ -169,18 +190,18 @@ function sendTiming(stallId){
 
             let userID = custId.userId
 
-            getSessionsFromCustomerID(userID, (session) => {
-                let socketids = getSocketIDsBySessionID(session)
-
-                order_util.getOrderIDFromUserId(userID).then(orderId => {
+            getSessionsFromUserID(userID, (sessionId) => {
+                getSocketIDsBySessionID(sessionId, (socketId) => {
+                    order_util.getOrderIDFromUserId(userID).then(orderId => {
                     
-                    getOrderTimingForOrder(orderId[0].id, (timing => {
-                        socketids.forEach(socketId => {
+                        getOrderTimingForOrder(orderId[0].id, (timing => {
                             io.to(socketId).emit('update-timing', {timing})
-                        })
-                    }))
-
+                        }))
+    
+                    })
                 })
+
+                
 
             })
 
@@ -204,24 +225,32 @@ function getSocketIDBySessionID(sessionId){
     return null
 }
 
-function getSocketIDsBySessionID(sessionId){
-    let socketIds = []
-    for(let socketId in sessionIDs){
-        if(sessionIDs[socketId] == sessionId)socketIds.push(socketId)
+function getSocketIDsBySessionID(sessionId, yieldCB){
+    for (let socketId in sessionIDs) {
+        let tsessionId = sessionIDs[socketId]
+        if(sessionId == tsessionId)yieldCB(socketId)
     }
-    return socketIds
 }
 
-function getSessionsFromCustomerID(custId, yieldCB){
+// function getSocketIDsBySessionID(sessionId){
+//     let socketIds = []
+//     for(let socketId in sessionIDs){
+//         if(sessionIDs[socketId] == sessionId)socketIds.push(socketId)
+//     }
+//     return socketIds
+// }
+
+function getSessionsFromUserID(userId, yieldCB){
     for(let socketId in sessionIDs){
         let sessionId = sessionIDs[socketId]
         getSessionBySessionID(sessionId, (err, session) => {
-            if(!err && session.passport.user === custId){
+            if(!err && session.passport.user === userId){
                 yieldCB(sessionId, session);
             }
         })
     }
 }
+
 
 
 function getSessionBySessionID(sessionId, cb){
@@ -244,3 +273,5 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
+
+module.exports = {sendOrderToStallOwner}

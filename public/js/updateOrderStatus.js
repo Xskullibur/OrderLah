@@ -16,14 +16,13 @@ $(document).ready(function (){
             socket.emit('customer-init', {publicOrderId});
         }
 
-
         //Customers events
         socket.on('update-status', function({updatedStatus}){
             console.log(updatedStatus);
 
             if(updatedStatus.valueOf() == 'Collection Confirmed'){
                 $('#while-order').addClass('d-none');
-                $(".trigger").toggleClass("drawn");
+                if(!$(".trigger").hasClass('drawn'))$(".trigger").addClass("drawn");
                 setCircleProgress(100);
                 setTime(0);
             }
@@ -36,6 +35,46 @@ $(document).ready(function (){
             console.log("Timing: " + timing);
             setTime(timing);
             setCircleProgress((60 - timing) / 60 * 100);
+        })
+
+        socket.on('update-status-complete', function({publicOrderId, updatedStatus, nxtStatus, errorMsg}){
+            
+            if (errorMsg != "") {
+                showAlert(errorMsg, 3000, "alert-warning")
+            }
+            else{
+    
+                var orderCard = document.getElementById(`orderCard_${publicOrderId}`)
+    
+                // Remove Card if updatedStatus = "Collection Confirmed"
+                if (updateStatus == "Collection Confirmed") {
+                    orderCard.parentNode.removeChild(orderCard)
+                }
+                else{
+    
+                    var updateBtn = document.getElementById(`updateStatusBtn_${publicOrderId}`)
+                    var currentStatusCtx = document.getElementById(`currentStatusTxt_${publicOrderId}`)       // Update Send
+                    var updateStatusCtx = document.getElementById(`updateStatusTxt_${publicOrderId}`)         // Next status aft current status    
+    
+                    // Update Current Status with Updated Status
+                    currentStatusCtx.innerHTML = updatedStatus
+    
+                    if (nxtStatus !== null) {
+                        updateStatusCtx.innerHTML = nxtStatus   
+                    }
+                }
+            
+                // Check order container for any orders
+                orderContainer = document.getElementById("orderContainer")
+            
+                if (orderContainer.childElementCount === 0) {
+                    orderContainer.innerHTML = `<div class="alert alert-success m-5" role="alert">
+                    <h4 class="alert-heading">Well Done!</h4>
+                    <p>There are no more orders left.</p>
+                    </div>`
+                }
+            
+            }
         })
     });
     socket.on('disconnect', () => {
@@ -72,58 +111,7 @@ function subStrCookie(cookie){
 // Update Status
 function updateStatus(publicOrderId, qrcode=false) {
 
-    var STATUS = {
-        OrderPending: 'Order Pending',
-        PreparingOrder: 'Preparing Order',
-        ReadyForCollection: 'Ready for Collection',
-        CollectionConfirmed: 'Collection Confirmed'
-    }
-
-    var updateBtn = document.getElementById(`updateStatusBtn_${publicOrderId}`)
-    var currentStatusCtx = document.getElementById(`currentStatusTxt_${publicOrderId}`)       // Update Send
-    var updateStatusCtx = document.getElementById(`updateStatusTxt_${publicOrderId}`)         // Next status aft current status
-    var orderCard = document.getElementById(`orderCard_${publicOrderId}`)
-
-    var updatedStatus = null
-    var nxtStatus = null
-
-    //Update Status
-    switch (updateBtn.innerText) {
-
-        case STATUS.PreparingOrder:
-            updatedStatus = STATUS.PreparingOrder
-            nxtStatus = STATUS.ReadyForCollection
-            break
-
-        case STATUS.ReadyForCollection:
-            updatedStatus = STATUS.ReadyForCollection
-            nxtStatus = STATUS.CollectionConfirmed
-            break
-
-        case STATUS.CollectionConfirmed:
-            updatedStatus = STATUS.CollectionConfirmed
-            orderCard.parentNode.removeChild(orderCard)
-            break
-
-    }
-
-    if (nxtStatus !== null) {
-        updateStatusCtx.innerHTML = nxtStatus   
-    }
-
-    currentStatusCtx.innerHTML = updatedStatus
-
-    // Send websocket (update-status)
+    // Send websocket (update-status) || Update DB
     socket.emit('update-status', {publicOrderId, qrcode})
-
-    // Check order container for any orders
-    orderContainer = document.getElementById("orderContainer")
-
-    if (orderContainer.childElementCount === 0) {
-        orderContainer.innerHTML = `<div class="alert alert-success m-5" role="alert">
-        <h4 class="alert-heading">Well Done!</h4>
-        <p>There are no more orders left.</p>
-        </div>`
-    }
 
 }
