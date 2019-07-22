@@ -14,33 +14,37 @@ window.onload = function() {
 }
 
 function showOrdersPerItem() {
-    var labels = []
-    var data = []
-    OrdersPerItem.forEach(item => {
-        labels.push(item.ItemName)
-        data.push(item.NoOfOrders)
-    });
+    if (OrdersPerItem) {
+        
+        var labels = []
+        var data = []
+        OrdersPerItem.forEach(item => {
+            labels.push(item.ItemName)
+            data.push(item.NoOfOrders)
+        });
+    
+        var ctx = document.getElementById('OrdersPerItem').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'pie',
+    
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders Per Item',
+                    backgroundColor,
+                    data: data
+                }]
+            },
+    
+            // Configuration options go here
+            options: {
+                legend: { position: 'bottom'},
+            }
+        });
 
-    var ctx = document.getElementById('OrdersPerItem').getContext('2d');
-    var chart = new Chart(ctx, {
-        // The type of chart we want to create
-        type: 'pie',
-
-        // The data for our dataset
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Orders Per Item',
-                backgroundColor,
-                data: data
-            }]
-        },
-
-        // Configuration options go here
-        options: {
-            legend: { position: 'bottom'},
-        }
-    });
+    }
 }
 
 function showAverageRating() {
