@@ -635,7 +635,7 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
-    var checkName = req.body.checkName
+    var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
     checkUnique(itemName).then(isUnique => {
