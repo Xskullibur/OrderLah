@@ -20,11 +20,12 @@ const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
+const ResetPass = globalHandle.get('resetpass')
 
 //Get App
 const app = globalHandle.get('app')
 
-//Passport.js   asdasdasdasd
+//Passport.js  
 const passport = require('passport')
 
 //moment
@@ -32,15 +33,20 @@ const moment = require('moment')
 
 // Create a token generator with the default settings:
 var randtoken = require('rand-token');
+
 //nodemailer
 const nodemailer = require('nodemailer');
 
 var session = require('express-session')
 
+//sequelize operator
+const Sequelize = require('sequelize').Sequelize
+const Op = Sequelize.Op
+
 //var token = '';
 app.use(session({
     token : '',
-    cookie: { maxAge: 600000 }
+    cookie: { maxAge: 6000000 },
 }));
 
 app.use(passport.initialize())
@@ -223,7 +229,10 @@ router.get('/register', uuid_middleware.generate, (req, res) => {
 
 
 router.post('/requesttoken',(req, res) => {
-    session.token = randtoken.generate(16);
+    req.session.token = randtoken.generate(16)
+
+    req.session.save()
+
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -236,7 +245,7 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        html: 'Your Orderlah verfication code is: ' + session.token
+        html: 'Your Orderlah verfication code is: ' + req.session.token
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -257,8 +266,9 @@ router.post('/requesttoken',(req, res) => {
 })*/
 
 router.post('/register', (req, res) => {
-    if(session.token === req.body.code){
+    if(req.session.token === req.body.code){
         //Create the user account
+
         console.log('Verification success, account being created...')
         User.create({
             username: req.body.username,
@@ -391,40 +401,69 @@ router.post('/forgotPassword', (req, res) =>{
       }else{
             resetpassword.createResetPass({
                 token: uuidv4(),
-                tokenTiming: Date.now(), 
-                userId: user.id
+                expiryTiming: new Date(Date.now()+(30*60*1000)).toISOString(), 
+                userId: user.id,
+            }).then(resetpassword => {
+                console.log('Ok, up and runnning...')
+                let transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user:'orderlah54@gmail.com',
+                        pass: 'orderlahpassword'
+                    }
+                });
+                let mailOptions = {
+                    from:'Orderlah Team',
+                    to: req.body.email,
+                    subject: 'Reset password',
+                    html: '<p>Click <a href="http://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
+                };
+            
+                transporter.sendMail(mailOptions, function(err, data){
+                    if (err) {
+                        console.log('error occured: ', err)
+                        res.redirect('/forgotPassword?error=' + err)
+                    } else {
+                        console.log('reset password email sent to user id:', resetpassword.userId, 'token:', resetpassword.token)
+                        res.redirect('/forgotPassword?success=Email sent!')
+                    }
+                })
             })
-            console.log('Ok, up and runnning...')
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user:'orderlah54@gmail.com',
-                    pass: 'orderlahpassword'
-                }
-            });
-    
-            let mailOptions = {
-                from:'Orderlah Team',
-                to: req.body.email,
-                subject: 'Reset password',
-                text: 'Here is the link to reset your password: localhost:3000/resetpassword/'+user.id,
-                html: '<p>Click <a href="http://localhost:3000/resetpassword/' + user.id + '">here</a> to reset your password</p>'
-            };
-        
-            transporter.sendMail(mailOptions, function(err, data){
-                if (err) {
-                    console.log('error occured: ', err)
-                    res.redirect('/forgotPassword?error=' + err)
-                } else {
-                    console.log('reset password email sent to user id:', user.id)
-                    res.redirect('/forgotPassword?success=Email sent!')
-                }
-            })
+            .catch(err => console.log(err))
+            
+            
         }
     })
 })
 
-router.get('/resetpassword/:id', (req, res) =>{
+/*DEBUG route for getting token */
+if(process.env.NODE_ENV === 'dev'){
+    router.get('/debug/token/:userId', (req, res) => {
+        const userId = req.params.userId
+        //Get the token for user id 
+        ResetPass.findOne({
+            where: {
+                userId,
+                expiryTiming:{
+                    [Op.gt]: new Date()
+                },
+                active: true
+            }
+        }).then(resetpassword => {
+            if(!resetpassword){
+                res.send('No valid token')
+            }else{
+                res.type('json')
+                res.send(JSON.stringify(resetpassword))
+            }
+        }).catch(err => {
+            console.log(err)
+            res.send('No valid token')
+        })
+    })
+}
+
+router.get('/resetpassword/:id/:token', (req, res) =>{
     User.findOne({
         where:{
             id: req.params.id
@@ -434,9 +473,33 @@ router.get('/resetpassword/:id', (req, res) =>{
             console.log('Error! Account not found...')
         }
         else{
-            res.render('resetpassword2', {
-                user,
-                layout: 'blank_layout'
+            ResetPass.findOne({
+                where: {
+                    userId: req.params.id,
+                    expiryTiming:{
+                        [Op.gt]: new Date()
+                    },
+                    token: req.params.token,
+                    active: true
+                }
+            }).then(resetpassword => {
+                if(!resetpassword){
+                    console.log('Error! Resetaccount issue...')
+                }
+                else{
+                    res.render('resetpassword2', {
+                        user,
+                        layout: 'blank_layout'
+                    })
+                    ResetPass.update({
+                        active: false
+                    }, {
+                        where: {
+                            userId: req.params.id,
+                            token: req.params.token
+                        }
+                    })
+                }
             })
         }
     })

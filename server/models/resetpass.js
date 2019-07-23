@@ -4,7 +4,8 @@ module.exports = {
             
             const ResetPass = db.define('resetpass',{
                 token: { type: Sequelize.STRING(50), allowNulls: false, unique: true },
-                tokenTiming: { type: Sequelize.DATE, allowNulls: false, unique: false },
+                expiryTiming: { type: Sequelize.DATE, allowNulls: false, unique: false },
+                active:{ type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true }
             })
 
             return ResetPass;
