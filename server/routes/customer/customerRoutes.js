@@ -423,19 +423,6 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
             console.log('transaction details saved to database')           
         }).catch(err => console.log(err))
-
-        // for(var orderline of req.cart.items){
-        //     await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
-
-        //         Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
-        //     })
-            
-
-
-
-
-        // }
-
         let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
         //inserts quantity to menuItems
         //_.zip()
