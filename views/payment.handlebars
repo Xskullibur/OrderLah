@@ -30,7 +30,7 @@
 
 <script>
     if({{totalAmount}} === 0){
-        alert('Cart is empty, items payable by paypal, visa, mastercard, amex')
+        showAlert('Cart is empty, items payable by paypal, visa, mastercard, amex')
     }else{
         paypal.Buttons({
             createOrder: function(data, actions) {
@@ -44,7 +44,7 @@
             },
             onApprove: function(data, actions) {                
                 return actions.order.capture().then(function(details) {   
-                    alert('Transaction completed by ' + details.payer.name.given_name + '!')                              
+                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!')                              
                     return fetch('/confrimPayment', {
                         method: 'post',
                         headers: {

@@ -30,6 +30,8 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+var validator = require('validator')
+
 router.use(auth_login.authStallOwner)
 
 /**
@@ -380,7 +382,7 @@ function toCap(str) {
  }
 
 function checkUnique(theName){
-    return MenuItem.count({where: {itemName: theName}}).then(count =>{
+    return MenuItem.count({where: {itemName: theName, active: true}}).then(count =>{
         if(count !== 0){
             return false
         }
@@ -415,19 +417,23 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
-    const owner = req.user.id
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     checkUnique(itemName).then(isUnique => {
         if(isUnique){
-            Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-                const stallId = theStall.id
-        
-                MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
-                    displayAlert.push('Item successfully added')
-                    res.redirect('/stallOwner/showMenu')
-                }).catch(err => console.log(err))
-            })
+            if(validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
+            && !validator.isEmpty(itemDesc)){
+                Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                    const stallId = theStall.id
+            
+                    MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
+                        displayAlert.push('Item successfully added')
+                        res.redirect('/stallOwner/showMenu')
+                    }).catch(err => console.log(err))
+                })
+            }else{
+                res.send('validation check failed')
+            }
         }else{
             errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
             res.redirect('/stallOwner/showMenu')
