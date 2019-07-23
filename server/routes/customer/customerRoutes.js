@@ -392,7 +392,8 @@ router.get('/payment', auth_login.auth, async (req, res) => {
     }
 
     console.log('total amount: ' + totalAmount)
-    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
+    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount, cart_items: req.cart.items
+    })
 
 })
 
