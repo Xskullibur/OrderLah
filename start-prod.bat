@@ -4,6 +4,10 @@
 
 :: SET 'orderlah' database environment
 
+:: Redis server
+SET REDIS_PORT=6379
+SET REDIS_HOST=192.168.99.100
+
 :: set Production
 set NODE_ENV=prod
 
