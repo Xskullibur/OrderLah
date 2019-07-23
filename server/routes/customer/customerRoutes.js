@@ -397,6 +397,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 
 })
 
+const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
@@ -437,6 +438,10 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
             menuItems.forEach(async menuItem => {
                 let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
             })
+
+            //Send order to stallowner
+            sendOrderToStallOwner(stallId, order)
+
         }
         //
         req.cart.clearOrderLine(req)

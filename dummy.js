@@ -196,7 +196,8 @@ async function createTestData() {
             itemDesc: 'Juicy Chicken dredge in the seasoned breadcrumbs.',
             price: 4.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '8ChickenCutlet.jpeg'
         })
 
         let spaghettiItem = await menu_item.createMenuItem({
@@ -204,7 +205,8 @@ async function createTestData() {
             itemDesc: 'PASTA COOKED WITH MINCE MEAT AND BOLOGNESE SAUCE',
             price: 3.30,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '8SpaghettiBolognese.jpeg'
         })
 
         let fishAndChipItem = await menu_item.createMenuItem({
@@ -212,7 +214,8 @@ async function createTestData() {
             itemDesc: 'Tender ocean fresh fish fillet fried perfectly for that crisp exterior but moist and delicate flesh, served with our signature house tartar sauce, U.S. fries and tangy coleslaw. Our most famous dish will hit the spot, every time…',
             price: 5.20,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '8FishAndChips.jpeg'
         })
 
         /**
@@ -289,21 +292,24 @@ async function createTestData() {
             itemDesc: 'A dish of poached chicken and seasoned rice, served with chili sauce and cucumber garnishes',
             price: 2.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '9ChickenRice.jpeg'
         })
         let duckRiceItem = await menu_item.createMenuItem({
             itemName: 'Duck Rice',
             itemDesc: 'Braised Duck with plain rice',
             price: 3.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '9DuckRice.jpeg'
         })
         let porkRiceItem = await menu_item.createMenuItem({
             itemName: 'Roasted Pork Rice',
             itemDesc: 'The chunks of lightly crispy, springy, and well-seasoned roast pork with rice',
             price: 3.30,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '9RoastedPorkRice.jpeg'
         })
         let deletedRiceItem = await menu_item.createMenuItem({
             itemName: 'Deleted Rice',
@@ -546,14 +552,16 @@ async function createTestData() {
             itemDesc: 'Served dry or in soup, and with a variety of noodles from mee pok to kway teow.',
             price: 2.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '10FishballNoodle.jpeg'
         })
         let wantonNoodleItem = await menu_item.createMenuItem({
             itemName: 'Wanton Noodle',
             itemDesc: 'Served in a hot broth, accompanied by leafy greens and shrimp or meat wanton dumplings',
             price: 3,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '10WantonNoodle.jpeg'
         })
 
         //Orders
@@ -685,7 +693,8 @@ async function createTestData() {
             itemDesc: 'A bowl of rice topped with a deep-fried pork cutlet, egg, vegetables, and condiments.',
             price: 3.80,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '11KatsuDon.jpeg'
         })
 
         let misoItem = await menu_item.createMenuItem({
@@ -693,7 +702,8 @@ async function createTestData() {
             itemDesc: 'A hearty and comforting noodle soup where chicken, fish cake, and udon noodles are simmered in a miso-flavored dashi broth.',
             price: 3.80,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '11MisoNikomiUdon.jpeg'
         })
 
         //Orders
@@ -764,7 +774,8 @@ async function createTestData() {
             itemDesc: 'Freshly homemade barley',
             price: 1.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '12Barley.jpeg'
         })
 
         let iceLemonTeaItem = await menu_item.createMenuItem({
@@ -772,7 +783,8 @@ async function createTestData() {
             itemDesc: 'Freshly homemade Ice Lemon Tea',
             price: 1.50,
             active: true,
-            stallId: stall.id
+            stallId: stall.id,
+            image: '12IceLemonTea.jpeg'
         })
 
         //Orders

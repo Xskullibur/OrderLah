@@ -48,12 +48,11 @@
                     {{!-- Body --}}
                     <div class="row">
                         <div class="col">
-
                             <div class="card p-4">
-                                <div class="card-columns" id="all-orders-column">
+                                {{#if currentOrders}}
+                                    <div class="card-columns" id="all-orders-column">
 
-                                    {{!-- Order Cards --}}
-                                    {{#if currentOrders}}
+                                        {{!-- Order Cards --}}
                                         {{#each currentOrders as |order|}}
                                             <div class="card shadow-sm" id="orderCard_{{order.publicOrderID}}">
 
@@ -126,11 +125,11 @@
 
                                             </div>
                                         {{/each}}
-                                    {{else}}
-                                        {{> current_orders/no_orders_alert}}    
-                                    {{/if}}
-                                    
-                                </div>
+                                        
+                                    </div>
+                                {{else}}
+                                    {{> current_orders/no_orders_alert}}    
+                                {{/if}}
                             </div>
 
                         </div>

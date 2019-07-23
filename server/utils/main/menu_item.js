@@ -24,8 +24,9 @@ module.exports = {
      * @param {MenuItem} menuItem - to be created inside database
      * @return {Promise} 
      */
-    createMenuItem: function({itemName, itemDesc, price, stallId, active = true}){
+    createMenuItem: function({itemName, itemDesc, price, stallId, image, active = true}){
         return MenuItem.create({
+            image: image,
             itemName: itemName,
             itemDesc: itemDesc,
             price: price,
