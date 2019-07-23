@@ -2,6 +2,10 @@
 
 # SET 'orderlah' database environment
 
+# Redis server
+export REDIS_PORT="6379"
+export REDIS_HOST="127.0.0.1"
+
 # set Production
 export NODE_ENV="prod"
 
