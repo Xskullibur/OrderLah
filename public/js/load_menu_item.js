@@ -93,7 +93,7 @@ function addOrder(menuItemId){
       var bottomList = $(bottom_list_selector);
       const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', orderline_id, orderline_id, true, true);
       bottomList.append(menuItemHTML);
-      var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
+      var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
       loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
 
       registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
@@ -144,7 +144,7 @@ function generateCartItems(){
           var bottomList = $(bottom_list_selector);
           const menuItemHTML = getMenuItemHTML('all-bottom-menu-container', orderlinesJson[index].orderLineId, orderlinesJson[index].orderLineId, true, true);
           bottomList.append(menuItemHTML);
-          var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
+          var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
           loadContent($(`#all-bottom-menu-container-menu-item-${orderlinesJson[index].orderLineId}`), menuItem);
           registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
         })
@@ -177,7 +177,7 @@ function insertContentToDivContainer(container, jsonMenuItems, no_animation=fals
     //Create menu item html dynamically
     container.append(menuItemHTML);
 
-    var menuItem = new MenuItem('/img/uploads/menu-item-1.jpg', menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
+    var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
     loadContent($(`#${container.attr('id')}-menu-item-${index}`), menuItem);
 });
 }
