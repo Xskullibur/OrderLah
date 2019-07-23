@@ -2,7 +2,8 @@
 
 <div class="container" style="position: relative; top: 5vh; width:">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-12 p-lg-5">
+            
 
             {{!-- Title --}}
             <div class="row">
@@ -61,15 +62,15 @@
                                     <div class="card mb-3 row bg-light">
                                         <div class="col p-3">
                                             <div class="row">
-                                                <div class="col-2">
+                                                <div class="col-12 col-lg-2">
                                                     <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}/img/no-image.jpg{{/if}}" alt"">
                                                 </div>
                                                 <div class="col">
                                                     <div class="row font-weight-bold mb-3">
-                                                        <div class="col">
+                                                        <div class="col-lg-6 col-12">
                                                             {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
                                                         </div>
-                                                        <div class="col" style="text-align: right;">
+                                                        <div class="col-lg-6 col-12" style="text-align: right;">
                                                             ${{calcItemPrice item}}
                                                         </div>
                                                     </div>
