@@ -5,12 +5,12 @@
 
             {{!-- Inputs --}}
             <div class="form-row">
-                <div class="form-group col">
+                <div class="form-group col-12 col-lg-6">
                     <label for="orderNo">Order No.</label>
                     <input type="number" name="orderNo" id="orderNo" class="form-control" placeholder="eg. 1" aria-describedby="Order Number" value="{{#if orderFilter}}{{orderFilter}}{{/if}}">
                 </div>
 
-                <div class="form-group col">
+                <div class="form-group col-12 col-lg-6">
                     <label for="date">Order Date</label>
                     <input type="date" name="orderDate" id="orderDate" class="form-control" placeholder="01/06/2019" aria-describedby="Order Date" value="{{#if dateFilter}}{{dateFilter}}{{/if}}">
                 </div>
