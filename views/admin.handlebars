@@ -10,14 +10,12 @@
 {{/if}}
 
 {{#if errorAlert}}
-    {{#each errorAlert}}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <center><strong>{{this.errorAlert}}</strong></center>
+            <center><strong>{{this.errorAlert}} already exist</strong></center>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-    {{/each}}    
 {{/if}}
 <br>
 <div class="container">

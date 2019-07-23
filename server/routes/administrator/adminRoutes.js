@@ -119,25 +119,25 @@ router.post('/submitStall', auth_login.authAdmin, async (req, res) =>{
 
     await checkUniqueUsername(username).then(isUnique => {
         if(!isUnique){
-            errorAlert.push('The username: ' + username + ' is already taken')
+            errorAlert.push(' username: ' + username + ' ')
         }
     })
 
     await checkUniqueEmail(email).then(isUnique =>{
         if(!isUnique){
-            errorAlert.push('The email: ' + email + ' is already used')
+            errorAlert.push(' Email: ' + email + ' ')
         }
     })
 
     await checkUniquePhone(phone).then(isUnique => {
         if(!isUnique){
-            errorAlert.push('The phone number: ' + phone + ' is already taken')
+            errorAlert.push(' Phone: ' + phone + ' ')
         }
     })
 
     await checkUniqueStall(stallName).then(isUnique => {
         if(!isUnique){
-            errorAlert.push('The stall name: ' + stallName + ' is already taken')
+            errorAlert.push(' Stall name: ' + stallName + ' ')
         }
     })
 
