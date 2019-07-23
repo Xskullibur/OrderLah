@@ -378,6 +378,11 @@ paypal.configure({
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
 const payPalClient = require('./ppClient')
 
+function storeUnique(test, myItems){
+    if(myItems.includes(test) === false){
+        myItems.push(test)
+    }
+}
 
 //hsien xiang's route - done by hsien xiang and ziheng
 
@@ -397,6 +402,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 })
 
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+    uniqueMenu = []
     var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)
