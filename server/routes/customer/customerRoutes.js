@@ -434,25 +434,35 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         for(let stallId in stallIdsWithMenuItemsGrouped){
             let menuItems = stallIdsWithMenuItemsGrouped[stallId]
             let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
-
-            menuItems.forEach(async menuItem => {
+            
+            for(let menuItem of menuItems){
                 let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
-            })
+            }
 
-            //Send order to stallowner
-            sendOrderToStallOwner(stallId, order)
+            Order.findOne({
+                where: {
+                    id: order.id
+                },
+                include: [{
+                    model: MenuItem
+                }]
+            }).then((orderDetails) => {
+                //Send order to stallowner
+                sendOrderToStallOwner(stallId, orderDetails)
+            })
 
         }
         //
         req.cart.clearOrderLine(req)
         console.log('transaction confrimed')
 
-        
-        
-
-
     }
 
+})
+
+router.get('/a', async (req,res)=>{
+    let orders = await order_utils.getOrderByUserId(1)
+    sendOrderToStallOwner(2, orders[0])
 })
 
 module.exports = router

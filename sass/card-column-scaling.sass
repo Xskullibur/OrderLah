@@ -1,4 +1,6 @@
-@import "bootstrap/scss/bootstrap"
+@import 'bootstrap/scss/_functions'
+@import 'bootstrap/scss/_variables'
+@import 'bootstrap/scss/mixins/_breakpoints'
 
 .card-columns
 
@@ -9,7 +11,7 @@
   column-count: 2
 
   @include media-breakpoint-only(lg)
-    column-count: 4
+  column-count: 4
 
   @include media-breakpoint-only(xl)
-    column-count: 5
+  column-count: 5

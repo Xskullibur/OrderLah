@@ -169,114 +169,18 @@ io.on('connection', function(socket){
 
     })
 
-    socket.on('add-order', function(order) {
-        var all_orders_column = document.getElementById('all-orders-column')
-
-        if (order) {
-
-            const pOrderId = helpers.substringTo5(order.publicOrderID)
-            const formattedOrderTiming = helpers.formatDate(order.orderTiming, "HH:MM:SS")
-            const nxtOrderStatus = helpers.getNextStatus(order.status)
-            const orderTotal = helpers.calcOrderTotal(order)
-    
-            var order_items = ""
-    
-            for (const orderItem in order.menuItems) {
-                if (order.menuItems.hasOwnProperty(orderItem)) {
-    
-                    const menuItem = order.menuItems[orderItem];
-                    order_items += `                
-                    <div class="row font-weight-light">
-                        <div class="col-md-auto">
-                            ${menuItem.itemName}
-                        </div>
-                        <div class="col text-right">
-                            <span class="badge badge-secondary">x${menuItem.orderItem.quantity}</span>
-                        </div>
-                    </div>`
-    
-                }
-            }
-
-            var card = `                                            
-            <div class="card shadow-sm" id="orderCard_${order.publicOrderID}">
-
-                {{!-- Header / Order ID, Order Timing --}}
-                <div class="card-header font-weight-bold bg-danger text-right text-white">
-                    <div class="row justify-content-between">
-                        <div class="col">
-                            <h7>Order: ${pOrderId}</h7>
-                        </div>
-                    </div>
-                    <div class="row justify-content-between">
-                        <div class="col">
-                            <h6>${formattedOrderTiming}</h6>
-                        </div>
-                    </div>
-                </div>
-
-                {{!-- Body / Order Details --}}
-                <div class="card-body" style="font-family: Roboto">
-
-                    <!-- Current Order Status -->
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <u class="mx-auto">Current Status:</u>
-                            </div>
-                            <div class="row">
-                                <b class="mx-auto" id="currentStatusTxt_${pOrderId}">${order.status}</b>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <!-- Order Info -->
-                    ${order_items}
-
-                    <hr>
-
-                    <!-- Order Total -->
-                    <div class="row">
-                        <div class="col text-right">
-                            ${orderTotal}   
-                        </div>
-                    </div>
-
-                </div>
-
-                {{!-- Footer / Update Status --}}
-                <div class="card-footer text-muted">
-                    <div class="row">
-                        <form action="./updateStatus/${pOrderId}" method="post" class="mx-auto">
-
-                            <button type="button" onclick="updateStatus('${pOrderId}');" id="updateStatusBtn_${pOrderId}" class="btn btn-sm btn-outline-primary mx-auto">
-                                <b id="updateStatusTxt_${pOrderId}">${nxtOrderStatus}</b>
-                            </button>
-                            
-                        </form>
-                    </div>
-                </div>
-            </div>`
-
-            all_orders_column.append(card)
-        }
-
-    })
-
 });
 
-function sendOrderToStallOwner(stallId, order){
-    getSessionsFromUserID(stallId, (sessionId, session)  => {
-        getSocketIDsBySessionID(sessionId, (socketId) => {
-            socketIds.forEach(socketId => {
-                io.to(socketId).emit('add-order', {
-                    order: JSON.stringify(order)
-                })
-                
-            });
+async function sendOrderToStallOwner(stallId, orderDetails){
 
+    const stall = await stall_util.getStallFromStallID(stallId)
+    const userId = stall.userId
+
+    getSessionsFromUserID(userId, (sessionId, session)  => {
+        getSocketIDsBySessionID(sessionId, (socketId) => {
+            io.to(socketId).emit('add-order', {
+                orderDetails
+            })
         })
     })
 }

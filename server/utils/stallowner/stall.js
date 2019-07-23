@@ -68,7 +68,15 @@ module.exports = {
             FROM orders
             WHERE orders.id = ${orderId}
         `, { type: Sequelize.QueryTypes.SELECT })
-    }
+    },
     
+    /**
+     * Get the Stall by stall id
+     * @param {number} stallId 
+     * @return {Promise}
+     */
+    getStallFromStallID(stallId){
+        return Stall.findByPk(stallId)
+    }
 
 }
