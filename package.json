@@ -36,6 +36,7 @@
     "generate-password": "^1.4.1",
     "jimp": "^0.6.4",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
     "material-components-web": "^2.3.0",
     "mathjs": "^5.10.3",
     "mdbootstrap": "^4.8.5",

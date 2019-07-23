@@ -4,6 +4,9 @@ const router = express.Router()
 //MomentJS
 const moment = require('moment')
 
+//Lodash
+const _ = require('lodash')
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -26,6 +29,12 @@ const db = globalHandle.get('db')
 
 //Get App
 const app = globalHandle.get('app')
+
+//database utils
+const menu_item_util = require('../../utils/main/menu_item')
+const order_utils = require('../../utils/stallowner/order')
+const stall_utils = require('../../utils/stallowner/stall')
+const cusine_util = require('../../utils/stallowner/cusine')
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review', (req, res) => {
@@ -127,8 +136,8 @@ router.post('/checkOrder', (req, res) =>{
 
 router.use(auth_login.auth)
 
-const cusine_util = require('../../utils/stallowner/cusine')
-const menu_item_util = require('../../utils/main/menu_item')
+
+
 
 
 /**
@@ -205,14 +214,12 @@ router.get('/menuItemSearch/:item_name', (req, res) => {
 
     })
 })
-
-const order_util = require('../../utils/stallowner/order')
 /**
  * Add a new ratings field into each menu item
  * @param menuItems - array of menu items
  */
 function includeMenuItemsWithRating(menuItems, done){
-    let promises = menuItems.map(menuItem => order_util.getMenuItemRating(menuItem.id))
+    let promises = menuItems.map(menuItem => order_utils.getMenuItemRating(menuItem.id))
 
     Promise.all(promises).then(ratings => {
         menuItems.forEach((menuItem, index) => {
@@ -227,7 +234,7 @@ function includeMenuItemsWithRating(menuItems, done){
  * @param menuItem - the menu item of the object to have a new field added
  */
 function includeMenuItemWithRating(menuItem, done){
-    order_util.getMenuItemRating(menuItem.id).then(rating => {
+    order_utils.getMenuItemRating(menuItem.id).then(rating => {
             menuItem.rating = rating[0]['AVG']
         done()
     })
@@ -410,20 +417,47 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     var payerID = order.result.payer.payer_id
     var userID = req.user.id
     var orderStatus = 'Order Pending'
-    var orderTiming = moment()
+    //var orderTiming = moment()
 
     if (showStatus == 'COMPLETED') {
         Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
             console.log('transaction details saved to database')           
         }).catch(err => console.log(err))
 
-        for(var orderline of req.cart.items){
-            await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
-                Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
+        // for(var orderline of req.cart.items){
+        //     await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
+
+        //         Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
+        //     })
+            
+
+
+
+
+        // }
+
+        let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
+        //inserts quantity to menuItems
+        //_.zip()
+
+        let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
+
+        for(let stallId in stallIdsWithMenuItemsGrouped){
+            let menuItems = stallIdsWithMenuItemsGrouped[stallId]
+            let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
+
+            menuItems.forEach(async menuItem => {
+                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
             })
         }
-        req.cart.clearOrderLine()
+        //
+        req.cart.clearOrderLine(req)
         console.log('transaction confrimed')
+
+        
+        
+
+
     }
 
 })

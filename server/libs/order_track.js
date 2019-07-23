@@ -47,8 +47,10 @@ cart.prototype.removeOrderLine = function(orderLineId){
     }
 }
 
-cart.prototype.clearOrderLine = function(){
-    this.items = []
+cart.prototype.clearOrderLine = function(req){
+    req.session._cart = new cart(req.user.id)
+    req.cart = req.session._cart
+    req.session.save()
 }
 
 function orderline(itemId, quantity = 1){
