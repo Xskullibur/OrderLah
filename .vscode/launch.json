@@ -27,7 +27,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/index.js",
             "env": {
-                "HTTPS": "YES",
+                "HTTPS": "NO",
                 "REDIS_HOST": "localhost",
                 "REDIS_PORT": "6379",
                 "NODE_ENV":"dev",
@@ -35,7 +35,7 @@
                 "DB_NAME":"orderlah_db",
                 "DB_USERNAME":"orderlah_web_user",
                 "DB_PASSWORD":"mysecurepassword",
-                "AUTO_LOGIN":"NO",
+                "AUTO_LOGIN":"YES",
                 "LOGIN_AS":"john@customer"
             }
         },
