@@ -54,6 +54,9 @@ cart.prototype.removeOrderLine = function(orderLineId){
     }
 }
 
+cart.prototype.clearOrderLine = function(){
+    this.items = []
+}
 
 function orderline(itemId, quantity = 1){
     this.itemId = itemId

@@ -18,74 +18,14 @@ const auth_login = require('../../libs/auth_login')
 const MenuItem = globalHandle.get('menuItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
+const Payment = globalHandle.get('payments')
 
 //Sequelize
 const Sequelize = require('sequelize')
+const db = globalHandle.get('db')
 
 //Get App
 const app = globalHandle.get('app')
-
-
-
-//Define main 'customer' paths
-
-//Payment PAYPAL
-const paypal = require('paypal-rest-sdk')
-paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU',
-    'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
-  });
-
-/**
- * GET '/payment' 
- * Payment stage for ordering items
- */
-router.get('/payment', auth_login.auth, (req, res) => {
-
-    var create_payment_json = {
-        "intent": "order",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://localhost:3000/payment-redirect",
-            "cancel_url": "http://localhost:3000/payment-void"
-        },
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "item",
-                    "sku": "item",
-                    "price": "1.00",
-                    "currency": "USD",
-                    "quantity": 1
-                }]
-            },
-            "payee": {"email": "payee@gmail.com"},
-            "amount": {
-                "currency": "USD",
-                "total": "1.00"
-            },
-            "description": "This is the payment description."
-        }]
-    };
-    
-    
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            throw error;
-        } else {
-            console.log("Create Payment Response");
-            console.log(payment);
-        }
-    });
-
-    res.render('payment', {size: MenuItem.count()})
-})
-
-
-
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review', (req, res) => {
@@ -419,5 +359,73 @@ router.get('/getRatingData', async (req, res) =>{
 const orders_api_routes = require('./orders_api')
 router.use(orders_api_routes)
 
+//Define main 'customer' paths
+
+const paypal = require('paypal-rest-sdk')
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc', //i changed it to mine to test -hsienxiang
+    'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
+  });
+
+const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
+const payPalClient = require('./ppClient')
+
+
+//hsien xiang's route - done by hsien xiang and ziheng
+
+router.get('/payment', auth_login.auth, async (req, res) => {
+    var totalAmount = 0
+
+    for(var orderline of req.cart.items){
+        console.log(orderline.itemId)
+        await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
+            totalAmount = totalAmount + parseFloat(setPrice.price)
+        })
+    }
+
+    console.log('total amount: ' + totalAmount)
+    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount})
+
+})
+
+router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+    var payerName = req.body.payerName
+    var orderID = req.body.orderID
+    console.log(orderID)
+    console.log(payerName)
+
+    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    let order
+    try {
+        order = await payPalClient.client().execute(request);
+        console.log(order)
+    } catch (err) {
+        console.error(err);
+        return res.send(500);
+    }
+    var showStatus = order.result.status
+    var payerID = order.result.payer.payer_id
+    var userID = req.user.id
+    var orderStatus = 'Order Pending'
+    var orderTiming = moment()
+
+    if (showStatus == 'COMPLETED') {
+        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
+            console.log('transaction details saved to database')           
+        }).catch(err => console.log(err))
+
+        for(var orderline of req.cart.items){
+            await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
+                Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
+            })
+        }
+        req.cart.clearOrderLine()
+        console.log('transaction confrimed')
+    }
+
+})
 
 module.exports = router

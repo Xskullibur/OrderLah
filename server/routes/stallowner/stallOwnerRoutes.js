@@ -34,6 +34,8 @@ const app = globalHandle.get('app')
 const Sequelize = require('sequelize')
 const db = globalHandle.get('db')
 
+var validator = require('validator')
+
 router.use(auth_login.authStallOwner)
 
 /**
@@ -544,8 +546,26 @@ router.get('/orderDetails/ratings/', (req, res) => {
  */
 
 router.use(auth_login.auth)
-
+const op = Sequelize.Op
 var displayAlert = []
+var errorAlert = []
+
+function toCap(str) {
+    var splitStr = str.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+    }
+    return splitStr.join(' ')
+ }
+
+function checkUnique(theName){
+    return MenuItem.count({where: {itemName: theName, active: true}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
 
 router.get('/showMenu', (req, res) => {
     const id = req.user.id
@@ -556,9 +576,11 @@ router.get('/showMenu', (req, res) => {
                     res.render('stallowner-menu', {
                         item:item,
                         stall: myStall,
-                        displayAlert: displayAlert
+                        displayAlert: displayAlert,
+                        errorAlert: errorAlert
                     })
                     displayAlert = []
+                    errorAlert = []
                 })    
             })
         }else{
@@ -569,25 +591,30 @@ router.get('/showMenu', (req, res) => {
 
 router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
     const currentUser = req.user.id
-
-    Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-        const itemName = req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")     
-        const price = req.body.itemPrice
-        const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
-        const owner = req.user.id
-        const active = true
-        const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-        const stallId = theStall.id
-
-        if (!fs.existsSync('./public/uploads')){
-            fs.mkdirSync('./public/uploads');
-        }
-
-        MenuItem.create({ itemName, price, itemDesc, owner, active, image, stallId}).then(function(){
-            //res.render('./successErrorPages/createSuccess')
-            displayAlert.push('Item successfully added')
+    const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
+    const price = req.body.itemPrice
+    const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
+    const active = true
+    const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
+    checkUnique(itemName).then(isUnique => {
+        if(isUnique){
+            if(validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
+            && !validator.isEmpty(itemDesc)){
+                Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                    const stallId = theStall.id
+            
+                    MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
+                        displayAlert.push('Item successfully added')
+                        res.redirect('/stallOwner/showMenu')
+                    }).catch(err => console.log(err))
+                })
+            }else{
+                res.send('validation check failed')
+            }
+        }else{
+            errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
             res.redirect('/stallOwner/showMenu')
-        }).catch(err => console.log(err))
+        }
     })
 })
 
@@ -603,29 +630,51 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
 
 router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
     const currentUser = req.user.id
-    const itemName = req.body.itemName
+    const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
-    const itemDesc = req.body.itemDescription
+    const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
+    var checkName = req.body.checkName
     var imageName = req.body.imgName
 
-    if (!fs.existsSync('./public/uploads')){
-        fs.mkdirSync('./public/uploads');
-    }
+    checkUnique(itemName).then(isUnique => {
+        if(isUnique || (checkName === itemName)){
+            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+                    if(err){
+                        console.log(err)
+                    }
+                })
+                displayAlert.push('Item updated!')
+                res.redirect('/stallOwner/showMenu')
+            }).catch(err => console.log(err))
+        }else{
+            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')
+            res.redirect('/stallOwner/showMenu')
+        }
+    })
+})
 
-    
-
-    MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-        //res.render('./successErrorPages/updateSuccess')
-        fs.rename(process.cwd()+'/public/uploads/'+ imageName, process.cwd()+'/public/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-            if(err){
-                console.log(err)
-            }
-        })
-        displayAlert.push('Item updated!')
-        res.redirect('/stallOwner/showMenu')
-    }).catch(err => console.log(err))
+router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
+    var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
+    const id = req.user.id
+    User.findOne({ where: id }).then(user => {
+         if(user.role === 'Stallowner'){
+            Stall.findOne({where: {userId: id}}).then(myStall => {
+                MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
+                    res.render('stallowner-menu', {
+                        item:item,
+                        stall: myStall,
+                        errorAlert: errorAlert
+                    })
+                    errorAlert = []
+                })    
+            })
+        }else{
+            res.render('./successErrorPages/error')
+        }      
+      })
 })
 
 router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
