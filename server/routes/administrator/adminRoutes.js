@@ -90,7 +90,7 @@ function checkUniquePhone(theNumber){
 
 router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
-        res.render('admin', {
+        res.render('admin/admin', {
             displayStallowner: stallowner,
             displayAlert: displayAlert,
             errorAlert: errorAlert
