@@ -5,7 +5,7 @@ export REDIS_PORT="6379"
 export REDIS_HOST="127.0.0.1"
 
 # Auto login
-export AUTO_LOGIN="YES"
+export AUTO_LOGIN="NO"
 export LOGIN_AS="john@customer"
 
 # SET 'orderlah' database environment
