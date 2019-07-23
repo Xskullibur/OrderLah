@@ -378,6 +378,11 @@ paypal.configure({
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
 const payPalClient = require('./ppClient')
 
+function storeUnique(test, myItems){
+    if(myItems.includes(test) === false){
+        myItems.push(test)
+    }
+}
 
 //hsien xiang's route - done by hsien xiang and ziheng
 
@@ -398,6 +403,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 })
 
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+    uniqueMenu = []
     var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)
@@ -428,23 +434,16 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         //inserts quantity to menuItems
         //_.zip()
 
-        let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
-
-        for(let stallId in stallIdsWithMenuItemsGrouped){
-            let menuItems = stallIdsWithMenuItemsGrouped[stallId]
-            let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
-
-            menuItems.forEach(async menuItem => {
-                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
+        for(var orderline of req.cart.items){
+            storeUnique(orderline.itemId, uniqueMenu);
+            await menuItem.findOne({where:{id: orderline.itemId}}).then(items =>{
+                Order.create({status: orderStatus, orderTiming, userId: userID, stallId: items.stallId})
             })
         }
-        //
-        req.cart.clearOrderLine(req)
+
+        console.log(uniqueMenu);
+        req.cart.clearOrderLine()
         console.log('transaction confrimed')
-
-        
-        
-
 
     }
 
