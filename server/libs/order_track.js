@@ -2,13 +2,6 @@
  * This js library tracks user orders through session
  */
 
-/**
- * users_carts store each individual order carts
- * 
- * To access a specific user cart, do users_carts.<userId>
- * @returns {Cart} - a cart object
- */
-// let users_carts = {}
 
 /**
  * Cart
@@ -79,18 +72,6 @@ module.exports = {
             req.cart = tmp_cart
         }
         next()
-
-        // //Register to handlebars locals
-        // if(req.cart.items.length != 0){
-        //     let menuItemsPromises = req.cart.items.map(v => menuitem_utils.getMenuItemByID(v.itemId))
-        //     Promise.all(menuItemsPromises).then(menuItems => {
-        //         res.locals.cart_items = menuItems
-        //         next()
-        //     })
-        // }else{
-        //     next()
-        // }
-
         
     },
 
