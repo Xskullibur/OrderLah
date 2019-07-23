@@ -8,7 +8,7 @@
  * To access a specific user cart, do users_carts.<userId>
  * @returns {Cart} - a cart object
  */
-let users_carts = {}
+// let users_carts = {}
 
 /**
  * Cart
@@ -66,13 +66,16 @@ function orderline(itemId, quantity = 1){
 module.exports = {
     
     register(req, res, next){
-        let tmp_cart = users_carts[req.user.id]
+        let tmp_cart = req.session._cart
         if(tmp_cart != null){
+
+            tmp_cart.__proto__ = cart.prototype
+
             req.cart = tmp_cart
         }else{
             //Create new cart
-            users_carts[req.user.id] = new cart(req.user.id)
-            tmp_cart = users_carts[req.user.id]
+            req.session._cart = new cart(req.user.id)
+            tmp_cart = req.session._cart
             req.cart = tmp_cart
         }
         next()

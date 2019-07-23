@@ -5,7 +5,7 @@ export REDIS_PORT="6379"
 export REDIS_HOST="127.0.0.1"
 
 # Auto login
-export AUTO_LOGIN="NO"
+export AUTO_LOGIN="YES"
 export LOGIN_AS="john@customer"
 
 # SET 'orderlah' database environment
@@ -18,7 +18,7 @@ export DB_NAME="orderlah_db"
 export DB_USERNAME="orderlah_web_user"
 export DB_PASSWORD="mysecurepassword"
 
-export HTTPS="YES"
+export HTTPS="NO"
 
 # start nodemon
 npm run start:dev &
