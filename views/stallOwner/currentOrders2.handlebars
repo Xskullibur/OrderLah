@@ -8,7 +8,6 @@
     import {toggleScanning, initQRScanner} from '/js/current_orders_QRscanner.mjs'
     
     initQRScanner((result) => {
-        alert(result)
         updateStatus(result, true)
     })
 
@@ -49,9 +48,9 @@
                     {{!-- Body --}}
                     <div class="row">
                         <div class="col">
-                            <div class="card p-4">
+                            <div class="card p-4" id="card-view">
+                                <div class="card-columns" id="all-orders-column">
                                 {{#if currentOrders}}
-                                    <div class="card-columns" id="all-orders-column">
 
                                         {{!-- Order Cards --}}
                                         {{#each currentOrders as |order|}}
@@ -127,8 +126,8 @@
                                             </div>
                                         {{/each}}
                                         
-                                    </div>
                                 {{else}}
+                                    </div>
                                     {{> current_orders/no_orders_alert}}    
                                 {{/if}}
                             </div>

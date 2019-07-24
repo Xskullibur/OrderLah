@@ -14,7 +14,7 @@ export DB_NAME="orderlah_db"
 export DB_USERNAME="orderlah_web_user"
 export DB_PASSWORD="mysecurepassword"
 
-export HTTPS="NO"
+export HTTPS="YES"
 
 # start nodemon
 npm run start

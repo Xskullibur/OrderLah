@@ -69,10 +69,10 @@ $(document).ready(function (){
                 orderContainer = document.getElementById("all-orders-column")
             
                 if (orderContainer.childElementCount === 0) {
-                    orderContainer.innerHTML = `<div class="alert alert-success m-5" role="alert">
+                    $('#card-view').append(`<div class="alert alert-success m-5" role="alert">
                     <h4 class="alert-heading">Well Done!</h4>
                     <p>There are no more orders left.</p>
-                    </div>`
+                    </div>`)
                 }
             
             }
@@ -164,6 +164,8 @@ $(document).ready(function (){
                 </div>`
     
                 all_orders_column.innerHTML += card
+
+                $('#no_order_msg').remove()
             }
     
         })
