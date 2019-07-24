@@ -167,10 +167,12 @@ io.on('connection', function(socket){
             console.log(errorMsg)
         }
         
+        // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+
         // Get all stallowner's socket id
         getSessionsFromUserID(stallownerId, (sessionId) => {
             getSocketIDsBySessionID(sessionId, (socketId) => {
-                socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+                io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
             })
         })
 

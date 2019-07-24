@@ -50,7 +50,6 @@ $(document).ready(function (){
                 // Remove Card if updatedStatus = "Collection Confirmed"
                 if (updatedStatus == "Collection Confirmed") {
                     $(`#orderCard_${publicOrderId}`).remove()
-                    // orderCard.parentNode.removeChild(orderCard)
                 }
                 else{
     
@@ -77,7 +76,7 @@ $(document).ready(function (){
                 }
             
             }
-            
+
         })
 
         socket.on('add-order', function({orderDetails}) {
@@ -180,6 +179,15 @@ $(document).ready(function (){
 
 })
 
+// Update Status
+function updateStatus(publicOrderId, qrcode=false) {
+
+    // Send websocket (update-status) || Update DB
+    socket.emit('update-status', {publicOrderId, qrcode})
+
+}
+
+
 // Get Session ID from Cookie
 function getCookie(cname) {
     var name = cname + "=";
@@ -202,15 +210,6 @@ function subStrCookie(cookie){
     var pattern = /:(.+)\./;
     return pattern.exec(cookie)[1];
 }
-
-// Update Status
-function updateStatus(publicOrderId, qrcode=false) {
-
-    // Send websocket (update-status) || Update DB
-    socket.emit('update-status', {publicOrderId, qrcode})
-
-}
-
 
 //Helpers 
 function substringTo5(text){
