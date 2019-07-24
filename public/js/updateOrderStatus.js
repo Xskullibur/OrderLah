@@ -37,6 +37,7 @@ $(document).ready(function (){
             setCircleProgress((60 - timing) / 60 * 100);
         })
 
+        //Stall owner events
         socket.on('update-status-complete', function({publicOrderId, updatedStatus, nxtStatus, errorMsg}){
             
             if (errorMsg != "") {
@@ -76,6 +77,7 @@ $(document).ready(function (){
                 }
             
             }
+            
         })
 
         socket.on('add-order', function({orderDetails}) {
