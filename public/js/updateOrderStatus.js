@@ -69,7 +69,7 @@ $(document).ready(function (){
                 orderContainer = document.getElementById("all-orders-column")
             
                 if (orderContainer.childElementCount === 0) {
-                    $('#card-view').append(`<div class="alert alert-success m-5" role="alert">
+                    $('#card-view').append(`<div class="alert alert-success m-5" role="alert" id="no_order_msg">
                     <h4 class="alert-heading">Well Done!</h4>
                     <p>There are no more orders left.</p>
                     </div>`)
