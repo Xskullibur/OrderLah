@@ -233,7 +233,7 @@ router.get('/profile', auth_login.auth, (req, res) => {
 
 router.post('/changePass', (req, res) =>{  
     if(req.body.password != req.body.password2){
-        failAlert.push('password does not match!')
+        failAlert.push(' password does not match' )
         res.redirect('/profile')
     }else{
         displayAlert.push('password successfully changed')
@@ -245,15 +245,60 @@ router.post('/changePass', (req, res) =>{
     }   
 })
 
-router.post('/updateProfile', upload.single('profileImage'), (req, res) =>{
-    var email = req.body.email
-    var phone = req.body.phone
-    var birthday = req.body.birthday
-
-    User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-        displayAlert.push('profile successfully updated')
-        res.redirect('/profile')
+function checkUniquePhone(theNumber){
+    return User.count({where: {phone: theNumber}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
     })
+}
+
+function checkUniqueEmail(theEmail){
+    return User.count({where: {email: theEmail}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
+
+router.post('/updateProfile', upload.single('profileImage'), async (req, res) =>{
+    var email = req.body.email.replace(/\s/g, "")
+    var phone = req.body.phone.replace(/\s/g, "")
+    var birthday = req.body.birthday
+    const checkEmail = req.body.checkEmail.replace(/\s/g, "")
+    const checkPhone = req.body.checkPhone.replace(/\s/g, "")
+    console.log(checkEmail)
+    console.log(email)
+    console.log(checkPhone)
+    console.log(phone)
+
+
+    await checkUniqueEmail(email).then(isUnique =>{
+        if(email === checkEmail){
+
+        }else if(!isUnique){
+            failAlert.push(' Email: ' + email + ' ')
+        }
+    })
+
+    await checkUniquePhone(phone).then(isUnique => {
+        if(phone === checkPhone){
+
+        }else if(!isUnique){
+            failAlert.push(' Phone: ' + phone + ' ')
+        }
+    })
+
+    if(failAlert.length > 0){
+        res.redirect('/profile')
+    }else{
+        User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+            displayAlert.push('profile successfully updated')
+            res.redirect('/profile')
+        })
+    }
 })
 
 module.exports = router
