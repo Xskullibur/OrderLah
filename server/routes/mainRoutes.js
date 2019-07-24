@@ -126,38 +126,61 @@ const profile_gen = require('../libs/profile_img_generator')
  */
 router.get('/register', uuid_middleware.generate, (req, res) => {
     res.render('register', {layout: 'blank_layout'})
+    registerFail = []
 })
 
 /**
  * Register POST '/register' path
  * Params: email, password, fname, lname, dob, phone
  */
-router.post('/register', uuid_middleware.verify, (req, res) => {
-    
-    //Create the user account
-    User.create({
-        username: req.body.username,
-        email: req.body.email,
-        firstName: req.body.fname,
-        lastName: req.body.lname,
-        birthday: req.body.dob,
-        phone: req.body.phone,
-        password: req.body.password
-    }).then(user => {
-        console.log("User's auto-generated ID:", user.id)
-        //Create profile pic
-        profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
-            img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
-            console.log('Generated image for user:' + user.id)
-        })
-        res.send('Success')
-    }).catch(err => {
-        console.log(err)
-        res.status(400)//Bad request
-        res.send('Failed')
+router.post('/register', uuid_middleware.verify, async (req, res) => {
+    var username = req.body.username
+    var email = req.body.email
+    var phone = req.body.phone
+
+    await checkUniqueUsername(username).then(isUnique => {
+        if(!isUnique){
+            registerFail.push(' username: ' + username + ' ')
+        }
     })
 
-    
+    await checkUniqueEmail(email).then(isUnique =>{
+        if(!isUnique){
+            registerFail.push(' Email: ' + email + ' ')
+        }
+    })
+
+    await checkUniquePhone(phone).then(isUnique => {
+        if(!isUnique){
+            registerFail.push(' Phone: ' + phone + ' ')
+        }
+    })
+
+    if(registerFail.length > 0){
+        //res.redirect('/login')
+    }else{
+        User.create({
+            username: req.body.username,
+            email: req.body.email,
+            firstName: req.body.fname,
+            lastName: req.body.lname,
+            birthday: req.body.dob,
+            phone: req.body.phone,
+            password: req.body.password
+        }).then(user => {
+            console.log("User's auto-generated ID:", user.id)
+            //Create profile pic
+            profile_gen.genProfileImage(user.username.substring(0, 1)).then(img => {
+                img.quality(100).write(__dirname + `/../../public/img/profiles/${user.id}.png`)
+                console.log('Generated image for user:' + user.id)
+            })
+            res.send('Success')
+        }).catch(err => {
+            console.log(err)
+            res.status(400)//Bad request
+            res.send('Failed')
+        })
+    } 
 })
 
 /**
@@ -221,8 +244,36 @@ router.get('/logout', (req, res) => {
  * Get Profile page
  */
 
+function checkUniqueEmail(theEmail){
+    return User.count({where: {email: theEmail}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
+
+function checkUniqueUsername(theName){
+    return User.count({where: {username: theName}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
+
+function checkUniquePhone(theNumber){
+    return User.count({where: {phone: theNumber}}).then(count =>{
+        if(count !== 0){
+            return false
+        }
+        return true
+    })
+}
+
 var displayAlert = []
 var failAlert = []
+var registerFail = []
 
 router.get('/profile', auth_login.auth, (req, res) => {
     const UserID = req.user.id
