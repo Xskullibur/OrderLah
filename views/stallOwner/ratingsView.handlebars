@@ -10,7 +10,7 @@
                     </div>
                 </div>
 
-                {{>stallowner_items/orderDetails_nav title}}
+                {{> stallowner_items/orderDetails_nav}}
 
                 <div class="p-3">
 
@@ -24,7 +24,7 @@
                                         <div class="row">
 
                                             {{!-- Item --}}
-                                            <div class="col-4">
+                                            <div class="col-12 col-lg-4 py-1 p-lg-3">
 
                                                 <div class="row">
                                                     <div class="col">
@@ -48,7 +48,7 @@
                                             </div>
 
                                             {{!-- Rating --}}
-                                            <div class="col-4">
+                                            <div class="col-12 col-lg-4 py-3 p-lg-3">
 
                                                 <div class="row">
                                                     <div class="col">
@@ -70,7 +70,7 @@
                                             <div class="col text-right">
                                                 <div class="row">
                                                     <div class="col">
-                                                        <a href="/stallOwner/ratings/" class="btn btn-outline-danger">Reset</a>
+                                                        <a href="/stallOwner/orderDetails/ratings/" class="btn btn-outline-danger">Reset</a>
                                                         <button class="btn btn-outline-danger">Filter</button>
                                                     </div>
                                                 </div>
@@ -96,10 +96,10 @@
 
                                         <div class="container">
                                             <div class="row">
-                                                <h5 class="col-11 mb-0">
+                                                <h5 class="col mb-0">
                                                     {{item.itemName}}
                                                 </h5>
-                                                <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                                <i class="col text-right fas fa-angle-down rotate-icon"></i>
                                             </div>
                                         </div>
 

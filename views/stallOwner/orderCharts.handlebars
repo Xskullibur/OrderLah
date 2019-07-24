@@ -15,38 +15,63 @@
         </div>
     </div>
 
-    {{>stallowner_items/orderDetails_nav title}}
+    {{> stallowner_items/orderDetails_nav}}
 
     <div class="p-3">
 
         {{!-- Filter --}}
         <div class="row mb-4">
             <div class="col">
-            
-                <div class="form">
-                    <div class="row">
+                <div class="card bg-light">
+                    <div class="card-body container p-4">
 
-                        <div class="col text-right">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="filter_date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Filter Date
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="filter_date">
-                                    <a class="dropdown-item" href="/All_Time">All Time</a>
-                                    <a class="dropdown-item disabled" href="#">Disabled action</a>
-                                    <h6 class="dropdown-header">Section header</h6>
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">After divider action</a>
+                        <form class="form">
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="frDate">From Date:</label>
+                                    <input type="date" name="frDate" id="frDate" class="form-control" aria-describedby="From Date" value="{{#if frDate}}{{frDate}}{{/if}}">
+                                </div>
+                                <div class="form-group col">
+                                    <label for="toDate">To Date:</label>
+                                    <input type="date" name="toDate" id="toDate" class="form-control" aria-describedby="From Date" value="{{#if toDate}}{{toDate}}{{/if}}">
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="form-row text-right">
+                                <div class="form-group col">
+                                    <a class="btn btn-outline-danger" href="/stallOwner/orderDetails/charts/">Clear</a>
+                                    <button class="btn btn-outline-danger" id="filterSubmitBtn">Filter</button>
+                                </div>
+                            </div>
+
+                            {{!-- <div class="row">
+
+                                <div class="col text-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="filter_date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Filter Date
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="filter_date">
+                                            <a class="dropdown-item" href="/All_Time">All Time</a>
+                                            <a class="dropdown-item disabled" href="#">Disabled action</a>
+                                            <h6 class="dropdown-header">Section header</h6>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">After divider action</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div> --}}
+                        </form>
 
                     </div>
                 </div>
-
             </div>
         </div>
+
+
 
         {{!-- Charts --}}
         <div class="row justify-content-center">
@@ -85,13 +110,23 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4 class="card-title">Number of Items Bought:</h4>
-                                                <canvas id="OrdersPerItem"></canvas>
+
+                                                {{#if OrdersPerItem}}
+                                                    <canvas id="OrdersPerItem"></canvas>
+                                                {{else}}
+                                                    {{> stallowner_items/no_orders_found_ALERT}}
+                                                {{/if}}
+
                                             </div>
                                         </div>
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4 class="card-title">Average Rating Per Item</h4>
-                                                <canvas id="ARPI"></canvas>
+                                                {{#if AvgRatingPerItem}}
+                                                    <canvas id="ARPI"></canvas>
+                                                {{else}}
+                                                    {{> stallowner_items/no_orders_found_ALERT}}
+                                                {{/if}}
                                             </div>
                                         </div>
                                     </div>

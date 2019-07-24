@@ -1,21 +1,27 @@
 // const Server = require('socket.io');
 // const io = new Server();
 
-const status = require('../../utils/stallowner/update_status')
 const transactions = require('../../utils/main/order_transactions')
 const globalHandle = require('../global/global')
+
+const order_util = require('../../utils/stallowner/order')
+const stall_util = require('../../utils/stallowner/stall')
+const update_util = require('../../utils/stallowner/update_status')
 
 const server = globalHandle.get('server')
 
 const io = require('socket.io')(server);
 
+const helpers = require('../../helpers/helpers')
+
 // , {
-//     // serveClient: false,
+//     // serveClient: true,
 //     // below are engine.IO options
 //     pingInterval: 10000,
 //     pingTimeout: 5000,
 //     cookie: false
 // }
+
 
 RedisStore = globalHandle.get('redis')
 
@@ -34,7 +40,35 @@ io.on('connection', function(socket){
         //Store session id with socket id
         sessionIDs[socket.id] = sessionId
         //io.to(socket.id) get socket
-        
+    })
+
+    /**
+     * Customer will send the order id upon connecting to socket
+     */
+    socket.on('customer-init', function({publicOrderId}) {
+
+
+        order_util.getOrderFromPublicOrderID(publicOrderId).then(order =>{
+
+            let orderId = order.id
+
+            let sessionid = sessionIDs[socket.id]
+
+            getSessionBySessionID(sessionid, async (err, session) => {
+                if(session.passport.user){
+                    let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
+                    
+                    stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
+                
+                        if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+                        
+                    })
+
+                    
+                }
+            })
+        })
+
     })
     
     // On User Disconnect
@@ -44,34 +78,145 @@ io.on('connection', function(socket){
     });
 
     // Customers events
-    socket.on('', function(){
+    socket.on('', function(){ })
 
-    })
+    var STATUS = {
+        OrderPending: 'Order Pending',
+        PreparingOrder: 'Preparing Order',
+        ReadyForCollection: 'Ready for Collection',
+        CollectionConfirmed: 'Collection Confirmed'
+    }
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', function({orderID, updatedStatus}) {
+    socket.on('update-status', async function({publicOrderId, qrcode}) {
 
-        status.updateOrderStatus({
-            orderID, updatedStatus
-        }).then((result) => {
-            console.log(`Updating order id of ${orderID} to ${updatedStatus}`)
-            transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                getSessionsFromCustomerID(orderCust.user.id, (sessionid, session) => {
-                    const socketid = getSocketIDBySessionID(sessionid)
-                    console.log(`Sending order update to socket id of ${socketid} which equate to session id: ${sessionid}`);
-                    
-                    io.to(socketid).emit('update-status', {updatedStatus})
+        //Update customer timing
+        getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
+            let stallownerId = stallownerSession.passport.user
+            let stallOwner = await order_util.getStallInfo(stallownerId)
+
+            let stallId = stallOwner.stall.id
+
+            sendTiming(stallId)
+        })
+
+        // Get Order Id from Public Order Id
+        let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
+        let orderID = order.id
+        updatedStatus = null
+        nxtStatus = null
+        errorMsg = ""
+    
+        // Get Current Status from Order Id
+        let currentStatus = await update_util.getCurrentStatus(orderID)
+    
+        // Check if called from QR Code (Inital Status = 'Ready for Collection')
+        if (qrcode) {
+            if (currentStatus != STATUS.ReadyForCollection) {
+                errorMsg = "Order not ready for collection!"
+            }
+        }
+    
+        // Get updated status
+        switch (currentStatus) {
+            case STATUS.OrderPending:
+                updatedStatus = STATUS.PreparingOrder
+                nxtStatus = STATUS.ReadyForCollection
+                break;
+    
+            case STATUS.PreparingOrder:
+                updatedStatus = STATUS.ReadyForCollection
+                nxtStatus = STATUS.CollectionConfirmed
+                break;
+    
+            case STATUS.ReadyForCollection:
+                updatedStatus = STATUS.CollectionConfirmed
+                break;
+        
+            default:
+                errorMsg = "Invalid Order Status!"
+                break;
+        }
+    
+        // Update and redirect if no errorMsg
+        if (errorMsg == "") {
+
+            update_util.updateOrderStatus({
+                orderID, updatedStatus
+            }).then((result) => {
+                console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
+                transactions.getCustomerByOrderID(orderID).then(orderCust => {
+                    getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
+                        getSocketIDsBySessionID(sessionid, (socketId) => {
+                            console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
+                            
+                            io.to(socketId).emit('update-status', {updatedStatus})
+
+                        })
+                    })
                 })
-            })
-        }).catch((err) => {
-            console.log(`Error: ${err}`)
-        });
+            }).catch((err) => {
+                console.log(`errorMsg: ${err}`)
+            });
+
+        }
+        else{
+            console.log(errorMsg)
+        }
+        
+        socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
 
     })
 
 });
-  
+
+async function sendOrderToStallOwner(stallId, orderDetails){
+
+    const stall = await stall_util.getStallFromStallID(stallId)
+    const userId = stall.userId
+
+    getSessionsFromUserID(userId, (sessionId, session)  => {
+        getSocketIDsBySessionID(sessionId, (socketId) => {
+            io.to(socketId).emit('add-order', {
+                orderDetails
+            })
+        })
+    })
+}
+
+function sendTiming(stallId){
+    //Update customer timing
+    stall_util.getAllPendingCustomersIDByStallID(stallId).then(custIds => {
+        custIds.forEach(custId => {
+
+            let userID = custId.userId
+
+            getSessionsFromUserID(userID, (sessionId) => {
+                getSocketIDsBySessionID(sessionId, (socketId) => {
+                    order_util.getOrderIDFromUserId(userID).then(orderId => {
+                    
+                        getOrderTimingForOrder(orderId[0].id, (timing => {
+                            io.to(socketId).emit('update-timing', {timing})
+                        }))
+    
+                    })
+                })
+
+                
+
+            })
+
+        })            
+    })
+}
+
+function getOrderTimingForOrder(orderid, cb){
+    const timingForEachOrder = 2
+    order_util.getNumberOfOrdersBeforeOrder(orderid).then(count => {
+        cb(count[0].ordersCount * timingForEachOrder)
+    })
+}
 
 function getSocketIDBySessionID(sessionId){
     for (let socketId in sessionIDs) {
@@ -81,11 +226,26 @@ function getSocketIDBySessionID(sessionId){
     return null
 }
 
-function getSessionsFromCustomerID(custId, yieldCB){
+function getSocketIDsBySessionID(sessionId, yieldCB){
+    for (let socketId in sessionIDs) {
+        let tsessionId = sessionIDs[socketId]
+        if(sessionId == tsessionId)yieldCB(socketId)
+    }
+}
+
+// function getSocketIDsBySessionID(sessionId){
+//     let socketIds = []
+//     for(let socketId in sessionIDs){
+//         if(sessionIDs[socketId] == sessionId)socketIds.push(socketId)
+//     }
+//     return socketIds
+// }
+
+function getSessionsFromUserID(userId, yieldCB){
     for(let socketId in sessionIDs){
         let sessionId = sessionIDs[socketId]
         getSessionBySessionID(sessionId, (err, session) => {
-            if(!err && session.passport.user === custId){
+            if(!err && session.passport.user === userId){
                 yieldCB(sessionId, session);
             }
         })
@@ -112,3 +272,5 @@ function getSessionBySessionID(sessionId, cb){
 
     })
 }
+
+module.exports = {sendOrderToStallOwner}

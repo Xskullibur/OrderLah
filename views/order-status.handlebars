@@ -22,7 +22,35 @@
         else $('.order-progress-circle, .order-pulsing-circle').removeClass('complete')
 
     }
+
+    function setTime(totalMins){
+        var mins = totalMins % 60;
+        var hours = Math.floor(totalMins / 60);
+
+        var timer ='<tspan id="order-est-time" class="order-sub-text"> ';
+
+        if(hours != 0){
+            timer += `<tspan class="plain">${hours}</tspan> hr`;
+        }
+
+
+        timer += ` <tspan class="plain">${mins}</tspan> mins</tspan>`;
+
+        $('#est-timer').html(timer)
+
+    }
 </script>
+{{!-- Set progress to 100 if status is already completed --}}
+{{#ifCondition order.status '==' 'Collection Confirmed'}}
+<script>
+    $(document).ready(function(){
+        $('#while-order').addClass('d-none');
+        $(".trigger").toggleClass("drawn");
+        setCircleProgress(100);
+    })
+</script>
+{{/ifCondition}}
+
 <div class="container">
     <div class="row justify-content-center pt-2">
         <div class="col-5 col-lg-7 text-center">
@@ -34,29 +62,44 @@
             <h2>Order ID: <span id="order-status">{{substringTo5 order.publicOrderID}}</span></h2>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-12 text-center">
-             <svg height="450" width="450">
-                 <g class="order-circle">
-                    <circle class="order-pulsing-circle" cx="50%" cy="50%" r="180"  stroke-width="3"/>
-                    <circle cx="50%" cy="50%" r="180"  stroke-width="3"/>
-                    <circle class="order-progress-circle" cx="50%" cy="50%" r="180" stroke-dasharray="1130.973355" stroke-width="13"/>
-                 </g>
-                 <foreignObject x="50%" y="50%"  width="128" height="128" style="transform:translate(-14%,-30%)">
-                    <div id="orderid-qr" class="mx-auto" style="max-width: 128px; max-height: 128px;">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 text-center">
+                <div class="trigger"></div>
+                <svg width="100%" viewBox="0 0 450 450" style="min-width: 320px;max-width: 450px;">
+                    <g class="order-circle">
+                        <circle class="order-pulsing-circle" cx="50%" cy="50%" r="180"  stroke-width="3"/>
+                        <circle cx="50%" cy="50%" r="180"  stroke-width="3"/>
+                        <circle class="order-progress-circle" cx="50%" cy="50%" r="180" stroke-dasharray="1130.973355" stroke-width="13"/>
+                    </g>
+                    <svg viewBox="0 0 37 37" class="ms-auto" x="155px" width="140"style="max-width: 140px">
+                        <g id="complete-order" class="order-tick" >
+                        <path class="circ path" style="fill:none;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:10;" d="
+                        M30.5,6.5L30.5,6.5c6.6,6.6,6.6,17.4,0,24l0,0c-6.6,6.6-17.4,6.6-24,0l0,0c-6.6-6.6-6.6-17.4,0-24l0,0C13.1-0.2,23.9-0.2,30.5,6.5z"
+                        />
+                        <polyline class="tick path" style="fill:none;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:10;" points="
+                            11.6,20 15.9,24.2 26.4,13.8 "/>
+                        </g>
+                    </svg>
+                    <g id="while-order">
+                        <foreignObject x="50%" y="50%"  width="128" height="128" style="transform:translate(-14%,-30%)">
+                            <div id="orderid-qr" class="mx-auto" style="max-width: 128px; max-height: 128px;">
 
-                    </div>
-                 </foreignObject>
-                
-                <text x="50%" y="50%" text-anchor="middle" dy="1.3em">
-                    <tspan class="order-text">Estimated time:</tspan>
-                </text>
-                <text  x="50%" y="50%" text-anchor="middle" dy="3.3em">
-                    <tspan id="order-est-time" class="order-sub-text"><tspan class="plain">1</tspan> h <tspan class="plain">20</tspan> min</tspan>
-                </text>
-            </svg> 
+                            </div>
+                        </foreignObject>
+                    
+                        <text x="50%" y="50%" text-anchor="middle" dy="1.3em">
+                            <tspan class="order-text">Estimated time:</tspan>
+                        </text>
+                        <text id="est-timer" x="50%" y="50%" text-anchor="middle" dy="3.3em">
+                            
+                        </text>
+                    </g>
+                </svg> 
+            </div>
         </div>
     </div>
+    
     <div class="row justify-content-center ">
         <div class="col text-center">
         </div>

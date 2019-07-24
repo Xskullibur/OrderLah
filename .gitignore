@@ -63,7 +63,7 @@ typings/
 # public/css files
 public/css/*
 
-# uploads folder content
-public/uploads/*
-#profile picture
-public/img/profiles/*
+# # uploads folder content
+# public/uploads/*
+# #profile picture
+# public/img/profiles/*

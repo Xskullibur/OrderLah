@@ -2,13 +2,6 @@
  * This js library tracks user orders through session
  */
 
-/**
- * users_carts store each individual order carts
- * 
- * To access a specific user cart, do users_carts.<userId>
- * @returns {Cart} - a cart object
- */
-let users_carts = {}
 
 /**
  * Cart
@@ -54,6 +47,11 @@ cart.prototype.removeOrderLine = function(orderLineId){
     }
 }
 
+cart.prototype.clearOrderLine = function(req){
+    req.session._cart = new cart(req.user.id)
+    req.cart = req.session._cart
+    req.session.save()
+}
 
 function orderline(itemId, quantity = 1){
     this.itemId = itemId
@@ -66,28 +64,19 @@ function orderline(itemId, quantity = 1){
 module.exports = {
     
     register(req, res, next){
-        let tmp_cart = users_carts[req.user.id]
+        let tmp_cart = req.session._cart
         if(tmp_cart != null){
+
+            tmp_cart.__proto__ = cart.prototype
+
             req.cart = tmp_cart
         }else{
             //Create new cart
-            users_carts[req.user.id] = new cart(req.user.id)
-            tmp_cart = users_carts[req.user.id]
+            req.session._cart = new cart(req.user.id)
+            tmp_cart = req.session._cart
             req.cart = tmp_cart
         }
         next()
-
-        // //Register to handlebars locals
-        // if(req.cart.items.length != 0){
-        //     let menuItemsPromises = req.cart.items.map(v => menuitem_utils.getMenuItemByID(v.itemId))
-        //     Promise.all(menuItemsPromises).then(menuItems => {
-        //         res.locals.cart_items = menuItems
-        //         next()
-        //     })
-        // }else{
-        //     next()
-        // }
-
         
     },
 

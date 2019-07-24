@@ -8,58 +8,78 @@
             </button>
         </div>
 {{/if}}
-<br>
 
-<center>
-    <div class="row">
-        <div class="col-sm-4">
+{{#if errorAlert}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center><strong>{{this.errorAlert}} already exist</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-        <div class="col-sm-2">
-            <input type="text" class="form-control" aria-describedby="" placeholder="Search Menu" style="width: 200px;">
+{{/if}}
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <center>
+                <form method="POST" action="/admin/filterItem" class="form-inline">
+                    <input type="text" class="form-control" name="filterName" id="filterName" placeholder="Search StallOwner" style="width: 180px;">
+                    <button type="submit" class="btn btn-outline-success" style="margin-left: 15px;">Search</button>
+                </form>
+            </center>
+            <br>         
+        </div>
+        <div class="col-sm-12 col-md-3 col-lg-4">
+            <center>
+                <form method="GET" action="/admin/adminPanel">
+                    <button type="submit" class="btn btn-outline-success">Show All</button>
+                </form>
+            </center>
             <br>
         </div>
-        <div class="col-sm-1">
-            <button type="button" class="red-btn" data-toggle="modal" data-target="#createStall">Add</button>
-        </div>
-        <div class="col-sm-5">
+        <div class="col-sm-12 col-md-3 col-lg-4">
+            <center>
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
+            </center>
+            <br>
         </div>
     </div>
-</center>
-
-<br><br>
-<div class="row" style="padding-left: 5em">
-    {{#if displayStallowner}}
-            {{#each displayStallowner}}
-                <div class="col-xs-6">
-                    <div class="column">
-                        <div class="container">
-                            <div class="card">
-                                <br>                 
-                                <div class="card__image-container">
-                                    <center><img class="card__image" src="/uploads/{{this.id}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="140" width="225" alt="" style="max-width: 65%; border-radius: 50%;"></center>
-                                </div>
-                                <br>
-                                <div class="card__content">
-                                    <center><h4 class="card__title">{{this.username}}</h4></center>
-                                    <center>
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#updateForm">
-                                            <font size="1">Edit</font>
-                                        </button>                                                                    
-                                        <button type="button" class="red-btn" data-toggle="modal" data-target="#freeze{{this.id}}">
-                                            <font size="1">Lock</font>
-                                        </button> 
-                                        <button type="submit" class="red-btn" data-toggle="modal" data-target="#reset{{this.id}}" title="comments and rating">
-                                            <font size="1">Reset</font>
-                                        </button>                                        
-                                    </center>
-                                </div>
-                            </div>
-                        </div>
-                        <br>
-                    </div>
-                </div>  
-        {{/each}}
-    {{/if}}
+    <br>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="card border-secondary" style="background-color: #fff;  width: 100% !important; height: 100% !important;">
+                <center><h2>Stall Management</h2></center>
+                <br>
+                <div class="row">
+                        {{#if displayStallowner}}
+                            {{#each displayStallowner}}
+                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                    <div class="column">
+                                        <div class="container">
+                                            <div class="card">
+                                                <br>                 
+                                                <div class="card__image-container">
+                                                    <center><img class="card__image" src="/img/profiles/{{this.id}}.png" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
+                                                </div>
+                                                <br>
+                                                <div class="card__content">
+                                                    <center><h4 class="card__title">{{this.username}}</h4></center>
+                                                    <center>                                                                                                         
+                                                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#freeze{{this.id}}">Lock</button> 
+                                                        <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>                                        
+                                                    </center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                                </div>  
+                        {{/each}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{#if displayStallowner}}
@@ -78,8 +98,8 @@
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
                             <center>
-                                <button type="submit" class="red-btn">Yes</button>
-                                <button data-dismiss="modal" class="red-btn">No</button>  
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
                             </center>
                         </div>            
                     </form>
@@ -105,8 +125,8 @@
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
                             <center>
-                                <button type="submit" class="red-btn">Yes</button>
-                                <button data-dismiss="modal" class="red-btn">No</button>  
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
                             </center>
                         </div>            
                     </form>
@@ -179,7 +199,7 @@
                     <div class="form-group row">
                         <label for="stallName" class="col-sm-2 col-form-label">Stall Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,50}" required>
+                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,125}" required>
                             <div class="valid-feedback">Valid!</div>
                             <div class="invalid-feedback">required, max 50 characters</div>
                         </div>
@@ -194,7 +214,7 @@
                     </div>                                                     
                     <input type="hidden" id="holder" name="holder"  value="">
                     <div class="modal-footer">
-                        <button type="submit" class="red-btn">Create</button>
+                        <button type="submit" class="btn btn-outline-danger">Create</button>
                     </div>
             </form>
         </div>

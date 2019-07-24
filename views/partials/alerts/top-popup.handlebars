@@ -4,7 +4,8 @@
     /**
     * Show alert message box
     * @param {message} message to be shown on the alert
-    * @param {timeout} set the timeout time (ms) for the alert to be dismissed (default: 3000ms)
+    * @param {timeout} set the timeout time (ms) for the alert to be dismissed, 
+        setting this to -1 will make the alert show indefinitely (default: 3000ms)
     * @param {type} set the bootstrap alert type (default: alert-primary)
     */
     function showAlert(message, timeout=3000, type="alert-primary"){
@@ -22,8 +23,8 @@
 
         popup_html.addClass('show');
 
-        //Hide element after timeout
-        setTimeout(function(){removeAlert(popup_html)}, timeout);
+        //Hide element after timeout, if -1 do not remove alert
+        if(timeout != -1)setTimeout(function(){removeAlert(popup_html)}, timeout);
 
     }
 

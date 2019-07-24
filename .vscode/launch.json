@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:3000/",
+            "webRoot": "${workspaceFolder}"
+        },
+
+        {
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
@@ -19,6 +27,7 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/index.js",
             "env": {
+                "HTTPS": "NO",
                 "REDIS_HOST": "192.168.99.100",
                 "REDIS_PORT": "6379",
                 "NODE_ENV":"dev",
