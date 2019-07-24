@@ -157,7 +157,7 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
     })
 
     if(registerFail.length > 0){
-        //res.redirect('/login')
+        res.send('fail')
     }else{
         User.create({
             username: req.body.username,
