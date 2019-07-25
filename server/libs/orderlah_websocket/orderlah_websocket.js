@@ -91,9 +91,11 @@ io.on('connection', function(socket){
     // [On Update Order Status]
     socket.on('update-status', async function({publicOrderId, qrcode}) {
 
+        let stallownerId = null
+
         //Update customer timing
-        getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
-            let stallownerId = stallownerSession.passport.user
+        await getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
+            stallownerId = stallownerSession.passport.user
             let stallOwner = await order_util.getStallInfo(stallownerId)
 
             let stallId = stallOwner.stall.id
@@ -165,7 +167,14 @@ io.on('connection', function(socket){
             console.log(errorMsg)
         }
         
-        socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+        // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+
+        // Get all stallowner's socket id
+        getSessionsFromUserID(stallownerId, (sessionId) => {
+            getSocketIDsBySessionID(sessionId, (socketId) => {
+                io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+            })
+        })
 
     })
 
@@ -202,9 +211,6 @@ function sendTiming(stallId){
     
                     })
                 })
-
-                
-
             })
 
         })            
