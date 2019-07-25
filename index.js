@@ -53,8 +53,8 @@ globalHandle.put('app', app)
 const fs = require('fs')
 const crypto = require('crypto')
 
-const signedCert = './.cert/dev-server.cert'
-const signedKey = './.cert/dev-server.key'
+const signedCert = './.cert/localhost.crt'
+const signedKey = './.cert/localhost.key'
 
 let server = null
 
@@ -141,6 +141,12 @@ db.connect(true, dummy)
 
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
+//Serve service worker js files for push notications
+app.use(express.static('push', {
+    setHeaders: function(res, path, stat) {
+        res.set('Service-Worker-Allowed', '/')
+    }
+}))
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
