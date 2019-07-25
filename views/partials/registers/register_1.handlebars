@@ -59,14 +59,13 @@
                 <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
             </div>
             <div class="col-12 col-md ml-1">
-                <label for="password">Confirm Password</label>
-                <input type="password" class="form-control" id="comfir,_password" placeholder="Confirm Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-control" id="comfirm_password" placeholder="Confirm Password">
                 <div class="valid-feedback">Valid!</div>
                 <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
             </div>
         </div>
-        <br>
-        <button type="submit" class="btn btn-outline-success float-right mt-2">Next</button>
+        <button type="button" class="btn btn-outline-success float-right mt-2" onclick="stepToSlide(2);submitToken();">Next</button>
     </form>
 </section>
 

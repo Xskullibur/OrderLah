@@ -28,19 +28,28 @@
                     <h2 class="card-title text-center">Login</h2>
                     <section>
                         <form action="/login" method="POST">
-                            <div class="form-group">
-                                <label for="email">Email address</label>
-                                <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+                            <div>
+                                <div class="form-group">
+                                    <label for="email">Email address</label>
+                                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                                    <label class="form-check-label" for="remember_me">Remember Me</label>
+                                </div>
+                                <br>
+                                <button type="submit" class="col btn btn-success">Login</button> 
+                                <br>
+                                <p class="" style="color:grey;"><a href="register" style="color:grey;">Register</a> | <a href="forgotPassword" style="color:grey;">Lost your password?</a></p>
+                                <h6 class="card-title text-center"> - or -</h6>
+                                <a href="guestLogin" class="col btn btn-secondary" role="button">Guest</a>
+                                <p></p>
+                                <a href="auth/google" class="col btn btn-danger float" role="button">Google</a>
                             </div>
-                            <div class="form-group">
-                                <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
-                                <label class="form-check-label" for="remember_me">Remember Me</label>
-                            </div>
-                            <button type="submit" class="btn btn-outline-success float-right">Login</button>
                         </form>
                     </section>
                 </div>

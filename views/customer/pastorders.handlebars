@@ -1,4 +1,5 @@
 <div class="container" style="position: relative; top: 5vh; width:">
+{{#if currentOrders}}
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="p-3" style="width: 100%;">
@@ -45,7 +46,7 @@
                                                         <div class="col">
                                                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.publicOrderID}}';">Check Status</button>
                                                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review';">Review order</button>
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
                                                     
                                                         </div>
                                                     </div>
@@ -76,3 +77,6 @@
         </div>
     </div>
 </div>
+{{else}}
+    <h3>No Orders</h3>
+{{/if}}

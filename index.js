@@ -119,6 +119,7 @@ const sequelize_db = db.db
 const Payments = db.Payments
 
 const RememberMe = db.RememberMe
+const ResetPass = db.ResetPass
 
 //Redis inside global
 globalHandle.put('redis', redisStore)
@@ -134,6 +135,8 @@ globalHandle.put('db', sequelize_db)
 
 globalHandle.put('rememberme', RememberMe)
 globalHandle.put('payments', Payments)
+
+globalHandle.put('resetpass', ResetPass)
 
 //connect to db
 const dummy = require('./dummy')

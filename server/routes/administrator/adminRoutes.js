@@ -249,7 +249,7 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
 router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     User.findAll({where: {role: "Stallowner", username:{[op.like]: filterName}}}).then((stallowner) =>{
-        res.render('admin', {
+        res.render('admin/admin', {
             displayStallowner: stallowner,
         })
     })  

@@ -7,6 +7,12 @@ const moment = require('moment')
 //Lodash
 const _ = require('lodash')
 
+// Uploads for menu item
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./customerupload');
+const upload = multer({storage : storage })
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -19,6 +25,7 @@ const auth_login = require('../../libs/auth_login')
 
 //Get Models
 const MenuItem = globalHandle.get('menuItem')
+const OrderItem = globalHandle.get('orderItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
 const Payment = globalHandle.get('payments')
@@ -35,19 +42,65 @@ const menu_item_util = require('../../utils/main/menu_item')
 const order_utils = require('../../utils/stallowner/order')
 const stall_utils = require('../../utils/stallowner/stall')
 const cusine_util = require('../../utils/stallowner/cusine')
+//validation
+
+//Define main 'customer' paths
+
+router.use(auth_login.auth)
+
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review', (req, res) => {
-    res.render('customer/review',{})
+router.get('/review/:id/:orderid', (req, res)=> {
+    OrderItem.findOne({
+        where: {
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
+        }
+    })
+    .then((orderItem) => {
+        res.render('customer/review', {
+            orderItem
+        });
+    })
 });
 
-router.get('/pastOrders', (req, res) => {
+router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
+    let comments = req.body.comments;
+    let rating = req.body.rating;
+    let image = req.body.reviewImage;
+
+    if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
+        fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
+    }
+
+    OrderItem.update({
+        comments,
+        rating,
+        image
+    }, {
+        where: {
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
+        }
+    }).then(() => {
+        res.redirect('/pastOrders');
+    }).catch((err) => console.error(err));
+});
+
+//Current Orders
+router.get('/pastOrders', (req, res, next) => {
+    
+    //Get Stall ID
+    
+
+    /**
+    * Get Current Orders
+    * Based on Stall ID received by function
+    * WHERE Status != Collection Completed
+    */
     Order.findAll({
         where: {
-            status: {
-                [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
-            },
-            // stallId: req.user.id
+            userId: req.user.id,
         },
         order: Sequelize.col('orderTiming'),
         include: [{
@@ -55,10 +108,13 @@ router.get('/pastOrders', (req, res) => {
         }]
 
     }).then((currentOrders) => {
+        
         // res.send(currentOrders);
         currentOrders = currentOrders.filter(order => order.userId == req.user.id)
         const testImg = process.cwd() + '/public/img/no-image'
+
         res.render('customer/pastorders', {
+            
             helpers: {
                 calcTotal(order){
                     let sum = 0;
@@ -110,8 +166,7 @@ router.get('/pastOrders', (req, res) => {
 
     }).catch((err) => console.error(err));
 
-});/*res.render('customer/pastorders',{})
-});*/
+});
 
 router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
@@ -120,8 +175,8 @@ router.get('/trackOrder', (req, res) => {
 router.post('/checkOrder', (req, res) =>{
     //trying to retrieve the ordernumber via the handbar
     let number = req.body.number;
-    console.log(number)
-
+    //console.log(number)
+    
     Order.findOne({
         where:{
             id: number //matches the order number input with the id in "order" table (just to test)
@@ -135,9 +190,6 @@ router.post('/checkOrder', (req, res) =>{
 })
 
 router.use(auth_login.auth)
-
-
-
 
 
 /**
@@ -262,7 +314,6 @@ function formatMenuItemToIndexHandlebars(menuItem){
 }
 
 
-
 /**
  * Format menu items array to json string
  * this function only includes the following property when converting:
@@ -283,7 +334,6 @@ function formatMenuItemsToIndexHandlebars(menuItems){
     }
     ))
 }
-
 
 const getRatingMatrix = require('../../ratings/ratings')
 const SVD_Optimizer = require('../../libs/ml/svd_sgd')
@@ -321,7 +371,6 @@ router.get('/recommendedMenuItems', (req, res) => {
  * Returns all current order cart items
  */
 router.get('/cartMenuItems', (req, res) => {
-    
     res.type('json')
     res.send(JSON.stringify(menuItems))
 })
@@ -329,7 +378,7 @@ router.get('/cartMenuItems', (req, res) => {
 function trainIfNotTrained(cb){
     if(optimizer == undefined || optimizer == null){
         getRatingMatrix(db, MenuItem, User).then((ratings) => {
-            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 9000)
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
             optimizer.reset()
             optimizer.train()
             cb()
@@ -346,7 +395,6 @@ function trainIfNotTrained(cb){
     }
 }
 
-
 function argsort(arr){
     return arr.map((item, index) => [item, index])
     .sort((a,b) => b[0] - a[0])
@@ -354,10 +402,7 @@ function argsort(arr){
 }
 
 router.get('/getRatingData', async (req, res) =>{
-
-    
     let optimizer = new SVD_Optimizer()
-    
     let pMatrix = optimizer.getRatingMatrix()
     console.log(ratings);
     res.send(pMatrix)
@@ -373,7 +418,7 @@ paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc', //i changed it to mine to test -hsienxiang
     'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
-  });
+});
 
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
 const payPalClient = require('./ppClient')
@@ -386,10 +431,14 @@ function storeUnique(test, myItems){
 
 //hsien xiang's route - done by hsien xiang and ziheng
 
+/**
+ * GET '/payment' 
+ * Payment stage for ordering items
+ */
 router.get('/payment', auth_login.auth, async (req, res) => {
     var totalAmount = 0
 
-    for(var orderline of req.cart.items){
+    for(var orderline of req.cart.items){ 
         console.log(orderline.itemId)
         await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
             totalAmount = totalAmount + parseFloat(setPrice.price)
