@@ -435,8 +435,12 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
             let menuItems = stallIdsWithMenuItemsGrouped[stallId]
             let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
             
-            for(let menuItem of menuItems){
-                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
+            //Group menu items by ids, if there is multiple menu items with the same id, only one will be added with the quantity set to the group size
+            let groupedMenuItemIds = _.groupBy(menuItems, 'id')
+
+            for(let menuItemId in groupedMenuItemIds){
+                let quantity = groupedMenuItemIds[menuItemId].length
+                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItemId, quantity: quantity})
             }
 
             Order.findOne({
@@ -458,11 +462,6 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
 
     }
 
-})
-
-router.get('/a', async (req,res)=>{
-    let orders = await order_utils.getOrderByUserId(1)
-    sendOrderToStallOwner(2, orders[0])
 })
 
 module.exports = router
