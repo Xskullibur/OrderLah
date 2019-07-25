@@ -6,7 +6,6 @@ const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
 const User = globalHandle.get('user')
 const Stall = globalHandle.get('stall')
-const MenuItem = globalHandle.get('menuItem')
 
 //Secure Random 
 const uuidv4 = require('uuid/v4')
@@ -74,28 +73,11 @@ module.exports = {
      * @param {number} userId - User id of all the orders
      * @return {Promise}
      */
-    getOrdersByUserId: function(userId){
+    getOrderByUserId: function(userId){
         return Order.findAll({
             where: {
                 userId
             }
-        })
-    },
-
-    /**
-     * Get all user orders (includes MenuItem) 
-     * @param {number} userId - User id of all the orders
-     * @return {Promise}
-     */
-    getOrdersWithMenuItemsByUserId: function(userId){
-        return Order.findAll({
-            where: {
-                userId
-            },
-            order: Sequelize.col('orderTiming'),
-            include: [{
-                model: MenuItem
-            }]
         })
     },
 
