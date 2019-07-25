@@ -42,76 +42,21 @@ router.get('/review', (req, res) => {
 });
 
 router.get('/pastOrders', (req, res) => {
-    Order.findAll({
-        where: {
-            status: {
-                [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
+    order_utils.getOrdersWithMenuItemsByUserId(req.user.id).then(currentOrders => {
+        res.render('customer/pastorders', {helpers: {
+            calcTotal(order){
+                let sum = 0;
+                order.menuItems.forEach(order => {
+                    sum += order.price*order.orderItem.quantity
+                });
+                return sum.toFixed(2);
             },
-            // stallId: req.user.id
-        },
-        order: Sequelize.col('orderTiming'),
-        include: [{
-            model: MenuItem
-        }]
+        },currentOrders})
+    })
 
-    }).then((currentOrders) => {
-        // res.send(currentOrders);
-        currentOrders = currentOrders.filter(order => order.userId == req.user.id)
-        const testImg = process.cwd() + '/public/img/no-image'
-        res.render('customer/pastorders', {
-            helpers: {
-                calcTotal(order){
-                    let sum = 0;
-                    order.menuItems.forEach(order => {
-                        sum += order.price*order.orderItem.quantity
-                    });
-                    return sum.toFixed(2);
-                },
-                calcItemPrice(items){
-                    return (items.price * items.orderItem.quantity).toFixed(2)
-                },
-                formatDate(date, formatType){
-                    return moment(date).format(formatType);
-                },
-                getTitle(menuItem){
-                    let title = []
 
-                    menuItem.forEach(item => {
-                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
-                    });
 
-                    return title.join(', ')
-                },
-                getNextStatus(status){
-                    let updatedStatus = "";
-                    switch (status) {
-                        case 'Order Pending':
-                            updatedStatus = "Preparing Order"
-                            break;
-                    
-                        case 'Preparing Order':
-                            updatedStatus = "Ready for Collection"
-                            break;
-
-                        case 'Ready for Collection':
-                            updatedStatus = "Collection Confirmed"
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    return updatedStatus;
-                }
-                
-            },
-            currentOrders
-        });
-
-    }).catch((err) => console.error(err));
-
-});/*res.render('customer/pastorders',{})
-});*/
+});
 
 router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
