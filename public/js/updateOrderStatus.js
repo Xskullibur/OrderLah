@@ -37,6 +37,7 @@ $(document).ready(function (){
             setCircleProgress((60 - timing) / 60 * 100);
         })
 
+        //Stall owner events
         socket.on('update-status-complete', function({publicOrderId, updatedStatus, nxtStatus, errorMsg}){
             
             if (errorMsg != "") {
@@ -49,7 +50,6 @@ $(document).ready(function (){
                 // Remove Card if updatedStatus = "Collection Confirmed"
                 if (updatedStatus == "Collection Confirmed") {
                     $(`#orderCard_${publicOrderId}`).remove()
-                    // orderCard.parentNode.removeChild(orderCard)
                 }
                 else{
     
@@ -69,13 +69,14 @@ $(document).ready(function (){
                 orderContainer = document.getElementById("all-orders-column")
             
                 if (orderContainer.childElementCount === 0) {
-                    orderContainer.innerHTML = `<div class="alert alert-success m-5" role="alert">
+                    $('#card-view').append(`<div class="alert alert-success m-5" role="alert" id="no_order_msg">
                     <h4 class="alert-heading">Well Done!</h4>
                     <p>There are no more orders left.</p>
-                    </div>`
+                    </div>`)
                 }
             
             }
+
         })
 
         socket.on('add-order', function({orderDetails}) {
@@ -164,6 +165,8 @@ $(document).ready(function (){
                 </div>`
     
                 all_orders_column.innerHTML += card
+
+                $('#no_order_msg').remove()
             }
     
         })
@@ -175,6 +178,15 @@ $(document).ready(function (){
     setTimeout(0);
 
 })
+
+// Update Status
+function updateStatus(publicOrderId, qrcode=false) {
+
+    // Send websocket (update-status) || Update DB
+    socket.emit('update-status', {publicOrderId, qrcode})
+
+}
+
 
 // Get Session ID from Cookie
 function getCookie(cname) {
@@ -198,15 +210,6 @@ function subStrCookie(cookie){
     var pattern = /:(.+)\./;
     return pattern.exec(cookie)[1];
 }
-
-// Update Status
-function updateStatus(publicOrderId, qrcode=false) {
-
-    // Send websocket (update-status) || Update DB
-    socket.emit('update-status', {publicOrderId, qrcode})
-
-}
-
 
 //Helpers 
 function substringTo5(text){
