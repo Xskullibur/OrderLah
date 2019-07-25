@@ -6,6 +6,7 @@
 : Redis server
 SET REDIS_PORT=24679
 SET REDIS_HOST=ec2-52-215-0-174.eu-west-1.compute.amazonaws.com
+SET REDIS_PASSWORD=pa76aff90d50e3f88f437112949793703de773528b51be81478babf490af7180d
 
 :: Auto login
 set AUTO_LOGIN=NO
