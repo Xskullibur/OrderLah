@@ -378,6 +378,11 @@ paypal.configure({
 const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
 const payPalClient = require('./ppClient')
 
+function storeUnique(test, myItems){
+    if(myItems.includes(test) === false){
+        myItems.push(test)
+    }
+}
 
 //hsien xiang's route - done by hsien xiang and ziheng
 
@@ -452,17 +457,9 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
             })
 
         }
-        //
         req.cart.clearOrderLine(req)
         console.log('transaction confrimed')
-
     }
-
-})
-
-router.get('/a', async (req,res)=>{
-    let orders = await order_utils.getOrderByUserId(1)
-    sendOrderToStallOwner(2, orders[0])
 })
 
 module.exports = router

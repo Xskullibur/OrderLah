@@ -178,10 +178,10 @@
                                 <div class="imagePreview" style="background: url(/img/uploads/{{this.image}}); background-size: 225px 140px;"></div>                            
                                     <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg">
                                 </div>
-                        </div>                       
+                        </div>   
+                        <input type="hidden" id="checkName" name="checkName" value="{{this.itemName}}">                    
                         <input type="hidden" id="itemID" name="itemID" value="{{this.id}}">
-                        <input type="hidden" id="imgName" name="imgName" value="{{this.image}}">
-                        <input type="hidden" id="checkName" name="checkName" value="{{this.itemName}}">
+                        <input type="hidden" id="imgName" name="imgName" value="{{this.image}}">                      
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-outline-danger">Update</button>  
                         </div> 

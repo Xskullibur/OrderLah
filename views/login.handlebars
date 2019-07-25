@@ -9,6 +9,15 @@
         </div>
 {{/if}}
 
+{{#if registerAlert}}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center><strong>{{this.registerAlert}} already exist</strong></center>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+{{/if}}
+
 <div class="card-fullcontent">
     <div class="container-fluid">
     <div class="row justify-content-center">
