@@ -8,9 +8,9 @@
 
 .card {
     position: relative;
-    background: #f4f4f4;
-    width: 225px;
-    height: 300px;
+    background: white;
+    width: 265px;
+    height: 350px;
     border-radius: 6px;
     padding: 2rem;
     color: black;
@@ -70,8 +70,8 @@
 }
 
 .card__title {
-    color: black;
-    margin-top: 0;
+    color: #343a40;
+    font-family: "Montserrat", sans-serif;
     font-weight: 400;
     letter-spacing: 0.01em;
 }
@@ -141,8 +141,8 @@
 /*image preview*/
 
 .imagePreview {
-    width: 140px;
-    height: 140px;
+    width: 180px;
+    height: 180px;
     background-position: center center;
     background: url(http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg);
     background-color: #fff;

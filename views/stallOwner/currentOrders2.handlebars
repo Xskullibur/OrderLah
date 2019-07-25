@@ -1,68 +1,21 @@
 <script src="/js/vendor/socket.io/socket.io.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
 <script src="/js/updateOrderStatus.js" type="text/javascript"></script>
 
-<script type="module">
-    import QrScanner from "/js/vendor/qrscanner/qr-scanner.min.js";
-    QrScanner.WORKER_PATH = '/js/vendor/qrscanner/qr-scanner-worker.min.js';
+<link rel="stylesheet" href="/css/card-column-scaling.css">
 
-    const video = document.getElementById('qr-video');
-    video.addEventListener('leavepictureinpicture', function(){
-        stopScanning()
+<script type="module">
+    import {toggleScanning, initQRScanner} from '/js/current_orders_QRscanner.mjs'
+    
+    initQRScanner((result) => {
+        updateStatus(result, true)
     })
 
-    video.onloadeddata = function(){
-        requestPIP()
-        console.log("close")
-    }
+    $('#bottom_btn').on('click', function(){
+        toggleScanning();
+    });
 
-    function setResult(result) {
-        alert(result)
-    }
-
-    // ####### Web Cam Scanning #######
-    QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
-
-    const scanner = new QrScanner(video, result => setResult(result));
-
-    let isScanning = false;
-
-    function startScanning(){
-        isScanning = true;
-        scanner.setInversionMode('both');
-        scanner.start();
-    }
-
-    function stopScanning(){
-        isScanning = false;
-        scanner.stop();
-        if(document.pictureInPictureEnabled){document.exitPictureInPicture();}
-    }
-
-    async function requestPIP(){
-        if(document.pictureInPictureEnabled){
-            //PIP is enabled
-            //Request 
-            await video.requestPictureInPicture()
-        }
-        else{
-            video.removeAttribute('hidden')
-            
-        }
-    }
-
-    function toggleScanning(){
-        if(isScanning){
-            stopScanning();
-        }else{
-            startScanning();
-        }
-    }
-
-    window.toggleScanning = toggleScanning
-    window.startScanning = startScanning
-    window.requestPIP = requestPIP
 </script>
-
 <script nomodule>
     console.log('Module not suppoted by browser, consider using lastest version of chrome.');
 </script>
@@ -72,6 +25,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12 mb-4">
             <div style="width: 100%;">
+
 
                 {{!-- Block --}}
                 <div class="card p-3">
@@ -86,7 +40,6 @@
                     {{!-- Scanner --}}
                     <div>
 
-                        <button onclick="toggleScanning()"><i class="fa fa-qrcode" aria-hidden="true"></i></button>
                         <video id="qr-video" width="230" height="160" hidden></video>
 
                         <p id="scannerOutput"></p>
@@ -95,88 +48,88 @@
                     {{!-- Body --}}
                     <div class="row">
                         <div class="col">
+                            <div class="card p-4" id="card-view">
+                                <div class="card-columns" id="all-orders-column">
+                                {{#if currentOrders}}
 
-                            <div class="card container-fluid bg-light text-center">
-                                
-                                <div class="col" id="orderContainer">
-
-                                    {{#if currentOrders}}
+                                        {{!-- Order Cards --}}
                                         {{#each currentOrders as |order|}}
-                                            <div id="orderCard_{{order.id}}" class="card d-inline-block m-4" style="width: 15rem">
-                                                <div class="card shadow-sm">
+                                            <div class="card shadow-sm" id="orderCard_{{order.publicOrderID}}">
 
-                                                    {{!-- Card Header --}}
-                                                    <div class="card-header font-weight-bold bg-danger text-white">
-                                                        <div class="row justify-content-between">
+                                                {{!-- Header / Order ID, Order Timing --}}
+                                                <div class="card-header font-weight-bold bg-danger text-right text-white">
+                                                    <div class="row justify-content-between">
+                                                        <div class="col">
+                                                            <h7>Order: {{substringTo5 order.publicOrderID}}</h7>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row justify-content-between">
+                                                        <div class="col">
+                                                            <h6>{{formatDate order.orderTiming "HH:MM:SS"}}</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{!-- Body / Order Details --}}
+                                                <div class="card-body" style="font-family: Roboto">
+
+                                                    <!-- Current Order Status -->
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="row">
+                                                                <u class="mx-auto">Current Status:</u>
+                                                            </div>
+                                                            <div class="row">
+                                                                <b class="mx-auto" id="currentStatusTxt_{{order.publicOrderID}}">{{order.status}}</b>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <hr>
+
+                                                    <!-- Order Info -->
+                                                    {{#each order.menuItems as |item|}}
+                                                        <div class="row font-weight-light">
                                                             <div class="col-md-auto">
-                                                                Order: {{order.id}}
+                                                                {{item.itemName}}
                                                             </div>
                                                             <div class="col text-right">
-                                                                {{formatDate order.orderTiming "HH:MM:SS"}}
+                                                                <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    {{/each}}
 
-                                                    {{!-- Card Body --}}
-                                                    <div class="card-body" style="font-family: Roboto">
+                                                    <hr>
 
-                                                        {{!-- Current Order Status --}}
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <div class="row">
-                                                                    <u class="mx-auto">Current Status:</u>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <b class="mx-auto" id="currentStatusTxt_{{order.id}}">{{order.status}}</b>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <hr>
-
-                                                        {{!-- Order Info --}}
-                                                        {{#each order.menuItems as |item|}}
-                                                            <div class="row font-weight-light">
-                                                                <div class="col-md-auto">
-                                                                    {{item.itemName}}
-                                                                </div>
-                                                                <div class="col text-right">
-                                                                    <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
-                                                                </div>
-                                                            </div>
-                                                        {{/each}}
-
-                                                        <hr>
-
-                                                        {{!-- Order Total --}}
-                                                        <div class="row">
-                                                            <div class="col text-right">
-                                                                ${{calcOrderTotal order}}   
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {{!-- Card Footer / Update Status --}}
-                                                    <div class="card-footer text-muted">
-                                                        <div class="row">
-                                                            <form action="./updateStatus/{{order.id}}" method="post" class="mx-auto">
-
-                                                                <button type="button" onclick="updateStatus('{{{order.id}}}');" id="updateStatusBtn_{{order.id}}" class="btn btn-sm btn-outline-primary mx-auto">
-                                                                    <b id="updateStatusTxt_{{order.id}}">{{getNextStatus order.status}}</b>
-                                                                </button>
-                                                                
-                                                            </form>
+                                                    <!-- Order Total -->
+                                                    <div class="row">
+                                                        <div class="col text-right">
+                                                            ${{calcOrderTotal order}}   
                                                         </div>
                                                     </div>
 
                                                 </div>
+
+                                                {{!-- Footer / Update Status --}}
+                                                <div class="card-footer text-muted">
+                                                    <div class="row">
+                                                        <form action="./updateStatus/{{order.publicOrderID}}" method="post" class="mx-auto">
+
+                                                            <button type="button" onclick="updateStatus('{{order.publicOrderID}}');" id="updateStatusBtn_{{order.publicOrderID}}" class="btn btn-sm btn-outline-primary mx-auto">
+                                                                <b id="updateStatusTxt_{{order.publicOrderID}}">{{getNextStatus order.status}}</b>
+                                                            </button>
+                                                            
+                                                        </form>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         {{/each}}
-                                    {{else}}
-                                        {{> current_orders/no_orders_alert}}
-                                    {{/if}}
-
-                                </div>
+                                        
+                                {{else}}
+                                    </div>
+                                    {{> current_orders/no_orders_alert}}    
+                                {{/if}}
                             </div>
 
                         </div>
@@ -188,3 +141,5 @@
         </div>
     </div>
 </div>
+{{!-- FAB QR code --}}
+{{> fixed_button icon='fas fa-qrcode icon-default'}}

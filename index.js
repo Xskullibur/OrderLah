@@ -46,12 +46,32 @@ let redisStore = new RedisStore({
 //Setup express
 const app = express()
 
-const http = require('http')
-const server = http.createServer(app)
-
 //Put app inside global
 globalHandle.put('app', app)
+
+//Import self signed cert (for dev only)
+const fs = require('fs')
+const crypto = require('crypto')
+
+const signedCert = './.cert/dev-server.cert'
+const signedKey = './.cert/dev-server.key'
+
+let server = null
+
+if(process.env.HTTPS == 'YES' && fs.existsSync(signedCert) && fs.existsSync(signedKey)){
+    console.log('Using HTTPS connections')
+    //Self-signed cert exists
+    server = require('https').createServer({
+        key: fs.readFileSync(signedKey).toString(),
+        cert: fs.readFileSync(signedCert).toString()
+    }, app)
+}else{
+    server = require('http').createServer(app)
+}
+
+
 globalHandle.put('server', server)
+
 
 //Setup handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main_layout', helpers}))
@@ -96,8 +116,10 @@ const OrderItem = db.OrderItem
 const MenuItem = db.MenuItem
 const Cusine = db.Cusine
 const sequelize_db = db.db
+const Payments = db.Payments
 
 const RememberMe = db.RememberMe
+const ResetPass = db.ResetPass
 
 //Redis inside global
 globalHandle.put('redis', redisStore)
@@ -112,6 +134,9 @@ globalHandle.put('cusine', Cusine)
 globalHandle.put('db', sequelize_db)
 
 globalHandle.put('rememberme', RememberMe)
+globalHandle.put('payments', Payments)
+
+globalHandle.put('resetpass', ResetPass)
 
 //connect to db
 const dummy = require('./dummy')
@@ -133,6 +158,25 @@ app.use('/admin', adminRoutes)
 //Websocket setup
 require('./server/libs/orderlah_websocket/orderlah_websocket')
 
+
+// process.on('SIGTERM', () => {
+//     close()
+// });
+
+// process.on('SIGINT', () => {
+//     close()
+// });
+
+// process.on('exit', () => {
+//     close()
+// });
+
+// function close(){
+//     console.log('Closing http server.');
+//     server.close(() => {
+//         console.log('Http server closed.');
+//     });
+// }
 
 app.set('port', port);
 server.listen(port, () => {

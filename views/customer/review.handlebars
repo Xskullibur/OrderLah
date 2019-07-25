@@ -1,8 +1,53 @@
+<style>
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+fieldset, label { margin: 0; padding: 0; }
+body{ margin: 20px; }
+h1 { font-size: 1.5em; margin: 10px; }
+
+/****** Style Star Rating Widget *****/
+
+.rating { 
+  border: none;
+  float: left;
+}
+
+.rating > input { display: none; } 
+.rating > label:before { 
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+
+.rating > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.rating > label { 
+  color: #ddd; 
+ float: right; 
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating:not(:checked) > label:hover, /* hover current star */
+.rating:not(:checked) > label:hover ~ label { color: #ffaa00;  } /* hover previous stars in list */
+
+.rating > input:checked + label:hover, /* hover current star when changing rating */
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating > input:checked ~ label:hover ~ label { color: #ffaa00;  } 
+</style>
+
 <div class="container-fluid">
     <div class="card card-body">
         <h4>Review Page</h4>
         <br>
-        <form action="" method="post">
+        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}?_method=POSTT" method="post" onload="getstars()" enctype="multipart/form-data">
 			<input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
@@ -10,22 +55,36 @@
                 </div>
                 <div class="col-lg-9">
                     <row>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
+                        <fieldset class="rating">
+                        <input type="radio" id="star5" onclick="myFunction(5)" name="rating" value="5" /><label class = "full" for="star5"></label>
+                        <input type="radio" id="star4" onclick="myFunction(4)" name="rating" value="4" /><label class = "full" for="star4"></label>
+                        <input type="radio" id="star3" onclick="myFunction(3)" name="rating" value="3" /><label class = "full" for="star3"></label>
+                        <input type="radio" id="star2" onclick="myFunction(2)" name="rating" value="2" /><label class = "full" for="star2"></label>
+                        <input type="radio" id="star1" onclick="myFunction(1)" name="rating" value="1" /><label class = "full" for="star1"></label>
+                        </fieldset>
+                        <input type="text" id="ratingstar" value="{{orderItem.rating}}" hidden></input>
                     </row>
                     <row>
                         <div class="form-group">
-                            <label class="font-italic" for="">Comments</label>
-                            <textarea class="form-control" id="" rows="8"></textarea>
+                            <textarea class="form-control" id="" name="comments" rows="8">{{orderItem.comments}}</textarea>
                         </div>
                     </row>
-                    <button id="butAddVideo" type="submit" class="btn btn-primary" style="float:right;">Save
-			        </button>
+                    <input type="file" name="reviewImage" id="reviewImage" accept="image/png,image/jpeg,image/jpg" style="float:left;">
+                    <button id="butAddVideo" type="submit" class="btn btn-primary" style="float:right;">Save</button>
                 </div>
             </div>
 		</form>
     </div>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  document.getElementById("star"+document.getElementById("ratingstar").value).click();
+});
+function myFunction(star) {
+  document.getElementById("ratingstar").value = star
+}
+function getstars(){
+  document.getElementById("star"+document.getElementById("ratingstar").value).click();
+}
+</script>

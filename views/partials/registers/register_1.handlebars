@@ -1,42 +1,94 @@
 <h2 class="card-title text-center">Register</h2>
 <section>
-    <form id="registerForm">
+    <form id="registerForm" class="needs-validation" novalidate>
          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" id="username" name="username">
+            <label for="username" class="col-sm-6 col-form-label">username</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,20}" required>
+                <div class="valid-feedback">Valid!</div>
+                <div class="invalid-feedback">required, max 20 characters</div>
+            </div>
         </div>
         <div class="form-group">
             <label for="email">Email address</label>
-            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email" required>
+                <div class="valid-feedback">Valid!</div>
+                <div class="invalid-feedback">email required</div>
+            </div>          
         </div>
         <div class="form-group form-row">
             <div class="col">
                 <label for="fname">First Name</label>
-                <input type="text" id="fname" name="fname" class="form-control" placeholder="First name">
+                <div class="col-sm-10">
+                    <input type="text" id="fname" name="fname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]+" maxlength="50" required>
+                    <div class="valid-feedback">Valid!</div>
+                    <div class="invalid-feedback">required, max 20 characters</div>
+                </div>         
             </div>
             <div class="col ml-1">
                 <label for="lname">Last Name</label>
-                <input type="text" id="lname" name="lname" class="form-control" placeholder="Last name">
+                <div class="col-sm-10">
+                    <input type="text" id="lname" name="lname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]+" maxlength="50" required>
+                    <div class="valid-feedback">Valid!</div>
+                    <div class="invalid-feedback">required, max 20 characters</div>
+                </div>     
             </div>
         </div>
         <div class="form-group">
             <label for="dob">Date of Birth</label>
-            <input type="date" class="form-control" id="dob" name="dob">
+                <div class="col-sm-10">
+                    <input type="date" class="form-control" id="dob" name="dob" required>
+                    <div class="valid-feedback">Valid!</div>
+                    <div class="invalid-feedback">required</div>
+                </div>    
         </div>
         <div class="form-group">
-            <label for="phone">Phone:</label>
-            <input type="text" class="form-control" id="phone" name="phone">
+            <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" required>
+                    <div class="valid-feedback">Valid!</div>
+                    <div class="invalid-feedback">required, 8-10 numbers</div>
+            </div>
         </div>
         <div class="form-group form-row">
             <div class="col-12 col-md">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <label for="password">New Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+                <div class="valid-feedback">Valid!</div>
+                <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
             </div>
             <div class="col-12 col-md ml-1">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" id="comfir,_password" placeholder="Confirm Password">
+                <input type="password" class="form-control" id="comfirm_password" placeholder="Confirm Password">
+                <div class="valid-feedback">Valid!</div>
+                <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-success float-right mt-2" onclick="stepToSlide(2)">Next</button>
+        <button type="button" class="btn btn-outline-success float-right mt-2" onclick="stepToSlide(2);submitToken();">Next</button>
     </form>
 </section>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }else{
+                        event.preventDefault();
+                        event.stopPropagation();
+                        stepToSlide(2);
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

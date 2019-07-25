@@ -1,4 +1,5 @@
 <div class="container" style="position: relative; top: 5vh; width:">
+{{#if currentOrders}}
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="p-3" style="width: 100%;">
@@ -10,7 +11,7 @@
                             <div class="card-header bg-secondary" role="tab" id="head{{@index}}">
                                     <button class="btn btn-link container-fluid text-white font-weight-bold" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
                                         <span class="float-left">
-                                            {{{order.id}}})
+                                            {{inc @index}})
                                             {{getTitle order.menuItems}}
                                         </span>
                                     </button>
@@ -22,7 +23,7 @@
                                         {{!-- Order Details --}}
                                         <div class="row">
                                             <div class="col">
-                                                <h3 class="mb-0">Order: {{order.id}}</h3>    
+                                                <h3 class="mb-0">Order: {{substringTo5 order.publicOrderID}}</h3>    
                                             </div>
                                             <div class="col text-right">
                                                 <p class="mb-0">Order Timing: {{formatDate order.orderTiming "HH:MM:SS"}}</p>
@@ -43,9 +44,9 @@
                                                     </div>
                                                     <div class="row my-5">
                                                         <div class="col">
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.id}}';">Check Status</button>
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.publicOrderID}}';">Check Status</button>
                                                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review';">Review order</button>
+                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
                                                     
                                                         </div>
                                                     </div>
@@ -76,3 +77,6 @@
         </div>
     </div>
 </div>
+{{else}}
+    <h3>No Orders</h3>
+{{/if}}

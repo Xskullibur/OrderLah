@@ -58,5 +58,15 @@ module.exports = {
             phone: phone,
             role: role,
         })
+    },
+    createUserByGoogle: function({username, firstName, email, googleid, role = 'Customer'}){
+        return User.create({
+            username: username,
+            firstName: firstName,
+            email: email,
+            password: "",
+            googleId: googleid,
+            role: role,
+        })
     }
 }

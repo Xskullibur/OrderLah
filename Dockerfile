@@ -14,8 +14,5 @@ COPY *.js package*.json ./
 # Install modules
 RUN npm install
 
-# # Expose port 3000 and 4000
-# EXPOSE 3000 4000
-
 # Start the node server
 CMD ["npm", "start"]

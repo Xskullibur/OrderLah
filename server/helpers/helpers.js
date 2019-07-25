@@ -36,6 +36,12 @@ module.exports = {
     ifCondition(input1, operator, input2, options){
         switch (operator) {
 
+            case "contains":
+                if (input1.includes(input2)) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+
             case "||":
                 if (input1 || input2) {
                     return options.fn(this)
@@ -168,5 +174,13 @@ module.exports = {
         }
 
         return updatedStatus;
+    },
+
+    inc(value, options) {
+        return parseInt(value) + 1
+    },
+    
+    substringTo5(text){
+        return text.substring(0, 5)
     }
 }

@@ -10,7 +10,7 @@
 {{/if}}
 {{#if failAlert}}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <center><strong>{{this.failAlert}}</strong></center>
+            <center><strong>{{this.failAlert}} already exist!</strong></center>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -22,7 +22,7 @@
         <div class="col-md-8 col-12">
             <div class="card">
                 <div class="card-header mb-2"><h3>Profile</h3></div>
-                <img class="card-img-top profile-img border border-danger" src="/uploads/{{UserID}}.jpeg" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" alt="Profile Picture">
+                <img class="card-img-top profile-img border border-danger" src="/img/profiles/{{user.id}}.png" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" alt="Profile Picture">
                 {{!-- Hidden form to update image --}}
                 <form>
                     <input type="text" hidden>
@@ -100,7 +100,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add menu item</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Update Profile</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -137,7 +137,9 @@
                             <div class="imagePreview"style="background: url(/uploads/{{UserID}}.jpeg); background-size: 140px 140px;"></div>                            
                                 <input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg">
                             </div>
-                    </div>                  
+                    </div>
+                    <input type="hidden" id="checkEmail" name="checkEmail" value="{{user.email}}">
+                    <input type="hidden" id="checkPhone" name="checkPhone" value="{{user.phone}}">                    
                     <div class="modal-footer">
                          <button type="submit" class="btn btn-outline-success">Update</button>
                     </div>

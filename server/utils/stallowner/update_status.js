@@ -15,6 +15,26 @@ module.exports = {
             where: { id: orderID } 
         })
 
+    },
+
+    /**
+     * Get order's current status
+     * @param {number} orderID 
+     */
+    getCurrentStatus(orderID){
+
+        let promise = new Promise((resolve, reject) => {
+            Order.findOne({
+                where: {id: orderID},
+                attributes: ['status']
+            }).then((order) => {
+                resolve(order.status)
+            }).catch((err) => {
+                reject(err)
+            });
+        })
+
+        return promise
     }
 
 }

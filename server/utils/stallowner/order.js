@@ -19,7 +19,7 @@ const Sequelize = require('sequelize')
  * @property {string} status - 'Order Pending', 'Preparing Order', 'Ready for Collection', 'Collection Confirmed'
  * @property {int} userId - user whom paid for the order as id
  * @property {int} stallId - stall whom will prepare the order as id
- * @property {Date=} orderTiming - date of the transaction (default current date)
+ * @property {Date} orderTiming - date of the transaction (default current date)
  */
 /**
  * OrderItem
@@ -57,7 +57,7 @@ module.exports = {
      * @param {OrderItem} orderitem - to be created inside database
      * @return {Promise} 
      */
-    createOrderItem: function({orderId, menuItemId, rating, comments, quantity = 1}){
+    createOrderItem: function({orderId, menuItemId, rating = null, comments = null, quantity = 1}){
         return OrderItem.create({
             quantity: quantity,
             orderId: orderId,
@@ -185,6 +185,67 @@ module.exports = {
         AND orderItems.menuItemId = ${menuItemId}
         
         `, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    /**
+     * Get the number of orders before given order
+     * @param {number} orderId 
+     * @return {Promise}
+     */
+    getNumberOfOrdersBeforeOrder: function(orderId){
+        return db.query(`SELECT COUNT(*) AS "ordersCount"
+        FROM orders, (
+            SELECT id, stallId, orderTiming
+            FROM orders
+            WHERE orders.id = ${orderId}
+        ) as a
+        WHERE orders.stallId = a.stallId
+        AND orders.status != 'Collection Confirmed'
+        AND orders.id <= a.id
+        AND DATE(orders.orderTiming) = current_date()
+        AND a.orderTiming >= orders.orderTiming;`, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    getOrderIDFromUserId(userId){
+        return db.query(`
+            SELECT orders.id
+            FROM orders
+            WHERE orders.userId = ${userId}
+            AND orders.status != "Collection Confirmed"
+            LIMIT 1
+        `, { type: Sequelize.QueryTypes.SELECT })
+    },
+
+    /**
+     * Get Order Id from Public Order Id
+     * @param {number} pOrderId 
+     */
+    getOrderIdFromPublicId(pOrderId){
+        let promise = new Promise((resolve, reject) => {
+            Order.findOne({
+                where: { publicOrderID: pOrderId },
+                attributes: ['id']
+            }).then(order => {
+                resolve(order.id)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+
+        return promise
+    },
+    
+    /** 
+     * Returns the order using the public order id
+     * @param {number} publicOrderID - public order id of the order
+     * @return {Promise}
+     */
+    getOrderFromPublicOrderID(publicOrderID){
+        return Order.findOne({
+            where: {
+                publicOrderID
+            }
+        })
     }
 
 }

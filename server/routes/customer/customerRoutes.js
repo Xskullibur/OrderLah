@@ -4,6 +4,15 @@ const router = express.Router()
 //MomentJS
 const moment = require('moment')
 
+//Lodash
+const _ = require('lodash')
+
+// Uploads for menu item
+const fs = require('fs');
+const multer = require('multer')
+const storage = require('./customerupload');
+const upload = multer({storage : storage })
+
 //Global
 const globalHandle = require('../../libs/global/global')
 
@@ -16,89 +25,82 @@ const auth_login = require('../../libs/auth_login')
 
 //Get Models
 const MenuItem = globalHandle.get('menuItem')
+const OrderItem = globalHandle.get('orderItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
+const Payment = globalHandle.get('payments')
 
 //Sequelize
 const Sequelize = require('sequelize')
+const db = globalHandle.get('db')
 
 //Get App
 const app = globalHandle.get('app')
 
-
+//database utils
+const menu_item_util = require('../../utils/main/menu_item')
+const order_utils = require('../../utils/stallowner/order')
+const stall_utils = require('../../utils/stallowner/stall')
+const cusine_util = require('../../utils/stallowner/cusine')
+//validation
 
 //Define main 'customer' paths
 
-//Payment PAYPAL
-const paypal = require('paypal-rest-sdk')
-paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU',
-    'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
-  });
-
-/**
- * GET '/payment' 
- * Payment stage for ordering items
- */
-router.get('/payment', auth_login.auth, (req, res) => {
-
-    var create_payment_json = {
-        "intent": "order",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": "http://localhost:3000/payment-redirect",
-            "cancel_url": "http://localhost:3000/payment-void"
-        },
-        "transactions": [{
-            "item_list": {
-                "items": [{
-                    "name": "item",
-                    "sku": "item",
-                    "price": "1.00",
-                    "currency": "USD",
-                    "quantity": 1
-                }]
-            },
-            "payee": {"email": "payee@gmail.com"},
-            "amount": {
-                "currency": "USD",
-                "total": "1.00"
-            },
-            "description": "This is the payment description."
-        }]
-    };
-    
-    
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            throw error;
-        } else {
-            console.log("Create Payment Response");
-            console.log(payment);
-        }
-    });
-
-    res.render('payment', {size: MenuItem.count()})
-})
-
-
+router.use(auth_login.auth)
 
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review', (req, res) => {
-    res.render('customer/review',{})
+router.get('/review/:id/:orderid', (req, res)=> {
+    OrderItem.findOne({
+        where: {
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
+        }
+    })
+    .then((orderItem) => {
+        res.render('customer/review', {
+            orderItem
+        });
+    })
 });
 
-router.get('/pastOrders', (req, res) => {
+router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
+    let comments = req.body.comments;
+    let rating = req.body.rating;
+    let image = req.body.reviewImage;
+
+    if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
+        fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
+    }
+
+    OrderItem.update({
+        comments,
+        rating,
+        image
+    }, {
+        where: {
+            menuItemId: req.params.id,
+            orderId: req.params.orderid
+        }
+    }).then(() => {
+        res.redirect('/pastOrders');
+    }).catch((err) => console.error(err));
+});
+
+//Current Orders
+router.get('/pastOrders', (req, res, next) => {
+    
+    //Get Stall ID
+    
+
+    /**
+    * Get Current Orders
+    * Based on Stall ID received by function
+    * WHERE Status != Collection Completed
+    */
     Order.findAll({
         where: {
-            status: {
-                [Sequelize.Op.or]: ['Order Pending', 'Preparing Order', 'Ready For Collection',]
-            },
-            // stallId: req.user.id
+            userId: req.user.id,
         },
         order: Sequelize.col('orderTiming'),
         include: [{
@@ -106,10 +108,13 @@ router.get('/pastOrders', (req, res) => {
         }]
 
     }).then((currentOrders) => {
+        
         // res.send(currentOrders);
-
+        currentOrders = currentOrders.filter(order => order.userId == req.user.id)
         const testImg = process.cwd() + '/public/img/no-image'
+
         res.render('customer/pastorders', {
+            
             helpers: {
                 calcTotal(order){
                     let sum = 0;
@@ -154,14 +159,14 @@ router.get('/pastOrders', (req, res) => {
 
                     return updatedStatus;
                 }
+                
             },
             currentOrders
         });
 
     }).catch((err) => console.error(err));
 
-});/*res.render('customer/pastorders',{})
-});*/
+});
 
 router.get('/trackOrder', (req, res) => {
     res.render('customer/orderStatus',{})
@@ -170,8 +175,8 @@ router.get('/trackOrder', (req, res) => {
 router.post('/checkOrder', (req, res) =>{
     //trying to retrieve the ordernumber via the handbar
     let number = req.body.number;
-    console.log(number)
-
+    //console.log(number)
+    
     Order.findOne({
         where:{
             id: number //matches the order number input with the id in "order" table (just to test)
@@ -185,9 +190,6 @@ router.post('/checkOrder', (req, res) =>{
 })
 
 router.use(auth_login.auth)
-
-const cusine_util = require('../../utils/stallowner/cusine')
-const menu_item_util = require('../../utils/main/menu_item')
 
 
 /**
@@ -244,7 +246,7 @@ router.get('/menuItemId/:menuItemId', (req, res) =>{
         //Need get ratings for all menuItems (Not that efficient due to the fact it has to grab rating for each menu item)
         includeMenuItemWithRating(menuItem, () => {
             res.type('json')
-            res.send(formatMenuItemsToIndexHandlebars(menuItems))
+            res.send(formatMenuItemToIndexHandlebars(menuItem))
         })
     })
 })
@@ -264,14 +266,12 @@ router.get('/menuItemSearch/:item_name', (req, res) => {
 
     })
 })
-
-const order_util = require('../../utils/stallowner/order')
 /**
  * Add a new ratings field into each menu item
  * @param menuItems - array of menu items
  */
 function includeMenuItemsWithRating(menuItems, done){
-    let promises = menuItems.map(menuItem => order_util.getMenuItemRating(menuItem.id))
+    let promises = menuItems.map(menuItem => order_utils.getMenuItemRating(menuItem.id))
 
     Promise.all(promises).then(ratings => {
         menuItems.forEach((menuItem, index) => {
@@ -286,13 +286,33 @@ function includeMenuItemsWithRating(menuItems, done){
  * @param menuItem - the menu item of the object to have a new field added
  */
 function includeMenuItemWithRating(menuItem, done){
-    order_util.getMenuItemRating(menuItem.id).then(rating => {
+    order_utils.getMenuItemRating(menuItem.id).then(rating => {
             menuItem.rating = rating[0]['AVG']
         done()
     })
 }
 
+
+
 /**
+ * Format menu item to json string
+ * this function only includes the following property when converting:
+ *  [image], [itemName], [rating], [price] 
+ * 
+ * @param menuItem - menu item
+ * @return {string} json string of the menu item
+ */
+function formatMenuItemToIndexHandlebars(menuItem){
+    return JSON.stringify({
+            id: menuItem.id,
+            image: menuItem.image,
+            itemName: menuItem.itemName,
+            rating: menuItem.rating,
+            price: menuItem.price
+        }
+    )
+}
+
 
 /**
  * Format menu items array to json string
@@ -305,6 +325,7 @@ function includeMenuItemWithRating(menuItem, done){
 function formatMenuItemsToIndexHandlebars(menuItems){
     return JSON.stringify(menuItems.map(menuItem => {
         return {
+            id: menuItem.id,
             image: menuItem.image,
             itemName: menuItem.itemName,
             rating: menuItem.rating,
@@ -313,7 +334,6 @@ function formatMenuItemsToIndexHandlebars(menuItems){
     }
     ))
 }
-
 
 const getRatingMatrix = require('../../ratings/ratings')
 const SVD_Optimizer = require('../../libs/ml/svd_sgd')
@@ -351,7 +371,6 @@ router.get('/recommendedMenuItems', (req, res) => {
  * Returns all current order cart items
  */
 router.get('/cartMenuItems', (req, res) => {
-    
     res.type('json')
     res.send(JSON.stringify(menuItems))
 })
@@ -376,7 +395,6 @@ function trainIfNotTrained(cb){
     }
 }
 
-
 function argsort(arr){
     return arr.map((item, index) => [item, index])
     .sort((a,b) => b[0] - a[0])
@@ -384,10 +402,7 @@ function argsort(arr){
 }
 
 router.get('/getRatingData', async (req, res) =>{
-
-    
     let optimizer = new SVD_Optimizer()
-    
     let pMatrix = optimizer.getRatingMatrix()
     console.log(ratings);
     res.send(pMatrix)
@@ -396,5 +411,104 @@ router.get('/getRatingData', async (req, res) =>{
 const orders_api_routes = require('./orders_api')
 router.use(orders_api_routes)
 
+//Define main 'customer' paths
+
+const paypal = require('paypal-rest-sdk')
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc', //i changed it to mine to test -hsienxiang
+    'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
+});
+
+const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
+const payPalClient = require('./ppClient')
+
+function storeUnique(test, myItems){
+    if(myItems.includes(test) === false){
+        myItems.push(test)
+    }
+}
+
+//hsien xiang's route - done by hsien xiang and ziheng
+
+/**
+ * GET '/payment' 
+ * Payment stage for ordering items
+ */
+router.get('/payment', auth_login.auth, async (req, res) => {
+    var totalAmount = 0
+
+    for(var orderline of req.cart.items){ 
+        console.log(orderline.itemId)
+        await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
+            totalAmount = totalAmount + parseFloat(setPrice.price)
+        })
+    }
+
+    console.log('total amount: ' + totalAmount)
+    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount, cart_items: req.cart.items
+    })
+
+})
+
+const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
+router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+    var payerName = req.body.payerName
+    var orderID = req.body.orderID
+    console.log(orderID)
+    console.log(payerName)
+
+    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    let order
+    try {
+        order = await payPalClient.client().execute(request);
+        console.log(order)
+    } catch (err) {
+        console.error(err);
+        return res.send(500);
+    }
+    var showStatus = order.result.status
+    var payerID = order.result.payer.payer_id
+    var userID = req.user.id
+    var orderStatus = 'Order Pending'
+    //var orderTiming = moment()
+
+    if (showStatus == 'COMPLETED') {
+        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
+            console.log('transaction details saved to database')           
+        }).catch(err => console.log(err))
+        let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
+        //inserts quantity to menuItems
+        //_.zip()
+
+        let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
+
+        for(let stallId in stallIdsWithMenuItemsGrouped){
+            let menuItems = stallIdsWithMenuItemsGrouped[stallId]
+            let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
+            
+            for(let menuItem of menuItems){
+                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
+            }
+
+            Order.findOne({
+                where: {
+                    id: order.id
+                },
+                include: [{
+                    model: MenuItem
+                }]
+            }).then((orderDetails) => {
+                //Send order to stallowner
+                sendOrderToStallOwner(stallId, orderDetails)
+            })
+
+        }
+        req.cart.clearOrderLine(req)
+        console.log('transaction confrimed')
+    }
+})
 
 module.exports = router
