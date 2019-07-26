@@ -68,7 +68,8 @@ router.get('/', (req, res, next) => {
         }).then((currentOrders) => {
 
             res.render('stallOwner/currentOrders2', {
-                currentOrders
+                currentOrders,
+                nav: 'currentOrders'
             });
 
         }).catch((err) => console.error(err));
@@ -94,7 +95,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
             if (req.params.monthYear == undefined) {                    // Check if date(Month-Year) is selected
                 dateNotSelected = true;                                 // Indicate that a date(Month-Year) is selected
                 res.render('../views/stallOwner/monthlySummary',{       // Render page w/o pulling data
-                    month, dateNotSelected, title
+                    month, dateNotSelected, title,
+                    nav: 'monthlySummary'
                })
             }
             else{                                                               // date(Month-Year) indicated
@@ -176,7 +178,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                     }
 
                     res.render('stallOwner/monthlySummary',{
-                        month, formatedOrder, title, selectedDate, stallOwner
+                        month, formatedOrder, title, selectedDate, stallOwner,
+                        nav: 'monthlySummary'
                     })
                 })
             }
@@ -258,6 +261,7 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
     
                 res.render('stallOwner/allOrders',{
                      pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
+                     nav: 'orderDetails',
                      helpers: {
     
                         //Pagination previous button Helper
@@ -437,7 +441,8 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
         // res.send(EachItemRating)
         res.render('stallOwner/orderCharts', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate,
+            nav: 'orderDetails'
         });
     }
 
@@ -532,7 +537,8 @@ router.get('/orderDetails/ratings/', (req, res) => {
         // res.send(items)
 
         res.render('stallOwner/ratingsView', {
-            allRatings, title, menu_items, item_filter, rating_filter
+            allRatings, title, menu_items, item_filter, rating_filter,
+            nav: 'orderDetails'
         })
 
     }
@@ -577,14 +583,17 @@ router.get('/showMenu', (req, res) => {
                         item:item,
                         stall: myStall,
                         displayAlert: displayAlert,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     displayAlert = []
                     errorAlert = []
                 })    
             })
         }else{
-            res.render('./successErrorPages/error')
+            res.render('./successErrorPages/error', {
+                nav: 'manageMenu'
+            })
         }      
       })
 })
@@ -663,10 +672,11 @@ router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     errorAlert = []
                 })    

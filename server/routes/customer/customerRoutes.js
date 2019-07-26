@@ -59,7 +59,8 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
     .then((orderItem) => {
         res.render('customer/review', {
-            orderItem
+            orderItem,
+            nav: 'pastOrders'
         });
     })
 });
@@ -161,15 +162,12 @@ router.get('/pastOrders', (req, res, next) => {
                 }
                 
             },
-            currentOrders
+            currentOrders,
+            nav: 'pastOrders'
         });
 
     }).catch((err) => console.error(err));
 
-});
-
-router.get('/trackOrder', (req, res) => {
-    res.render('customer/orderStatus',{})
 });
 
 router.post('/checkOrder', (req, res) =>{
@@ -197,7 +195,7 @@ router.use(auth_login.auth)
  */
 router.get('/', (req, res) => {
     cusine_util.getAllCusine().then(cusines => {
-        res.render('index', {cusines: cusines})
+        res.render('index', {cusines: cusines, nav: 'home'})
     })
 })
 
@@ -206,7 +204,9 @@ router.get('/', (req, res) => {
  * Get Profile page
  */
 router.get('/profile', (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
+    res.render('profile', {
+        birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''
+    })
 })
 /**
  * Get '/menuItem' all menu items inside the database as JSON
@@ -446,7 +446,11 @@ router.get('/payment', auth_login.auth, async (req, res) => {
     }
 
     console.log('total amount: ' + totalAmount)
-    res.render('customer/payment', {size: MenuItem.count(), totalAmount: totalAmount, cart_items: req.cart.items
+    res.render('customer/payment', {
+        size: MenuItem.count(), 
+        totalAmount: totalAmount, 
+        cart_items: req.cart.items,
+        nav: 'home'
     })
 
 })
