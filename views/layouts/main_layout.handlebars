@@ -28,8 +28,14 @@
             {{/if}}
     {{/if}}
     {{> loading}}
+    
     {{> nav}}
+
     {{{body}}}
+
+    {{!-- Popup Modal --}}
+    {{> alerts/popup-modal}}
   <input id="csrf-token" type="hidden" value="{{csrf}}"/>
+  
 </body>
 </html>
