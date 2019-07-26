@@ -96,13 +96,19 @@ function addOrder(menuItemId){
       var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
       loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
 
-      registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+      registerAllMenuItemsButtonsInContainer(bottom_list_selector, promptRemoveOrder);
 
     })
 
   }).catch(err => {
     showAlert('Error adding item', 3000, 'alert-danger');
   });
+}
+
+function promptRemoveOrder(orderLineId){
+  showDialog({title: 'Warning', body:'Are you sure you want to remove this order?'}).then(() =>{
+    removeOrder(orderLineId);
+  })
 }
 
 function removeOrder(orderLineId){
