@@ -6,6 +6,7 @@
         <div class="row d-md-none mb-5">
             <div class="col">
                 <select class="form-control">
+                    <option onclick="generateMenuCardItem('')" selected>All Menu Items</option>
                     {{#each cusines}}
                         <option onclick="generateMenuCardItem('{{cusineType}}')">{{cusineType}}</option>
                     {{/each}}
@@ -29,6 +30,7 @@
                         <div class="col-7 align-self-center">
                                 <div>
                                 <ul class="menu-list list-group list-group-flush text-center" >
+                                    <li class="category-list-item list-group-item selected"><div onclick="generateMenuCardItem('')">All Menu Items</div></li>
                                     {{#each cusines}}
                                         <li class="category-list-item list-group-item"><div onclick="generateMenuCardItem('{{cusineType}}')">{{cusineType}}</div></li>
                                     {{/each}}
