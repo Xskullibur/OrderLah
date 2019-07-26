@@ -152,7 +152,7 @@ function generateCartItems(){
           bottomList.append(menuItemHTML);
           var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
           loadContent($(`#all-bottom-menu-container-menu-item-${orderlinesJson[index].orderLineId}`), menuItem);
-          registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+          registerAllMenuItemsButtonsInContainer(bottom_list_selector, promptRemoveOrder);
         })
       
       
