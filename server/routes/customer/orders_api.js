@@ -76,6 +76,14 @@ router.get('/cartItems', (req, res) => {
 })
 
 /**
+ * GET '/cartItemsCount'
+ * returns the size of the cart items
+ */
+router.get('/cartItemsCount', (req, res) => {
+    res.send(JSON.stringify(req.cart.items.length))
+})
+
+/**
  * DELETE '/removeOrder'
  * remove existing order from the cart
  * params: orderLineId

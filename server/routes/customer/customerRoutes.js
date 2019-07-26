@@ -481,7 +481,6 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
         }).catch(err => console.log(err))
         let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
         //inserts quantity to menuItems
-        //_.zip()
 
         let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
 

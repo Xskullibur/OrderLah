@@ -3,6 +3,9 @@ $(document).ready(function(){
 
     //Call one at least when loading page
     checkScrollGrow();
+
+    //Update cart count value
+    updateCartCount();
 });
 
 /**
@@ -33,4 +36,16 @@ function checkScrollGrow(){
  */
 function setCartBadgeValue(val){
     $('#nav-cart-count').text(val)
+}
+
+/**
+ * Update cart count value
+ */
+function updateCartCount(){
+    $.ajax({
+        method: "GET",
+        url: "/cartItemsCount"
+    }).done((count) => {
+        setCartBadgeValue(count);
+    })
 }
