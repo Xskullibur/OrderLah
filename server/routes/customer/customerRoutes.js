@@ -378,7 +378,7 @@ router.get('/cartMenuItems', (req, res) => {
 function trainIfNotTrained(cb){
     if(optimizer == undefined || optimizer == null){
         getRatingMatrix(db, MenuItem, User).then((ratings) => {
-            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 10000)
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
             optimizer.reset()
             optimizer.train()
             cb()
@@ -387,7 +387,7 @@ function trainIfNotTrained(cb){
         getRatingMatrix(db, MenuItem, User).then((ratings) => {
             //Retrain
             optimizer.updateRatingsMatrix(ratings)
-            optimizer.iterations = 3000
+            optimizer.iterations = 1000
             optimizer.train()
             cb()
         })
