@@ -573,7 +573,7 @@ router.get('/showMenu', (req, res) => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
                         displayAlert: displayAlert,
@@ -675,26 +675,6 @@ router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
             res.render('./successErrorPages/error')
         }      
       })
-})
-
-router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
-    const itemID = req.body.itemID
-    console.log(itemID)
-    const id = req.user.id
-    MenuItem.findOne({where : {id: itemID}}).then(menu =>{
-        User.findOne({ where: id }).then(user => {
-            if(user.role === 'Stallowner'){
-               OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
-                   res.render('stallmenu-comment', {
-                       items: items,
-                       menu: menu
-                   })
-               })
-           }else{
-               res.render('./successErrorPages/error')
-           }      
-         })
-    })   
 })
 
 module.exports = router;
