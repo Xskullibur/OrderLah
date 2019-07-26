@@ -50,7 +50,7 @@ router.use(auth_login.auth)
 
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review/:id/:orderid', (req, res)=> {
+router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
     OrderItem.findOne({
         where: {
             menuItemId: req.params.id,
@@ -65,7 +65,7 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
 });
 
-router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
+router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
     let image = req.body.reviewImage;
@@ -435,7 +435,7 @@ function storeUnique(test, myItems){
  * GET '/payment' 
  * Payment stage for ordering items
  */
-router.get('/payment', auth_login.auth, async (req, res) => {
+router.get('/payment', uuid_middleware.generate, async (req, res) => {
     var totalAmount = 0
 
     for(var orderline of req.cart.items){ 
@@ -456,7 +456,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 })
 
 const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
-router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+router.post('/confrimPayment', uuid_middleware.verify, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)

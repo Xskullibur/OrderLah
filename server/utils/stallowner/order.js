@@ -7,6 +7,9 @@ const Order = globalHandle.get('order')
 const User = globalHandle.get('user')
 const Stall = globalHandle.get('stall')
 
+//MomentJS
+const moment = require('moment')
+
 //Secure Random 
 const uuidv4 = require('uuid/v4')
 
@@ -37,7 +40,7 @@ module.exports = {
      * @param {Order} order - to be created inside database
      * @return {Promise} 
      */
-    createOrder: function({status, userId, stallId, orderTiming = new Date}){
+    createOrder: function({status, userId, stallId, orderTiming = moment().locale('sg')}){
         const buffer = Buffer.allocUnsafe(16);
         uuidv4(null, buffer, 0)
 
