@@ -121,7 +121,8 @@ const Payments = db.Payments
 const RememberMe = db.RememberMe
 
 //Redis inside global
-globalHandle.put('redis', redisStore)
+globalHandle.put('redis-store', redisStore)
+globalHandle.put('redis-client', client)
 
 //Put User model inside global
 globalHandle.put('user', User)
@@ -148,7 +149,11 @@ app.use(express.static('push', {
     }
 }))
 
-
+//Push notificaions setup
+require('./server/libs/orderlah_push_notifications/push_notifications')(app)
+//Websocket setup
+const {sendOrderToStallOwner} = require('./server/libs/orderlah_websocket/orderlah_websocket')
+globalHandle.put('websocket:sendOrderToStallOwner', sendOrderToStallOwner)
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
@@ -160,10 +165,6 @@ app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 app.use('/admin', adminRoutes)
 
-//Websocket setup
-require('./server/libs/orderlah_websocket/orderlah_websocket')
-//Push notificaions setup
-require('./server/libs/orderlah_push_notifications/push_notifications')(app)
 
 // process.on('SIGTERM', () => {
 //     close()

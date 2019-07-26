@@ -14,6 +14,9 @@ const io = require('socket.io')(server);
 
 const helpers = require('../../helpers/helpers')
 
+//Notifications
+const webpush = globalHandle.get('webpush')
+const client = globalHandle.get('redis-client')
 // , {
 //     // serveClient: true,
 //     // below are engine.IO options
@@ -23,7 +26,7 @@ const helpers = require('../../helpers/helpers')
 // }
 
 
-RedisStore = globalHandle.get('redis')
+RedisStore = globalHandle.get('redis-store')
 
 const sessionIDs = {}
 
@@ -154,6 +157,19 @@ io.on('connection', function(socket){
                             console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
                             
                             io.to(socketId).emit('update-status', {updatedStatus})
+                            
+                            //Send push notications
+                            client.get('subscription:' + sessionid, function(err, subscription){
+                                const payload = JSON.stringify({title:'Hey, there is an update to your order!',
+                                 body:`Your Order: ${orderID} is in status: ${updatedStatus}`})
+
+                                console.log(subscription)
+
+                                webpush.sendNotification(JSON.parse(subscription), payload).catch(err => {
+                                    console.log(err)
+                                })
+                            })
+                            
 
                         })
                     })

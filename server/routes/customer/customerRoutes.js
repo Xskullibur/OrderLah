@@ -274,7 +274,7 @@ router.get('/cartMenuItems', (req, res) => {
 function trainIfNotTrained(cb){
     if(optimizer == undefined || optimizer == null){
         getRatingMatrix(db, MenuItem, User).then((ratings) => {
-            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 9000)
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 100)
             optimizer.reset()
             optimizer.train()
             cb()
@@ -342,7 +342,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 
 })
 
-const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
+const sendOrderToStallOwner = globalHandle.get('websocket:sendOrderToStallOwner')
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
