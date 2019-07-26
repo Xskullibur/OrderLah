@@ -40,7 +40,7 @@ module.exports = {
      * @param {Order} order - to be created inside database
      * @return {Promise} 
      */
-    createOrder: function({status, userId, stallId, orderTiming = moment().locale('sg')}){
+    createOrder: function({status, userId, stallId, orderTiming = moment().local().format('YYYY-MM-DD HH:mm:ss')}){
         const buffer = Buffer.allocUnsafe(16);
         uuidv4(null, buffer, 0)
 
