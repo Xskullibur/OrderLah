@@ -37,7 +37,8 @@
                 "DB_USERNAME":"orderlah_web_user",
                 "DB_PASSWORD":"mysecurepassword",
                 "AUTO_LOGIN":"NO",
-                "LOGIN_AS":"john@customer"
+                "LOGIN_AS":"john@customer",
+                "HTTPS":"YES"
             }
         },
         {
