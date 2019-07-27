@@ -122,7 +122,8 @@ const RememberMe = db.RememberMe
 const ResetPass = db.ResetPass
 
 //Redis inside global
-globalHandle.put('redis', redisStore)
+globalHandle.put('redis-store', redisStore)
+globalHandle.put('redis-client', client)
 
 //Put User model inside global
 globalHandle.put('user', User)
@@ -144,6 +145,18 @@ db.connect(true, dummy)
 
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
+//Serve service worker js files for push notications
+app.use(express.static('push', {
+    setHeaders: function(res, path, stat) {
+        res.set('Service-Worker-Allowed', '/')
+    }
+}))
+
+//Push notificaions setup
+require('./server/libs/orderlah_push_notifications/push_notifications')(app)
+//Websocket setup
+const {sendOrderToStallOwner} = require('./server/libs/orderlah_websocket/orderlah_websocket')
+globalHandle.put('websocket:sendOrderToStallOwner', sendOrderToStallOwner)
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
@@ -154,9 +167,6 @@ app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 app.use('/admin', adminRoutes)
-
-//Websocket setup
-require('./server/libs/orderlah_websocket/orderlah_websocket')
 
 
 // process.on('SIGTERM', () => {

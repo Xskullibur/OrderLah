@@ -5,7 +5,7 @@ const mathjs = require('mathjs')
  * This class implements the singular-value decomposition type of factorization
  * The factorization matrix P & Q is not computed by finding the eigenvalues and eigenvectors,
  * but using stochastic gradient descent to find the minimum weights
- * yet also alson pls test this thanks. dont have to know what I wrote
+ * 
  * @param {*} R 
  * @param {*} K 
  * @param {*} alpha 

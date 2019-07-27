@@ -86,85 +86,24 @@ router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res)
         res.redirect('/pastOrders');
     }).catch((err) => console.error(err));
 });
-
-//Current Orders
-router.get('/pastOrders', (req, res, next) => {
-    
-    //Get Stall ID
-    
-
-    /**
-    * Get Current Orders
-    * Based on Stall ID received by function
-    * WHERE Status != Collection Completed
-    */
-    Order.findAll({
-        where: {
-            userId: req.user.id,
-        },
-        order: Sequelize.col('orderTiming'),
-        include: [{
-            model: MenuItem
-        }]
-
-    }).then((currentOrders) => {
-        
-        // res.send(currentOrders);
-        currentOrders = currentOrders.filter(order => order.userId == req.user.id)
-        const testImg = process.cwd() + '/public/img/no-image'
-
-        res.render('customer/pastorders', {
-            
-            helpers: {
-                calcTotal(order){
-                    let sum = 0;
-                    order.menuItems.forEach(order => {
-                        sum += order.price*order.orderItem.quantity
-                    });
-                    return sum.toFixed(2);
-                },
-                calcItemPrice(items){
-                    return (items.price * items.orderItem.quantity).toFixed(2)
-                },
-                formatDate(date, formatType){
-                    return moment(date).format(formatType);
-                },
-                getTitle(menuItem){
-                    let title = []
-
-                    menuItem.forEach(item => {
-                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
-                    });
-
-                    return title.join(', ')
-                },
-                getNextStatus(status){
-                    let updatedStatus = "";
-                    switch (status) {
-                        case 'Order Pending':
-                            updatedStatus = "Preparing Order"
-                            break;
-                    
-                        case 'Preparing Order':
-                            updatedStatus = "Ready for Collection"
-                            break;
-
-                        case 'Ready for Collection':
-                            updatedStatus = "Collection Confirmed"
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    return updatedStatus;
-                }
-                
+/**
+ * GET '/pastOrders'
+ * returns all past orders page, displaying all orders user had
+ */
+router.get('/pastOrders', (req, res) => {
+    order_utils.getOrdersWithMenuItemsByUserId(req.user.id).then(currentOrders => {
+        res.render('customer/pastorders', {helpers: {
+            calcTotal(order){
+                let sum = 0;
+                order.menuItems.forEach(order => {
+                    sum += order.price*order.orderItem.quantity
+                });
+                return sum.toFixed(2);
             },
-            currentOrders
-        });
+        },currentOrders})
+    })
 
-    }).catch((err) => console.error(err));
+
 
 });
 
@@ -378,7 +317,7 @@ router.get('/cartMenuItems', (req, res) => {
 function trainIfNotTrained(cb){
     if(optimizer == undefined || optimizer == null){
         getRatingMatrix(db, MenuItem, User).then((ratings) => {
-            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 1000)
+            optimizer = new SVD_Optimizer(ratings, 20, 0.001, 100)
             optimizer.reset()
             optimizer.train()
             cb()
@@ -451,7 +390,7 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 
 })
 
-const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
+const sendOrderToStallOwner = globalHandle.get('websocket:sendOrderToStallOwner')
 router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
@@ -488,8 +427,12 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
             let menuItems = stallIdsWithMenuItemsGrouped[stallId]
             let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
             
-            for(let menuItem of menuItems){
-                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItem.id})
+            //Group menu items by ids, if there is multiple menu items with the same id, only one will be added with the quantity set to the group size
+            let groupedMenuItemIds = _.groupBy(menuItems, 'id')
+
+            for(let menuItemId in groupedMenuItemIds){
+                let quantity = groupedMenuItemIds[menuItemId].length
+                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItemId, quantity: quantity})
             }
 
             Order.findOne({
