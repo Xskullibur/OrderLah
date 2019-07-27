@@ -16,7 +16,6 @@ const upload = multer({storage : storage })
 //Global
 const globalHandle = require('../../libs/global/global')
 
-
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../../libs/uuid_middleware')
 

@@ -11,6 +11,9 @@ const upload = multer({storage : storage })
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
 
+//Setup uuid for csrf authentication
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 //MomentJS
 const moment = require('moment')
 
@@ -573,7 +576,7 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', (req, res) => {
+router.get('/showMenu', uuid_middleware.generate, (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
@@ -598,7 +601,7 @@ router.get('/showMenu', (req, res) => {
       })
 })
 
-router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
@@ -627,7 +630,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
     displayAlert.push('Item deleted!')
     const active = false
     const id = req.body.itemID
@@ -637,7 +640,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
+router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
@@ -665,7 +668,7 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/filterItem', (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
