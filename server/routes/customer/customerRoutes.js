@@ -391,11 +391,12 @@ router.get('/payment', auth_login.auth, async (req, res) => {
 })
 
 const sendOrderToStallOwner = globalHandle.get('websocket:sendOrderToStallOwner')
-router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+router.post('/confirmPayment', auth_login.auth, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
-    console.log(orderID)
-    console.log(payerName)
+    console.log('Processing new order')
+    console.log('Order ID:' + orderID)
+    console.log('Payer: ' + payerName)
 
     const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
     request.requestBody({});
@@ -403,7 +404,6 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     let order
     try {
         order = await payPalClient.client().execute(request);
-        console.log(order)
     } catch (err) {
         console.error(err);
         return res.send(500);
@@ -412,7 +412,6 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
     var payerID = order.result.payer.payer_id
     var userID = req.user.id
     var orderStatus = 'Order Pending'
-    //var orderTiming = moment()
 
     if (showStatus == 'COMPLETED') {
         Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
@@ -449,7 +448,7 @@ router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
 
         }
         req.cart.clearOrderLine(req)
-        console.log('transaction confrimed')
+        console.log('transaction complete')
     }
 })
 

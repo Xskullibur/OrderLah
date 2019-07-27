@@ -40,19 +40,11 @@ const upload = multer({storage : storage })
 var randtoken = require('rand-token');
 
 //nodemailer
-const nodemailer = require('nodemailer');
-
-var session = require('express-session')
+const nodemailer = require('nodemailer')
 
 //sequelize operator
 const Sequelize = require('sequelize').Sequelize
 const Op = Sequelize.Op
-
-//var token = '';
-app.use(session({
-    token : '',
-    cookie: { maxAge: 6000000 },
-}));
 
 app.use(passport.initialize())
 app.use(passport.session())
