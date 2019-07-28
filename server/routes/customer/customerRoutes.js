@@ -28,7 +28,7 @@ const MenuItem = globalHandle.get('menuItem')
 const OrderItem = globalHandle.get('orderItem')
 const User = globalHandle.get('user')
 const Order = globalHandle.get('order')
-const Payment = globalHandle.get('payments')
+
 
 //Sequelize
 const Sequelize = require('sequelize')
@@ -350,106 +350,8 @@ router.get('/getRatingData', async (req, res) =>{
 const orders_api_routes = require('./orders_api')
 router.use(orders_api_routes)
 
-//Define main 'customer' paths
+const orders_payment_api_routes = require('./orders_payment_api')
+router.use(orders_payment_api_routes)
 
-const paypal = require('paypal-rest-sdk')
-paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc', //i changed it to mine to test -hsienxiang
-    'client_secret': 'EBQDifpjwCyCCB3LNgKqSexOA3cigW6GJ1Kuf-FiDuOmMZeHEgPyYtzXrK2kKyf7LyxIF72AKJQEeMOL'
-});
-
-const checkoutNodeJssdk = require('@paypal/checkout-server-sdk')
-const payPalClient = require('./ppClient')
-
-function storeUnique(test, myItems){
-    if(myItems.includes(test) === false){
-        myItems.push(test)
-    }
-}
-
-//hsien xiang's route - done by hsien xiang and ziheng
-
-/**
- * GET '/payment' 
- * Payment stage for ordering items
- */
-router.get('/payment', auth_login.auth, async (req, res) => {
-    var totalAmount = 0
-
-    for(var orderline of req.cart.items){ 
-        console.log(orderline.itemId)
-        await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
-            totalAmount = totalAmount + parseFloat(setPrice.price)
-        })
-    }
-
-    console.log('total amount: ' + totalAmount)
-    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount, cart_items: req.cart.items
-    })
-
-})
-
-const sendOrderToStallOwner = globalHandle.get('websocket:sendOrderToStallOwner')
-router.post('/confirmPayment', auth_login.auth, async (req, res) =>{
-    var payerName = req.body.payerName
-    var orderID = req.body.orderID
-    console.log('Processing new order')
-    console.log('Order ID:' + orderID)
-    console.log('Payer: ' + payerName)
-
-    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-    request.requestBody({});
-
-    let order
-    try {
-        order = await payPalClient.client().execute(request);
-    } catch (err) {
-        console.error(err);
-        return res.send(500);
-    }
-    var showStatus = order.result.status
-    var payerID = order.result.payer.payer_id
-    var userID = req.user.id
-    var orderStatus = 'Order Pending'
-
-    if (showStatus == 'COMPLETED') {
-        Payment.create({orderID, payerName, payerID, status: showStatus, userID}).then(function(){           
-            console.log('transaction details saved to database')           
-        }).catch(err => console.log(err))
-        let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
-        //inserts quantity to menuItems
-
-        let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
-
-        for(let stallId in stallIdsWithMenuItemsGrouped){
-            let menuItems = stallIdsWithMenuItemsGrouped[stallId]
-            let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
-            
-            //Group menu items by ids, if there is multiple menu items with the same id, only one will be added with the quantity set to the group size
-            let groupedMenuItemIds = _.groupBy(menuItems, 'id')
-
-            for(let menuItemId in groupedMenuItemIds){
-                let quantity = groupedMenuItemIds[menuItemId].length
-                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItemId, quantity: quantity})
-            }
-
-            Order.findOne({
-                where: {
-                    id: order.id
-                },
-                include: [{
-                    model: MenuItem
-                }]
-            }).then((orderDetails) => {
-                //Send order to stallowner
-                sendOrderToStallOwner(stallId, orderDetails)
-            })
-
-        }
-        req.cart.clearOrderLine(req)
-        console.log('transaction complete')
-    }
-})
 
 module.exports = router
