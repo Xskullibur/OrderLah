@@ -12,6 +12,9 @@ const MenuItem = globalHandle.get('menuItem')
 const Payment = globalHandle.get('payments')
 const Order = globalHandle.get('order')
 
+//Setup uuid for csrf authentication
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 //database utils
 const menu_item_util = require('../../utils/main/menu_item')
 const order_utils = require('../../utils/stallowner/order')
@@ -55,9 +58,9 @@ const paypalClient = new paypal.core.PayPalHttpClient(environment)
  * GET '/payment' 
  * Payment stage for ordering items
  */
-router.get('/payment', async (req, res) => {
+router.get('/payment', uuid_middleware.generate, async (req, res) => {
     let totalAmount = await getTotalAmount(req)
-    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount, client_id: apiKeys.client_id
+    res.render('customer/payment', {size: MenuItem.count(), totalAmount: totalAmount, client_id: apiKeys.client_id
     })
 })
 
@@ -65,7 +68,7 @@ router.get('/payment', async (req, res) => {
  * POST '/payment/create'
  * Create a new paypal order
  */
-router.post('/payment/create', async (req, res) => {
+router.post('/payment/create', uuid_middleware.verify, async (req, res) => {
     let totalAmount = await getTotalAmount(req)
     //Create order on server
     let createRequest = new paypal.orders.OrdersCreateRequest()
