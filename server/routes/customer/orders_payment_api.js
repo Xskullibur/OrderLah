@@ -4,6 +4,9 @@ const globalHandle = require('../../libs/global/global')
 var redis = require('redis')
 const client = globalHandle.get('redis-client')
 
+//Lodash
+const _ = require('lodash')
+
 //Database models
 const MenuItem = globalHandle.get('menuItem')
 const Payment = globalHandle.get('payments')

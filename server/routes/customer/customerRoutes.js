@@ -4,8 +4,7 @@ const router = express.Router()
 //MomentJS
 const moment = require('moment')
 
-//Lodash
-const _ = require('lodash')
+
 
 // Uploads for menu item
 const fs = require('fs');
