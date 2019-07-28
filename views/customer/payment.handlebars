@@ -1,7 +1,7 @@
 {{!-- Styling for menu_item.handlebars --}}
 <link rel="stylesheet" type="text/css" href="/css/menu_item.css"/>
 <script
-    src="https://www.paypal.com/sdk/js?client-id=AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc&currency=SGD">
+    src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=SGD">
 </script>
 <script
     src="/js/rating.js">
@@ -38,13 +38,18 @@
 </div>
 
 <script>
+    console.log('asd')
     if({{totalAmount}} === 0){
-        showAlert('Cart is empty', -1, 'alert-danger')
+        showAlert('Cart is empty', -1, 'alert-danger');
     }else{
         paypal.Buttons({
             createOrder: function(data, actions) {
                 return fetch('/payment/create', {
-                    method: 'post'
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        csrf: $('#csrf-token').val()
+                    })
                 }).then(function(res) {
                     return res.json();
                 }).then(function(data) {
@@ -54,14 +59,15 @@
             onApprove: function(data, actions) {                
                 return fetch('/payment/confirm/' + data.orderID, {
                     method: 'post',
-                    body: {
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
                         csrf: $('#csrf-token').val()
-                    }
+                    })
                 }).then(function(res) {
                     return res.json();
                 }).then(function(details) {
                     // Show a success message to the buyer
-                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!');
+                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!', -1, 'alert-success');
                 });                           
             }
         }).render('#paypal-button-container');
