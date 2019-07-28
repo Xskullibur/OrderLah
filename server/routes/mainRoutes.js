@@ -107,16 +107,6 @@ router.post('/resetpassword/:id', (req, res) =>{
             console.log('reset password success! New password is: ', hash)
         }).catch((err) => console.error(err));
       });
-    // User.update({
-    //     password
-    // }, {
-    //     where: {
-    //         id: req.params.id
-    //     }
-    // }).then(() => {
-    //     res.redirect('/login');
-    //     console.log('reset password success! New password is: ', password)
-    // }).catch((err) => console.error(err));
 })
 
 passport.use(new LocalStrategy({usernameField: 'email',},
@@ -150,7 +140,7 @@ passport.use(new RememberMeStrategy(
   ))
 
 passport.serializeUser(function(user, done) {   
-    done(null, user.id)
+    done(null, user.userId || user.id)
 })
   
 passport.deserializeUser(function(id, done) {
@@ -324,14 +314,6 @@ router.post('/requesttoken',(req, res) => {
         }
     })
 })
-
-/*router.post('/checktoken',(req, res) => {
-    if(session.token === req.body.code){
-        console.log('verification success!!')
-    } else {
-        console.log('error occured, verification failed!')
-    }    
-})*/
 
 /**
  * Login GET '/login' path

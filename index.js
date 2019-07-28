@@ -92,7 +92,7 @@ app.use(session({
     store: redisStore,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, httpOnly: false }//Set this to true for https website
+    cookie: { maxAge: 60 * 60 * 60, secure: false, httpOnly: false }//Set this to true for https website
 }))
 
 app.use((req, res, next) => {

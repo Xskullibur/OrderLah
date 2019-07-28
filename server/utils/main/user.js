@@ -68,5 +68,8 @@ module.exports = {
             googleId: googleid,
             role: role,
         })
+    },
+    getUserByID(userId){
+        return User.findByPk(userId)
     }
 }
