@@ -60,7 +60,7 @@ const paypalClient = new paypal.core.PayPalHttpClient(environment)
  */
 router.get('/payment', uuid_middleware.generate, async (req, res) => {
     let totalAmount = await getTotalAmount(req)
-    res.render('customer/payment', {size: MenuItem.count(), totalAmount: totalAmount, client_id: apiKeys.client_id
+    res.render('customer/payment', {size: MenuItem.count(), totalAmount: totalAmount, client_id: apiKeys.client_id, nav: 'home'
     })
 })
 
@@ -181,7 +181,7 @@ router.post('/payment/confirm/:orderID', async (req, res) =>{
                 }
                 req.cart.clearOrderLine(req)
                 console.log('transaction complete')
-                res.send('Transaction Complete')
+                res.send(order.result)
             }
         }
     })
