@@ -10,6 +10,7 @@ const _ = require('lodash')
 //Database models
 const MenuItem = globalHandle.get('menuItem')
 const Payment = globalHandle.get('payments')
+const Order = globalHandle.get('order')
 
 //database utils
 const menu_item_util = require('../../utils/main/menu_item')
