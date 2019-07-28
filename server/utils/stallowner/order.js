@@ -152,7 +152,7 @@ module.exports = {
      */
     getMenuItemRatings: function (menuItemId, item_filter = null, rating_filter = null) {
 
-        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments, orderItems.image
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
