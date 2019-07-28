@@ -123,7 +123,7 @@ router.post('/payment/confirm/:orderID', async (req, res) =>{
     //Validate order id is from server
     //get order id in redis
     client.get("paypal-order:"+orderID, async function(err, sessionId){
-        if(err != null && sessionId == req.sessionID){
+        if(err == null && sessionId == req.sessionID){
             const request = new paypal.orders.OrdersCaptureRequest(orderID);
             request.requestBody({});
 
