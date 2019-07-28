@@ -25,11 +25,21 @@ let environment = undefined
 /**
  * SANDBOX keys
  */
-apiKeys = {
-    'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU', //i changed it to mine to test -hsienxiang
-    'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
+if(process.env.PAYPAL_ENV !== 'SANDBOX'){
+    apiKeys = {
+        'client_id': 'Ab4fm52s-IieX93B0Q4Gpip0yY3wRdAUmWk6-h8_CjOUUdficLVNuuB9r7J_EUQwReqoTdXrPhiFM3Q5', //i changed it to mine to test -hsienxiang
+        'client_secret': 'EN0ew5Y-NffvcXaxq37Z1HEPZIANYSkDjaxbgF0S5nssKO2ci4A3iXt55dqRMdzzSgdBof4w3QiJVynd'
+    }
+    environment = new paypal.core.SandboxEnvironment(apiKeys.client_id, apiKeys.client_secret)
+
+}else{
+    apiKeys = {
+        'client_id': 'AQGtzP7jJg8NtDT0gOANp39ANghQOGEfPGlMBhVIAonS3nURnSUgHPmeBi7anGsaVqhryjr_kwERQQAU', //i changed it to mine to test -hsienxiang
+        'client_secret': 'EHpL42iL_PWSPtCJ4LG2sJsQaLdRmXtWvp_NkmrbftbRd3MnpJR2YyLYq6AQMnaFAPuMers0fayrA8h7'
+    }
+    environment = new paypal.core.SandboxEnvironment(apiKeys.client_id, apiKeys.client_secret)
+
 }
-environment = new paypal.core.SandboxEnvironment(apiKeys.client_id, apiKeys.client_secret)
 
 
 //Setup paypal
