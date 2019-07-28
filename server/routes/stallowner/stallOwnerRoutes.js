@@ -11,6 +11,9 @@ const upload = multer({storage : storage })
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
 
+//Setup uuid for csrf authentication
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 //MomentJS
 const moment = require('moment')
 
@@ -68,7 +71,8 @@ router.get('/', (req, res, next) => {
         }).then((currentOrders) => {
 
             res.render('stallOwner/currentOrders2', {
-                currentOrders
+                currentOrders,
+                nav: 'currentOrders'
             });
 
         }).catch((err) => console.error(err));
@@ -94,7 +98,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
             if (req.params.monthYear == undefined) {                    // Check if date(Month-Year) is selected
                 dateNotSelected = true;                                 // Indicate that a date(Month-Year) is selected
                 res.render('../views/stallOwner/monthlySummary',{       // Render page w/o pulling data
-                    month, dateNotSelected, title
+                    month, dateNotSelected, title,
+                    nav: 'monthlySummary'
                })
             }
             else{                                                               // date(Month-Year) indicated
@@ -176,7 +181,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                     }
 
                     res.render('stallOwner/monthlySummary',{
-                        month, formatedOrder, title, selectedDate, stallOwner
+                        month, formatedOrder, title, selectedDate, stallOwner,
+                        nav: 'monthlySummary'
                     })
                 })
             }
@@ -258,6 +264,7 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
     
                 res.render('stallOwner/allOrders',{
                      pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
+                     nav: 'orderDetails',
                      helpers: {
     
                         //Pagination previous button Helper
@@ -437,7 +444,8 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
         // res.send(EachItemRating)
         res.render('stallOwner/orderCharts', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate,
+            nav: 'orderDetails'
         });
     }
 
@@ -532,7 +540,8 @@ router.get('/orderDetails/ratings/', (req, res) => {
         // res.send(items)
 
         res.render('stallOwner/ratingsView', {
-            allRatings, title, menu_items, item_filter, rating_filter
+            allRatings, title, menu_items, item_filter, rating_filter,
+            nav: 'orderDetails'
         })
 
     }
@@ -567,29 +576,32 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', (req, res) => {
+router.get('/showMenu', uuid_middleware.generate, (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
                         displayAlert: displayAlert,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     displayAlert = []
                     errorAlert = []
                 })    
             })
         }else{
-            res.render('./successErrorPages/error')
+            res.render('./successErrorPages/error', {
+                nav: 'manageMenu'
+            })
         }      
       })
 })
 
-router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
@@ -618,7 +630,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
     displayAlert.push('Item deleted!')
     const active = false
     const id = req.body.itemID
@@ -628,7 +640,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
+router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
@@ -656,17 +668,18 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/filterItem', (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     errorAlert = []
                 })    
@@ -675,26 +688,6 @@ router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
             res.render('./successErrorPages/error')
         }      
       })
-})
-
-router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
-    const itemID = req.body.itemID
-    console.log(itemID)
-    const id = req.user.id
-    MenuItem.findOne({where : {id: itemID}}).then(menu =>{
-        User.findOne({ where: id }).then(user => {
-            if(user.role === 'Stallowner'){
-               OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
-                   res.render('stallmenu-comment', {
-                       items: items,
-                       menu: menu
-                   })
-               })
-           }else{
-               res.render('./successErrorPages/error')
-           }      
-         })
-    })   
 })
 
 module.exports = router;

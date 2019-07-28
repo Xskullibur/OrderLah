@@ -16,7 +16,6 @@ const upload = multer({storage : storage })
 //Global
 const globalHandle = require('../../libs/global/global')
 
-
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../../libs/uuid_middleware')
 
@@ -50,7 +49,7 @@ router.use(auth_login.auth)
 
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review/:id/:orderid', (req, res)=> {
+router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
     OrderItem.findOne({
         where: {
             menuItemId: req.params.id,
@@ -59,12 +58,13 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
     .then((orderItem) => {
         res.render('customer/review', {
-            orderItem
+            orderItem,
+            nav: 'pastOrders'
         });
     })
 });
 
-router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
+router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
     let image = req.body.reviewImage;
@@ -102,7 +102,7 @@ router.get('/pastOrders', (req, res, next) => {
         where: {
             userId: req.user.id,
         },
-        order: Sequelize.col('orderTiming'),
+        order: Sequelize.literal('orderTiming DESC'),
         include: [{
             model: MenuItem
         }]
@@ -114,62 +114,12 @@ router.get('/pastOrders', (req, res, next) => {
         const testImg = process.cwd() + '/public/img/no-image'
 
         res.render('customer/pastorders', {
-            
-            helpers: {
-                calcTotal(order){
-                    let sum = 0;
-                    order.menuItems.forEach(order => {
-                        sum += order.price*order.orderItem.quantity
-                    });
-                    return sum.toFixed(2);
-                },
-                calcItemPrice(items){
-                    return (items.price * items.orderItem.quantity).toFixed(2)
-                },
-                formatDate(date, formatType){
-                    return moment(date).format(formatType);
-                },
-                getTitle(menuItem){
-                    let title = []
-
-                    menuItem.forEach(item => {
-                        title.push(`${item.itemName} x${item.orderItem.quantity}`)
-                    });
-
-                    return title.join(', ')
-                },
-                getNextStatus(status){
-                    let updatedStatus = "";
-                    switch (status) {
-                        case 'Order Pending':
-                            updatedStatus = "Preparing Order"
-                            break;
-                    
-                        case 'Preparing Order':
-                            updatedStatus = "Ready for Collection"
-                            break;
-
-                        case 'Ready for Collection':
-                            updatedStatus = "Collection Confirmed"
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    return updatedStatus;
-                }
-                
-            },
-            currentOrders
+            currentOrders,
+            nav: 'pastOrders'
         });
 
     }).catch((err) => console.error(err));
 
-});
-
-router.get('/trackOrder', (req, res) => {
-    res.render('customer/orderStatus',{})
 });
 
 router.post('/checkOrder', (req, res) =>{
@@ -197,7 +147,7 @@ router.use(auth_login.auth)
  */
 router.get('/', (req, res) => {
     cusine_util.getAllCusine().then(cusines => {
-        res.render('index', {cusines: cusines})
+        res.render('index', {cusines: cusines, nav: 'home'})
     })
 })
 
@@ -206,7 +156,9 @@ router.get('/', (req, res) => {
  * Get Profile page
  */
 router.get('/profile', (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
+    res.render('profile', {
+        birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''
+    })
 })
 /**
  * Get '/menuItem' all menu items inside the database as JSON
@@ -435,7 +387,7 @@ function storeUnique(test, myItems){
  * GET '/payment' 
  * Payment stage for ordering items
  */
-router.get('/payment', auth_login.auth, async (req, res) => {
+router.get('/payment', uuid_middleware.generate, async (req, res) => {
     var totalAmount = 0
 
     for(var orderline of req.cart.items){ 
@@ -446,13 +398,17 @@ router.get('/payment', auth_login.auth, async (req, res) => {
     }
 
     console.log('total amount: ' + totalAmount)
-    res.render('payment', {size: MenuItem.count(), totalAmount: totalAmount, cart_items: req.cart.items
+    res.render('customer/payment', {
+        size: MenuItem.count(), 
+        totalAmount: totalAmount, 
+        cart_items: req.cart.items,
+        nav: 'home'
     })
 
 })
 
 const {sendOrderToStallOwner} = require('../../libs/orderlah_websocket/orderlah_websocket')
-router.post('/confrimPayment', auth_login.auth, async (req, res) =>{
+router.post('/confrimPayment', uuid_middleware.verify, async (req, res) =>{
     var payerName = req.body.payerName
     var orderID = req.body.orderID
     console.log(orderID)
