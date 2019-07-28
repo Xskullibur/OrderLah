@@ -9,6 +9,9 @@ const Stall = globalHandle.get('stall')
 const MenuItem = globalHandle.get('menuItem')
 
 
+//MomentJS
+const moment = require('moment')
+
 //Secure Random 
 const uuidv4 = require('uuid/v4')
 
@@ -39,7 +42,7 @@ module.exports = {
      * @param {Order} order - to be created inside database
      * @return {Promise} 
      */
-    createOrder: function({status, userId, stallId, orderTiming = new Date}){
+    createOrder: function({status, userId, stallId, orderTiming = moment().local().format('YYYY-MM-DD HH:mm:ss')}){
         const buffer = Buffer.allocUnsafe(16);
         uuidv4(null, buffer, 0)
 
@@ -170,7 +173,7 @@ module.exports = {
      */
     getMenuItemRatings: function (menuItemId, item_filter = null, rating_filter = null) {
 
-        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments, orderItems.image
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id

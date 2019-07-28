@@ -1,9 +1,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <script>
     var OrdersPerItem = {{{jsonStringfy OrdersPerItem}}};
     var AvgRatingPerItem = {{{jsonStringfy AvgRatingPerItem}}};
     var EachItemRating = {{{jsonStringfy EachItemRating}}};
 </script>
+
 <script src="/js/createChart.js"></script>
 
 <div class="container" style="position: relative; top: 5vh; width:">
@@ -28,14 +35,16 @@
                         <form class="form">
 
                             <div class="form-row">
+
                                 <div class="form-group col">
-                                    <label for="frDate">From Date:</label>
-                                    <input type="date" name="frDate" id="frDate" class="form-control" aria-describedby="From Date" value="{{#if frDate}}{{frDate}}{{/if}}">
+                                    <div id="daterange" class="row mx-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                        <i class="fa fa-calendar col-auto pt-1"></i>
+                                        <span class="col"></span> <i class="fa fa-caret-down pt-1 col-auto text-right"></i>
+                                        <input type="hidden" id="toDate" name="toDate">
+                                        <input type="hidden" id="frDate" name="frDate">
+                                    </div>
                                 </div>
-                                <div class="form-group col">
-                                    <label for="toDate">To Date:</label>
-                                    <input type="date" name="toDate" id="toDate" class="form-control" aria-describedby="From Date" value="{{#if toDate}}{{toDate}}{{/if}}">
-                                </div>
+
                             </div>
 
                             <div class="form-row text-right">
@@ -201,26 +210,39 @@
 
 <script>
 
-    let orderNo = document.getElementById('orderNo')
-    let orderDate = document.getElementById('orderDate')
+    $(function() {
+        
+        var start = moment().subtract(29, 'days');
+        var end = moment();
 
-    orderNo.oninput = function() {
-        if (this.value.length) {
-            orderDate.disabled = true
-        }
-        else{
-            orderDate.disabled = false
-        }
-    }
+        {{#if toDate}}
+            {{#if frDate}}                
+                start = moment('{{frDate}}')
+                end = moment('{{toDate}}')
+            {{/if}}
+        {{/if}}
 
-    orderDate.oninput = function() {
-        if (this.value.length) {
-            orderNo.disabled = true
+        function cb(start, end) {
+            $('#daterange span').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
+            $('#frDate').val(`${start.format('YYYY-MM-DD')}`)
+            $('#toDate').val(`${end.format('YYYY-MM-DD')}`) 
+        }
 
-        }
-        else{
-            orderNo.disabled = false
-        }
-    }
+        $('#daterange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
 
 </script>

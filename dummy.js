@@ -388,7 +388,7 @@ async function createTestData() {
         })
         await order_util.createOrderItem({
             quantity: 1,
-            orderId: order5.id,
+            orderId: order6.id,
             menuItemId: porkRiceItem.id
         })
 

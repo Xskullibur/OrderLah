@@ -38,7 +38,7 @@ router.get('/orderStatus/:pubOrderId', async (req, res) => {
         let valid = await order_util.checkOrderIsInUser(userId, orderId)
     
         if(valid){
-            res.render('order-status', {order})
+            res.render('customer/order-status', {order})
         }else res.redirect('/orderStatus')
     })
 })

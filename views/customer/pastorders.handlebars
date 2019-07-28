@@ -35,7 +35,7 @@
                                             </div>
                                             {{/ifCondition}}
                                             <div class="col text-right">
-                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "HH:MM:SS"}}</p>
+                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "hh:mm:ss"}}</p>
                                                 <p class="mb-0">User ID: {{order.userId}}</p>
                                             </div>
                                         </div>
@@ -69,7 +69,7 @@
                                         <hr>  
                                         <div class="row text-right">
                                             <div class="col">
-                                                <b>Total Amount: ${{calcTotal order}}</b>
+                                                <b>Total Amount: ${{calcOrderTotal order}}</b>
                                             </div>
                                         </div>
                                         <hr>

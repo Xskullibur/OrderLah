@@ -53,7 +53,10 @@
             },
             onApprove: function(data, actions) {                
                 return fetch('/payment/confirm/' + data.orderID, {
-                    method: 'post'
+                    method: 'post',
+                    body: {
+                        csrf: $('#csrf-token').val()
+                    }
                 }).then(function(res) {
                     return res.json();
                 }).then(function(details) {

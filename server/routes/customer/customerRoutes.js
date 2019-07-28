@@ -15,7 +15,6 @@ const upload = multer({storage : storage })
 //Global
 const globalHandle = require('../../libs/global/global')
 
-
 //Setup uuid for csrf authentication
 const uuid_middleware = require('../../libs/uuid_middleware')
 
@@ -49,7 +48,7 @@ router.use(auth_login.auth)
 
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
-router.get('/review/:id/:orderid', (req, res)=> {
+router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
     OrderItem.findOne({
         where: {
             menuItemId: req.params.id,
@@ -58,12 +57,13 @@ router.get('/review/:id/:orderid', (req, res)=> {
     })
     .then((orderItem) => {
         res.render('customer/review', {
-            orderItem
+            orderItem,
+            nav: 'pastOrders'
         });
     })
 });
 
-router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
+router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
     let image = req.body.reviewImage;
@@ -106,10 +106,6 @@ router.get('/pastOrders', (req, res) => {
 
 });
 
-router.get('/trackOrder', (req, res) => {
-    res.render('customer/orderStatus',{})
-});
-
 router.post('/checkOrder', (req, res) =>{
     //trying to retrieve the ordernumber via the handbar
     let number = req.body.number;
@@ -135,7 +131,7 @@ router.use(auth_login.auth)
  */
 router.get('/', (req, res) => {
     cusine_util.getAllCusine().then(cusines => {
-        res.render('index', {cusines: cusines})
+        res.render('index', {cusines: cusines, nav: 'home'})
     })
 })
 
@@ -144,7 +140,9 @@ router.get('/', (req, res) => {
  * Get Profile page
  */
 router.get('/profile', (req, res) => {
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''})
+    res.render('profile', {
+        birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''
+    })
 })
 /**
  * Get '/menuItem' all menu items inside the database as JSON
