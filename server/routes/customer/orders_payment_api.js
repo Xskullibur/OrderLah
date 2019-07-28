@@ -181,6 +181,7 @@ router.post('/payment/confirm/:orderID', async (req, res) =>{
                 }
                 req.cart.clearOrderLine(req)
                 console.log('transaction complete')
+                res.send('Transaction Complete')
             }
         }
     })

@@ -63,8 +63,6 @@
                     body: JSON.stringify({
                         csrf: $('#csrf-token').val()
                     })
-                }).then(function(res) {
-                    return res.json();
                 }).then(function(details) {
                     // Show a success message to the buyer
                     showAlert('Transaction completed by ' + details.payer.name.given_name + '!', -1, 'alert-success');
