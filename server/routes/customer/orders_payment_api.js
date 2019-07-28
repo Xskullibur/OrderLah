@@ -87,8 +87,8 @@ router.post('/payment/create', async (req, res) => {
     console.log(`Order: ${JSON.stringify(paypalRes.result)}`);
 
     //Put order id in redis
-    client.set("paypal-order:"+paypalRes.id, req.sessionID, redis.print)
-    client.expire("paypal-order:"+paypalRes.id, 3600)
+    client.set("paypal-order:"+paypalRes.result.id, req.sessionID, redis.print)
+    client.expire("paypal-order:"+paypalRes.result.id, 3600)
 
     res.type('json')
     res.send({orderID: paypalRes.result.id})
