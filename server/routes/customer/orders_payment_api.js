@@ -28,7 +28,7 @@ let environment = undefined
 /**
  * SANDBOX keys
  */
-if(process.env.PAYPAL_ENV !== 'SANDBOX'){
+if(process.env.PAYPAL_ENV === 'LIVE'){
     apiKeys = {
         'client_id': 'Ab4fm52s-IieX93B0Q4Gpip0yY3wRdAUmWk6-h8_CjOUUdficLVNuuB9r7J_EUQwReqoTdXrPhiFM3Q5', //i changed it to mine to test -hsienxiang
         'client_secret': 'EN0ew5Y-NffvcXaxq37Z1HEPZIANYSkDjaxbgF0S5nssKO2ci4A3iXt55dqRMdzzSgdBof4w3QiJVynd'
@@ -120,60 +120,68 @@ router.post('/payment/confirm/:orderID', async (req, res) =>{
     console.log('Processing new order')
     console.log('Order ID:' + orderID)
 
-    const request = new paypal.orders.OrdersCaptureRequest(orderID);
-    request.requestBody({});
+    //Validate order id is from server
+    //get order id in redis
+    client.get("paypal-order:"+orderID, async function(err, sessionId){
+        if(err != null && sessionId == req.sessionID){
+            const request = new paypal.orders.OrdersCaptureRequest(orderID);
+            request.requestBody({});
 
-    let order
-    try {
-        order = await paypalClient.execute(request);
-    } catch (err) {
-        console.error(err);
-        res.status(500)
-        res.send('Internal Error')
-        return
-    }
-    var showStatus = order.result.status
-    var payerID = order.result.payer.payer_id
-    var userID = req.user.id
-    var orderStatus = 'Order Pending'
-
-    if (showStatus == 'COMPLETED') {
-        Payment.create({orderID, payerName: order.result.payer.name.given_name, payerID, status: showStatus, userID}).then(function(){           
-            console.log('transaction details saved to database')           
-        }).catch(err => console.log(err))
-        let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
-        //inserts quantity to menuItems
-
-        let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
-
-        for(let stallId in stallIdsWithMenuItemsGrouped){
-            let menuItems = stallIdsWithMenuItemsGrouped[stallId]
-            let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
-            
-            //Group menu items by ids, if there is multiple menu items with the same id, only one will be added with the quantity set to the group size
-            let groupedMenuItemIds = _.groupBy(menuItems, 'id')
-
-            for(let menuItemId in groupedMenuItemIds){
-                let quantity = groupedMenuItemIds[menuItemId].length
-                let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItemId, quantity: quantity})
+            let order
+            try {
+                order = await paypalClient.execute(request);
+            } catch (err) {
+                console.error(err);
+                res.status(500)
+                res.send('Internal Error')
+                return
             }
+            var showStatus = order.result.status
+            var payerID = order.result.payer.payer_id
+            var userID = req.user.id
+            var orderStatus = 'Order Pending'
 
-            Order.findOne({
-                where: {
-                    id: order.id
-                },
-                include: [{
-                    model: MenuItem
-                }]
-            }).then((orderDetails) => {
-                //Send order to stallowner
-                sendOrderToStallOwner(stallId, orderDetails)
-            })
+            if (showStatus == 'COMPLETED') {
+                Payment.create({orderID, payerName: order.result.payer.name.given_name, payerID, status: showStatus, userID}).then(function(){           
+                    console.log('transaction details saved to database')           
+                }).catch(err => console.log(err))
+                let menuItems = await Promise.all(req.cart.items.map(item => menu_item_util.getMenuItemByID(item.itemId)))
+                //inserts quantity to menuItems
 
+                let stallIdsWithMenuItemsGrouped = _.groupBy(menuItems, 'stallId')
+
+                for(let stallId in stallIdsWithMenuItemsGrouped){
+                    let menuItems = stallIdsWithMenuItemsGrouped[stallId]
+                    let order = await order_utils.createOrder({status: orderStatus, userId: userID, stallId: stallId})
+                    
+                    //Group menu items by ids, if there is multiple menu items with the same id, only one will be added with the quantity set to the group size
+                    let groupedMenuItemIds = _.groupBy(menuItems, 'id')
+
+                    for(let menuItemId in groupedMenuItemIds){
+                        let quantity = groupedMenuItemIds[menuItemId].length
+                        let order_details = await order_utils.createOrderItem({orderId: order.id, menuItemId: menuItemId, quantity: quantity})
+                    }
+
+                    Order.findOne({
+                        where: {
+                            id: order.id
+                        },
+                        include: [{
+                            model: MenuItem
+                        }]
+                    }).then((orderDetails) => {
+                        //Send order to stallowner
+                        sendOrderToStallOwner(stallId, orderDetails)
+                    })
+
+                }
+                req.cart.clearOrderLine(req)
+                console.log('transaction complete')
+            }
         }
-        req.cart.clearOrderLine(req)
-        console.log('transaction complete')
-    }
+    })
+
+    
 })
 
 module.exports = router
