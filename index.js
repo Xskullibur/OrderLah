@@ -161,12 +161,14 @@ globalHandle.put('websocket:sendOrderToStallOwner', sendOrderToStallOwner)
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
 const customerRoutes = require('./server/routes/customer/customerRoutes')
-const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
-const adminRoutes = require('./server/routes/administrator/adminRoutes');
+const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes')
+const adminRoutes = require('./server/routes/administrator/adminRoutes')
+const customDialogRoutes = require('./server/routes/customDialogRoutes')
 app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 app.use('/admin', adminRoutes)
+app.use('/customDialog', customDialogRoutes)
 
 
 // process.on('SIGTERM', () => {

@@ -644,4 +644,5 @@ router.post('/updateProfile', upload.single('profileImage'), async (req, res) =>
     }
 })
 
+
 module.exports = router

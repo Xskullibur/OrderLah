@@ -1,4 +1,4 @@
-<div id="popup-model" class="modal fade" tabindex="-1" role="dialog">
+<div id="popup-modal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -17,8 +17,32 @@
     </div>
   </div>
 </div>
+<div id="custom-popup-modal" class="modal fade" tabindex="-1" role="dialog">
+  
+</div>
 
 <script type="application/javascript">
+
+   /**
+    * Display a custom bootstrap model dialog
+    * @param {string} - link of the dynamically inserted html; the link will response with a html which will be embedded into the dialog,
+    * @param {object} - option for passing to bootstrap modal
+    */
+    function showCustomDialog(contentLink, options = {keyboard: false}){
+        fetch(contentLink)
+        .then(res => {
+          return res.text();
+        }).then(data => {
+          console.log(data)
+          //Insert to div
+          $('#custom-popup-modal').html(data);
+
+          //Show dialog
+           $('#custom-popup-modal').modal(options);
+        })
+
+    }
+
 
     /**
     * Display a bootstrap model dialog
@@ -30,36 +54,32 @@
 
         var promise = new Promise((resolve, reject) => {
             //Set all model texts
-            $('#popup-model-title').text(title);
-            $('#popup-model-body').text(body);
-            $('#popup-model-accept').text(acceptText);
-            $('#popup-model-reject').text(rejectText);
+            $('#popup-modal-title').text(title);
+            $('#popup-modal-body').text(body);
+            $('#popup-modal-accept').text(acceptText);
+            $('#popup-modal-reject').text(rejectText);
 
 
             //Remove all listener from previous 'showDialog'
-            $("#popup-model-accept").off("click");
-            $("#popup-model-reject").off("click");
+            $("#popup-modal-accept").off("click");
+            $("#popup-modal-reject").off("click");
 
             //Bind buttons to Promise
-            $('#popup-model-accept').click(function(){
+            $('#popup-modal-accept').click(function(){
                 resolve();
-                $('#popup-model').modal('hide');
+                $('#popup-modal').modal('hide');
             })
-            $('#popup-model-reject').click(function(){
+            $('#popup-modal-reject').click(function(){
                 reject();
-                $('#popup-model').modal('hide');
+                $('#popup-modal').modal('hide');
             })
 
-            $('#popup-model').modal(options);
+            $('#popup-modal').modal(options);
         });
         
         return promise;
 
 
     }
-
-    $(document).ready(function() {
-
-    })
 
 </script>
