@@ -24,8 +24,7 @@ const client = globalHandle.get('redis-client')
 //     pingTimeout: 5000,
 //     cookie: false
 // }
-
-
+const redis = require('redis')
 RedisStore = globalHandle.get('redis-store')
 
 const sessionIDs = {}
@@ -41,8 +40,9 @@ io.on('connection', function(socket){
         var sessionId = msg
 
         //Store session id with socket id
-        sessionIDs[socket.id] = sessionId
-        //io.to(socket.id) get socket
+        //sessionIDs[socket.id] = sessionId
+        storeSocketIdForSessionId(socket.id, sessionId)
+        storeSessionIdForSocketId(socket.id, sessionId)
     })
 
     /**
@@ -240,19 +240,14 @@ function getOrderTimingForOrder(orderid, cb){
     })
 }
 
-function getSocketIDBySessionID(sessionId){
-    for (let socketId in sessionIDs) {
-        let tsessionId = sessionIDs[socketId]
-        if(sessionId == tsessionId)return socketId
-    }
-    return null
-}
-
 function getSocketIDsBySessionID(sessionId, yieldCB){
-    for (let socketId in sessionIDs) {
-        let tsessionId = sessionIDs[socketId]
-        if(sessionId == tsessionId)yieldCB(socketId)
-    }
+    client.get('sessionToSocket:' + sessionId, function(err, socketIds){
+        socketIds = JSON.parse(socketIds)
+        socketIds.forEach(socketId => {
+            yieldCB(socketId)
+
+        })
+    })
 }
 
 // function getSocketIDsBySessionID(sessionId){
@@ -264,14 +259,17 @@ function getSocketIDsBySessionID(sessionId, yieldCB){
 // }
 
 function getSessionsFromUserID(userId, yieldCB){
-    for(let socketId in sessionIDs){
-        let sessionId = sessionIDs[socketId]
-        getSessionBySessionID(sessionId, (err, session) => {
-            if(!err && session.passport.user === userId){
-                yieldCB(sessionId, session);
+    client.get('userToSessions:' + userId, function(err, sessionIds){
+        if(!err){
+            if(sessionIDs){
+                sessionIDs.forEach(sessionId => {
+                    getSessionBySessionID(sessionId, (err, session) => {
+                        yieldCB(sessionId, session);
+                    })
+                })
             }
-        })
-    }
+        }
+    })
 }
 
 function getSessionBySessionID(sessionId, cb){
@@ -292,6 +290,46 @@ function getSessionBySessionID(sessionId, cb){
             }
         }
 
+    })
+}
+
+
+function storeSocketIdForSessionId(socketId, sessionId){
+    client.set('socketToSession:' + socketId,  sessionId, redis.print)
+
+    //Store userid as well
+    getSessionBySessionID(sessionId, (err, session) => {
+        storeUserIdForSessionId(session.passport.user, sessionId)
+    })
+}
+
+function storeUserIdForSessionId(userId, sessionId){
+    client.get('userToSessions:' + userId, function(err, sessionIds){
+        sessionIds = JSON.parse(sessionIds)
+        if(!err){
+            if(sessionIds == null){
+                client.set('userToSessions:' + userId, JSON.stringify([]), redis.print)
+                storeUserIdForSessionId(userId, sessionId)
+            }else{
+                sessionIds.push(sessionId)
+                client.set('userToSessions:' + userId, JSON.stringify(sessionIds), redis.print)
+            }
+        }
+    })
+}
+
+function storeSessionIdForSocketId(socketId, sessionId){
+    client.get('sessionToSockets:' + sessionId, function(err, socketIds){
+        socketIds = JSON.parse(socketIds)
+        if(!err){
+            if(socketIds == null){
+                client.set('sessionToSockets:' + sessionId, JSON.stringify([]), redis.print)
+                storeSessionIdForSocketId(socketId, sessionId)
+            }else{
+                socketIds.push(sessionId)
+                client.set('sessionToSockets:' + sessionId, JSON.stringify(socketIds), redis.print)
+            }
+        }
     })
 }
 
