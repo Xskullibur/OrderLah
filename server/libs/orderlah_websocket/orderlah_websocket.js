@@ -38,7 +38,6 @@ io.on('connection', function(socket){
         var sessionId = msg
 
         //Store session id with socket id
-        //sessionIDs[socket.id] = sessionId
         storeSocketIdForSessionId(socket.id, sessionId)
         storeSessionIdForSocketId(socket.id, sessionId)
     })
