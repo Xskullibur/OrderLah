@@ -51,7 +51,8 @@ h1 { font-size: 1.5em; margin: 10px; }
 			<input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
-                    <img id="poster" src="/img/no-image.jpg" alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
+                    <div class="imagePreview" style="background: url(/img/reviewimages/{{orderItem.image}}); background-size: 225px 140px;"></div>
+                    <img id="poster" src="/img/reviewimages/{{orderItem.image}}" alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
                 </div>
                 <div class="col-lg-9">
                     <row>
