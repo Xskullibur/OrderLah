@@ -97,7 +97,7 @@ app.use(session({
 
 app.use((req, res, next) => {
     if (!req.session) {
-        return next(new Error('Lost Connestion to Redis'))
+        return next(new Error('Lost Connection to Redis'))
     }
     next()
 })
