@@ -47,12 +47,12 @@ h1 { font-size: 1.5em; margin: 10px; }
     <div class="card card-body">
         <h4>Review Page</h4>
         <br>
-        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}?_method=POSTT" method="post" onload="getstars()" enctype="multipart/form-data">
-			<input type="hidden" name="_method" value="PUT">
+        <form action="/saveReview/{{orderItem.menuItemId}}/{{orderItem.orderId}}" method="post" onload="getstars()" enctype="multipart/form-data">
+			      <input type="hidden" name="_method" value="PUT">
             <div class="row">
                 <div class="col-lg-3">
-                    <div class="imagePreview" style="background: url(/img/reviewimages/{{orderItem.image}}); background-size: 225px 140px;"></div>
-                    <img id="poster" src="/img/reviewimages/{{orderItem.image}}" alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
+                    {{!-- <div class="imagePreview" style="background: url(/img/reviewimages/{{orderItem.image}}); background-size: 225px 140px;"></div> --}}
+                    <img id="poster" {{#if orderItem.image}}src="/img/reviewimages/{{orderItem.image}}"{{/if}} alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
                 </div>
                 <div class="col-lg-9">
                     <row>
