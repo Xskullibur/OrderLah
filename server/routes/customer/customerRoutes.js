@@ -67,7 +67,7 @@ router.get('/review/:id/:orderid', (req, res)=> {
 router.post('/saveReview/:id/:orderid', upload.single("reviewImage"), (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
-    let image = req.user.id + Date.now() + '.jpeg';
+    let image = req.user.id + req.params.id + req.params.orderid + ".jpeg";
 
     if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
         fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
