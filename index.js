@@ -92,12 +92,12 @@ app.use(session({
     store: redisStore,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, httpOnly: false }//Set this to true for https website
+    cookie: { maxAge: 3600000, secure: false, httpOnly: false }//Set this to true for https website
 }))
 
 app.use((req, res, next) => {
     if (!req.session) {
-        return next(new Error('Lost Connestion to Redis'))
+        return next(new Error('Lost Connection to Redis'))
     }
     next()
 })
@@ -122,7 +122,8 @@ const RememberMe = db.RememberMe
 const ResetPass = db.ResetPass
 
 //Redis inside global
-globalHandle.put('redis', redisStore)
+globalHandle.put('redis-store', redisStore)
+globalHandle.put('redis-client', client)
 
 //Put User model inside global
 globalHandle.put('user', User)
@@ -144,39 +145,31 @@ db.connect(true, dummy)
 
 //Serve static files for css, js, etc.
 app.use(express.static('public'))
+//Serve service worker js files for push notications
+app.use(express.static('push', {
+    setHeaders: function(res, path, stat) {
+        res.set('Service-Worker-Allowed', '/')
+    }
+}))
+
+//Push notificaions setup
+require('./server/libs/orderlah_push_notifications/push_notifications')(app)
+//Websocket setup
+const {sendOrderToStallOwner} = require('./server/libs/orderlah_websocket/orderlah_websocket')
+globalHandle.put('websocket:sendOrderToStallOwner', sendOrderToStallOwner)
 
 //Setup path
 const mainRoutes = require('./server/routes/mainRoutes')
 const customerRoutes = require('./server/routes/customer/customerRoutes')
-const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes');
-const adminRoutes = require('./server/routes/administrator/adminRoutes');
+const stallOwnerRoutes = require('./server/routes/stallowner/stallOwnerRoutes')
+const adminRoutes = require('./server/routes/administrator/adminRoutes')
+const customDialogRoutes = require('./server/routes/customDialogRoutes')
 app.use(mainRoutes)
 app.use(customerRoutes)
 app.use('/stallOwner', stallOwnerRoutes)
 app.use('/admin', adminRoutes)
+app.use('/customDialog', customDialogRoutes)
 
-//Websocket setup
-require('./server/libs/orderlah_websocket/orderlah_websocket')
-
-
-// process.on('SIGTERM', () => {
-//     close()
-// });
-
-// process.on('SIGINT', () => {
-//     close()
-// });
-
-// process.on('exit', () => {
-//     close()
-// });
-
-// function close(){
-//     console.log('Closing http server.');
-//     server.close(() => {
-//         console.log('Http server closed.');
-//     });
-// }
 
 app.set('port', port);
 server.listen(port, () => {

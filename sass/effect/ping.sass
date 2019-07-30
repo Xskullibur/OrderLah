@@ -1,0 +1,73 @@
+@import '../colors'
+
+$size-of-ring: 40px
+$size-of-dot: 10px
+
+div.ring-container
+    display: block
+    float: left
+    position: relative
+    height: 40px
+    width: 40px
+
+div.ring 
+    position: absolute
+    border-radius: 55px
+    width: $size-of-ring
+    height: $size-of-ring
+    transform: scale(.25)
+    transform-origin: center
+    animation-iteration-count: infinite
+
+.small-ping 
+    position: absolute
+    border: double $coral-1 10px
+    animation-duration: .75s
+    animation-name: smallping
+
+@-webkit-keyframes ping 
+    from 
+        transform: scale(.25)
+        opacity: 1
+    
+    to 
+        transform: scale(1)
+        opacity: 0
+    
+
+@-webkit-keyframes smallping 
+    from 
+        transform: scale(.1)
+        opacity: 1
+    
+    to 
+        color: white
+        transform: scale(.55)
+        opacity: 0
+    
+
+
+
+a.dot 
+    width: $size-of-dot
+    height: $size-of-dot
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    position: absolute
+    text-decoration: none
+    background-color: $coral-1
+    border-radius: 55px
+    animation-iteration-count: infinite
+    animation-direction: alternate
+    animation-delay:0s
+
+@-webkit-keyframes breathe 
+    from 
+        border-color: $coral-1
+        background-color: #77d2ff
+    
+    to 
+        border-color: $coral-1
+        background-color: #6dc1ec
+    

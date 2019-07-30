@@ -17,6 +17,8 @@ const express = require('express')
 //Create router
 const router = express.Router()
 
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 const menu_item_util = require('../../utils/main/menu_item')
 
 
@@ -25,7 +27,7 @@ const order_track = require('../../libs/order_track')
 router.use(order_track.register)
 
 const order_util = require('../../utils/stallowner/order')
-router.get('/orderStatus/:pubOrderId', async (req, res) => {
+router.get('/orderStatus/:pubOrderId', uuid_middleware.generate, async (req, res) => {
 
     //Check user is authorised to access order id 
     const pubOrderId = req.params.pubOrderId
@@ -73,6 +75,14 @@ router.post('/addOrder', (req, res) => {
 router.get('/cartItems', (req, res) => {
         res.type('json')
         res.send(JSON.stringify(req.cart.items))
+})
+
+/**
+ * GET '/cartItemsCount'
+ * returns the size of the cart items
+ */
+router.get('/cartItemsCount', (req, res) => {
+    res.send(JSON.stringify(req.cart.items.length))
 })
 
 /**

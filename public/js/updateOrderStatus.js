@@ -3,17 +3,17 @@ var socket = null;
 
 $(document).ready(function (){
 
-    var sid = subStrCookie(getCookie('connect.sid'))
+    var sessionId = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
     socket = io.connect(window.location.protocol + '//' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
-        socket.emit('sessionid', sid)
+        socket.emit('sessionid', {sessionId, csrf: $('#csrf-token').val()})
 
         if(typeof getPublicOrderId === "function"){
             //Is a customer on a order status page
             var publicOrderId = getPublicOrderId();
-            socket.emit('customer-init', {publicOrderId});
+            socket.emit('customer-init', {publicOrderId, csrf: $('#csrf-token').val()});
         }
 
         //Customers events
@@ -108,8 +108,9 @@ $(document).ready(function (){
                     }
                 }
     
-                var card = `                                            
-                <div class="card shadow-sm" id="orderCard_${orderDetails.publicOrderID}">
+                var card = `   
+                <div class="d-inline-block p-3">                                         
+                <div class="card shadow-sm" id="orderCard_${orderDetails.publicOrderID}" style="width: 15rem">
     
                     <div class="card-header font-weight-bold bg-danger text-right text-white">
                         <div class="row justify-content-between">
@@ -162,6 +163,7 @@ $(document).ready(function (){
                             </form>
                         </div>
                     </div>
+                </div>
                 </div>`
     
                 all_orders_column.innerHTML += card
@@ -183,7 +185,7 @@ $(document).ready(function (){
 function updateStatus(publicOrderId, qrcode=false) {
 
     // Send websocket (update-status) || Update DB
-    socket.emit('update-status', {publicOrderId, qrcode})
+    socket.emit('update-status', {publicOrderId, qrcode, csrf: $('#csrf-token').val()})
 
 }
 

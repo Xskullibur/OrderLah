@@ -1,7 +1,3 @@
-<script>
-  alert({{nav}})
-</script>
-
 <div class="sticky-top">
 <nav class="navbar sticky-top navbar-expand-lg navbar-light border-bottom rounded-bottom">
   <div class="nav navbar-nav">
@@ -36,7 +32,7 @@
 
             {{!-- All Orders --}}
             <li class="nav-item {{#ifCondition nav "==" "orderDetails"}}active{{/ifCondition}}">
-              <a class="nav-link" href="/stallOwner/orderDetails/allOrders/1/">Order Details</a>
+              <a class="nav-link" href="/stallOwner/orderDetails/allOrders/">Order Details</a>
             </li>
 
             {{!-- Monthly Summary --}}
@@ -60,12 +56,17 @@
   {{!-- Profile navbar for md --}}
   <div class="nav navbar-nav pull-right d-none d-md-inline-block">
       
-        <div class="shake-effect d-inline-block px-5">
-          <a class="" href="#">
-            <i class="coral-1 fas fa-shopping-cart fa-lg"></i>
-            <span id="nav-cart-count" class="badge badge-pill badge-danger" style="position: relative; top: -15px;">0</span>
-          </a>
-        </div>
+        {{!-- Shopping cart --}}
+        {{#if isCustomer}}
+          <div class="shake-effect d-inline-block px-5">
+            <a class="" href="/payment" style="text-decoration: none;">
+              <i class="coral-1 fas fa-shopping-cart fa-lg"></i>
+              <span id="nav-cart-count" class="badge badge-pill badge-danger" style="position: relative; top: -15px;">0</span>
+              <span class="text-danger font-weight-bold" style="font-size: .95em; color: #BF0303;">Checkout</span>
+            </a>
+          </div>
+        {{/if}}
+
         <div class="d-inline-block">
           {{> profile_nav}}</div>
         

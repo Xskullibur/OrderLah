@@ -1,7 +1,7 @@
 {{!-- Styling for menu_item.handlebars --}}
 <link rel="stylesheet" type="text/css" href="/css/menu_item.css"/>
 <script
-    src="https://www.paypal.com/sdk/js?client-id=AazJKzsDqoiA6ApXquTum5zTKDC4QmPlbzZXG8YCwmnoQyzPviV8q-2-JBrXbhh-VXS_Nutq8sp4ybGc&currency=SGD">
+    src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=SGD">
 </script>
 <script
     src="/js/rating.js">
@@ -15,7 +15,7 @@
 <div class="container">
     <div class="row" align="center">
         <div class="col">
-            <div class="card m-5">
+            <div class="card my-5">
                 <div class="card-header"><h3>1.Confirm Orders</h3></div>
                 <div class="card-body">
                     <div class="row">
@@ -39,33 +39,35 @@
 
 <script>
     if({{totalAmount}} === 0){
-        showAlert('Cart is empty, items payable by paypal, visa, mastercard, amex')
+        showAlert('Cart is empty', -1, 'alert-danger');
     }else{
         paypal.Buttons({
             createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: {{totalAmount}},                                                  
-                        }
-                    }]
+                return fetch('/payment/create', {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        csrf: $('#csrf-token').val()
+                    })
+                }).then(function(res) {
+                    return res.json();
+                }).then(function(data) {
+                    return data.orderID;
                 });
             },
             onApprove: function(data, actions) {                
-                return actions.order.capture().then(function(details) {   
-                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!')                              
-                    return fetch('/confrimPayment', {
-                        method: 'post',
-                        headers: {
-                            'content-type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            orderID: data.orderID,
-                            payerName: details.payer.name.given_name,
-                            csrf: $('#csrf-token').val()
-                        }),
-                    })                                                         
-                })                                                                  
+                return fetch('/payment/confirm/' + data.orderID, {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        csrf: $('#csrf-token').val()
+                    })
+                }).then(function(res) {
+                    return res.json();
+                }).then(function(details) {
+                    // Show a success message to the buyer
+                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!', -1, 'alert-success');
+                });                           
             }
         }).render('#paypal-button-container');
     }

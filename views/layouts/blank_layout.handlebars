@@ -30,20 +30,21 @@
     <div style="position: fixed; min-width: 100%; min-height: 100%; overflow-y: auto; overflow-x: hidden; background-color: rgba(0, 17, 38, .7) ">
         {{!-- Popup --}}
         {{> alerts/top-popup}}
-        {{#if error}}
+
+        {{!-- Alerts  --}}
+        {{#if alerts}}
             <script>
-                showAlert("{{error}}", 3000, "alert-danger")
+                {{#each alerts as |alert|}}
+                    showAlert("{{alert.message}}", {{alert.timeout}}, "{{alert.type}}")
+                {{/each}}
             </script>
         {{/if}}
-        {{#if success}}
-            <script>
-                showAlert("{{success}}", 3000)
-            </script>
-        {{/if}}
+
 
         {{{body}}}
     </div>
-
     </div>
+        {{!-- Popup Modal --}}
+        {{> alerts/popup-modal}}
 </body>
 </html>

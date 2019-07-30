@@ -14,6 +14,9 @@ const io = require('socket.io')(server);
 
 const helpers = require('../../helpers/helpers')
 
+//Notifications
+const webpush = globalHandle.get('webpush')
+const client = globalHandle.get('redis-client')
 // , {
 //     // serveClient: true,
 //     // below are engine.IO options
@@ -21,11 +24,8 @@ const helpers = require('../../helpers/helpers')
 //     pingTimeout: 5000,
 //     cookie: false
 // }
-
-
-RedisStore = globalHandle.get('redis')
-
-const sessionIDs = {}
+const redis = require('redis')
+RedisStore = globalHandle.get('redis-store')
 
 io.on('connection', function(socket){
 
@@ -33,39 +33,54 @@ io.on('connection', function(socket){
     console.log('a user connected');
     
     // On User Connect
-    socket.on('sessionid', function (msg) {
-        console.log(msg);
-        var sessionId = msg
+    socket.on('sessionid', function ({sessionId, csrf}) {
+        console.log(sessionId);
 
         //Store session id with socket id
-        sessionIDs[socket.id] = sessionId
-        //io.to(socket.id) get socket
+        storeSocketIdForSessionId(socket.id, sessionId)
+        storeSessionIdForSocketId(socket.id, sessionId)
+
+        client.get('socketToSession:'+socket.id, async function(err, sessionId){
+            getSessionBySessionID(sessionId, async (err, session) => {
+                let valid = verifyCSRFTokenFromSession(session, csrf)
+                if(!valid){
+                    socket.disconnect(true)
+                    return 
+                }
+            })
+        })
+
     })
 
     /**
      * Customer will send the order id upon connecting to socket
      */
-    socket.on('customer-init', function({publicOrderId}) {
+    socket.on('customer-init', function({publicOrderId, csrf}) {
 
+        client.get('socketToSession:'+socket.id, async function(err, sessionId){
+            getSessionBySessionID(sessionId, async (err, session) => {
 
-        order_util.getOrderFromPublicOrderID(publicOrderId).then(order =>{
+            let valid = verifyCSRFTokenFromSession(session, csrf)
+            if(!valid){
+                socket.disconnect(true)
+                return 
+            }
 
-            let orderId = order.id
+            order_util.getOrderFromPublicOrderID(publicOrderId).then(async order =>{
 
-            let sessionid = sessionIDs[socket.id]
-
-            getSessionBySessionID(sessionid, async (err, session) => {
-                if(session.passport.user){
-                    let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
-                    
-                    stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
-                
-                        if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+                let orderId = order.id
+                    if(session.passport.user){
+                        let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
                         
-                    })
-
+                        stall_util.getStallIDFromOrderID(orderId).then((stallId) => {
                     
-                }
+                            if(valid)sendTiming(stallId[0].stallId)//stallowner socket 
+                            
+                        })
+    
+                        
+                    }
+                })
             })
         })
 
@@ -74,11 +89,7 @@ io.on('connection', function(socket){
     // On User Disconnect
     socket.on('disconnect', function(){
         console.log('user disconnected');
-        delete sessionIDs[socket.id] 
     });
-
-    // Customers events
-    socket.on('', function(){ })
 
     var STATUS = {
         OrderPending: 'Order Pending',
@@ -89,92 +100,116 @@ io.on('connection', function(socket){
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', async function({publicOrderId, qrcode}) {
+    socket.on('update-status', async function({publicOrderId, qrcode, csrf}) {
 
         let stallownerId = null
 
         //Update customer timing
-        await getSessionBySessionID(sessionIDs[socket.id], async (err, stallownerSession) => {
-            stallownerId = stallownerSession.passport.user
-            let stallOwner = await order_util.getStallInfo(stallownerId)
+        client.get('socketToSession:'+socket.id, async function(err, sessionId){
+            await getSessionBySessionID(sessionId, async (err, stallownerSession) => {
 
-            let stallId = stallOwner.stall.id
+                //Check 
+                let valid = verifyCSRFTokenFromSession(stallownerSession, csrf)
+                if(!valid){
+                    socket.disconnect(true)
+                    return 
+                }
 
-            sendTiming(stallId)
-        })
-
-        // Get Order Id from Public Order Id
-        let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
-        let orderID = order.id
-        updatedStatus = null
-        nxtStatus = null
-        errorMsg = ""
+                stallownerId = stallownerSession.passport.user
+                let stallOwner = await order_util.getStallInfo(stallownerId)
     
-        // Get Current Status from Order Id
-        let currentStatus = await update_util.getCurrentStatus(orderID)
+                let stallId = stallOwner.stall.id
     
-        // Check if called from QR Code (Inital Status = 'Ready for Collection')
-        if (qrcode) {
-            if (currentStatus != STATUS.ReadyForCollection) {
-                errorMsg = "Order not ready for collection!"
-            }
-        }
+                sendTiming(stallId)
+            })
     
-        // Get updated status
-        switch (currentStatus) {
-            case STATUS.OrderPending:
-                updatedStatus = STATUS.PreparingOrder
-                nxtStatus = STATUS.ReadyForCollection
-                break;
-    
-            case STATUS.PreparingOrder:
-                updatedStatus = STATUS.ReadyForCollection
-                nxtStatus = STATUS.CollectionConfirmed
-                break;
-    
-            case STATUS.ReadyForCollection:
-                updatedStatus = STATUS.CollectionConfirmed
-                break;
+            // Get Order Id from Public Order Id
+            let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
+            let orderID = order.id
+            updatedStatus = null
+            nxtStatus = null
+            errorMsg = ""
         
-            default:
-                errorMsg = "Invalid Order Status!"
-                break;
-        }
+            // Get Current Status from Order Id
+            let currentStatus = await update_util.getCurrentStatus(orderID)
+        
+            // Check if called from QR Code (Inital Status = 'Ready for Collection')
+            if (qrcode) {
+                if (currentStatus != STATUS.ReadyForCollection) {
+                    errorMsg = "Order not ready for collection!"
+                }
+            }
+        
+            // Get updated status
+            switch (currentStatus) {
+                case STATUS.OrderPending:
+                    updatedStatus = STATUS.PreparingOrder
+                    nxtStatus = STATUS.ReadyForCollection
+                    break;
+        
+                case STATUS.PreparingOrder:
+                    updatedStatus = STATUS.ReadyForCollection
+                    nxtStatus = STATUS.CollectionConfirmed
+                    break;
+        
+                case STATUS.ReadyForCollection:
+                    updatedStatus = STATUS.CollectionConfirmed
+                    break;
+            
+                default:
+                    errorMsg = "Invalid Order Status!"
+                    break;
+            }
+        
+            // Update and redirect if no errorMsg
+            if (errorMsg == "") {
     
-        // Update and redirect if no errorMsg
-        if (errorMsg == "") {
-
-            update_util.updateOrderStatus({
-                orderID, updatedStatus
-            }).then((result) => {
-                console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
-                transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                    getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
-                        getSocketIDsBySessionID(sessionid, (socketId) => {
-                            console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
-                            
-                            io.to(socketId).emit('update-status', {updatedStatus})
-
+                update_util.updateOrderStatus({
+                    orderID, updatedStatus
+                }).then((result) => {
+                    console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
+                    transactions.getCustomerByOrderID(orderID).then(orderCust => {
+                        getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
+                            getSocketIDsBySessionID(sessionid, (socketId) => {
+                                console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
+                                
+                                io.to(socketId).emit('update-status', {updatedStatus})
+                                
+                                //Send push notications
+                                client.get('subscription:' + sessionid, function(err, subscription){
+                                    const payload = JSON.stringify({title:'Hey, there is an update to your order!',
+                                     body:`Your Order: ${orderID} is in status: ${updatedStatus}`})
+    
+                                    console.log(subscription)
+    
+                                    webpush.sendNotification(JSON.parse(subscription), payload).catch(err => {
+                                        console.log(err)
+                                    })
+                                })
+                                
+    
+                            })
                         })
                     })
+                }).catch((err) => {
+                    console.log(`errorMsg: ${err}`)
+                });
+    
+            }
+            else{
+                console.log(errorMsg)
+            }
+            
+            // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+    
+            // Get all stallowner's socket id
+            getSessionsFromUserID(stallownerId, (sessionId) => {
+                getSocketIDsBySessionID(sessionId, (socketId) => {
+                    io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
                 })
-            }).catch((err) => {
-                console.log(`errorMsg: ${err}`)
-            });
-
-        }
-        else{
-            console.log(errorMsg)
-        }
-        
-        // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
-
-        // Get all stallowner's socket id
-        getSessionsFromUserID(stallownerId, (sessionId) => {
-            getSocketIDsBySessionID(sessionId, (socketId) => {
-                io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
             })
         })
+        
 
     })
 
@@ -224,38 +259,31 @@ function getOrderTimingForOrder(orderid, cb){
     })
 }
 
-function getSocketIDBySessionID(sessionId){
-    for (let socketId in sessionIDs) {
-        let tsessionId = sessionIDs[socketId]
-        if(sessionId == tsessionId)return socketId
-    }
-    return null
-}
-
 function getSocketIDsBySessionID(sessionId, yieldCB){
-    for (let socketId in sessionIDs) {
-        let tsessionId = sessionIDs[socketId]
-        if(sessionId == tsessionId)yieldCB(socketId)
-    }
-}
+    client.get('sessionToSockets:' + sessionId, function(err, socketIds){
+        if(socketIds){
+            socketIds = JSON.parse(socketIds)
+            socketIds.forEach(socketId => {
+                yieldCB(socketId)
 
-// function getSocketIDsBySessionID(sessionId){
-//     let socketIds = []
-//     for(let socketId in sessionIDs){
-//         if(sessionIDs[socketId] == sessionId)socketIds.push(socketId)
-//     }
-//     return socketIds
-// }
+            })
+        }
+    })
+}
 
 function getSessionsFromUserID(userId, yieldCB){
-    for(let socketId in sessionIDs){
-        let sessionId = sessionIDs[socketId]
-        getSessionBySessionID(sessionId, (err, session) => {
-            if(!err && session.passport.user === userId){
-                yieldCB(sessionId, session);
+    client.get('userToSessions:' + userId, function(err, sessionIds){
+        if(!err){
+            if(sessionIds){
+                sessionIds = JSON.parse(sessionIds)
+                sessionIds.forEach(sessionId => {
+                    getSessionBySessionID(sessionId, (err, session) => {
+                        yieldCB(sessionId, session);
+                    })
+                })
             }
-        })
-    }
+        }
+    })
 }
 
 function getSessionBySessionID(sessionId, cb){
@@ -277,6 +305,52 @@ function getSessionBySessionID(sessionId, cb){
         }
 
     })
+}
+
+
+function storeSocketIdForSessionId(socketId, sessionId){
+    client.set('socketToSession:' + socketId,  sessionId, redis.print)
+
+    //Store userid as well
+    getSessionBySessionID(sessionId, (err, session) => {
+        storeUserIdForSessionId(session.passport.user, sessionId)
+    })
+}
+
+function storeUserIdForSessionId(userId, sessionId){
+    client.get('userToSessions:' + userId, function(err, sessionIds){
+        sessionIds = JSON.parse(sessionIds)
+        if(!err){
+            if(sessionIds == null){
+                client.set('userToSessions:' + userId, JSON.stringify([]), redis.print)
+                storeUserIdForSessionId(userId, sessionId)
+            }else if(!sessionIds.includes(sessionId)){
+                sessionIds.push(sessionId)
+                client.set('userToSessions:' + userId, JSON.stringify(sessionIds), redis.print)
+            }
+        }
+    })
+}
+
+function storeSessionIdForSocketId(socketId, sessionId){
+    client.get('sessionToSockets:' + sessionId, function(err, socketIds){
+        socketIds = JSON.parse(socketIds)
+        if(!err){
+            if(socketIds == null){
+                client.set('sessionToSockets:' + sessionId, JSON.stringify([]), redis.print)
+                storeSessionIdForSocketId(socketId, sessionId)
+            }else if(!socketIds.includes(socketId)){
+                socketIds.push(socketId)
+                client.set('sessionToSockets:' + sessionId, JSON.stringify(socketIds), redis.print)
+            }
+        }
+    })
+}
+
+const uuid_middleware = require('../uuid_middleware')
+function verifyCSRFTokenFromSession(session, csrf){
+    let valid = uuid_middleware.verifyFromSession(session, csrf, false)
+    return valid
 }
 
 module.exports = {sendOrderToStallOwner}

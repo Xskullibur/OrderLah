@@ -31,7 +31,7 @@ function generateRecommendedMenuCardItem(){
         insertContentToDivContainer($(recommended_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtonsInContainer(recommended_menu_container_selector, addOrder);
+        registerAllMenuItemsButtonsInContainer(recommended_menu_container_selector, showDescDialog);
     });
     
 }
@@ -44,7 +44,7 @@ function generateMenuCardItem(cusine = ''){
         insertContentToDivContainer($(all_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
+        registerAllMenuItemsButtonsInContainer(all_menu_container_selector, showDescDialog);
     });
 }
 
@@ -55,7 +55,7 @@ function generateSearchMenuCardItem(query){
       insertContentToDivContainer($(all_menu_container_selector), json)
       //Do staggering animations for the items
       doStaggerAnimation();
-      registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
+      registerAllMenuItemsButtonsInContainer(all_menu_container_selector, showDescDialog);
   });
 }
 
@@ -69,6 +69,10 @@ function registerAllMenuItemsButtonsInContainer(containerSelector, fn){
       fn(menuItemId);
       
     });
+}
+
+function showDescDialog(menuItemId) {
+  showCustomDialog(`/customDialog/itemDesc?id=${menuItemId}`)
 }
 
 function addOrder(menuItemId){
@@ -96,13 +100,19 @@ function addOrder(menuItemId){
       var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
       loadContent($(`#all-bottom-menu-container-menu-item-${orderline_id}`), menuItem);
 
-      registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+      registerAllMenuItemsButtonsInContainer(bottom_list_selector, promptRemoveOrder);
 
     })
 
   }).catch(err => {
     showAlert('Error adding item', 3000, 'alert-danger');
   });
+}
+
+function promptRemoveOrder(orderLineId){
+  showDialog({title: 'Warning', body:'Are you sure you want to remove this order?'}).then(() =>{
+    removeOrder(orderLineId);
+  }).catch)_
 }
 
 function removeOrder(orderLineId){
@@ -146,7 +156,7 @@ function generateCartItems(){
           bottomList.append(menuItemHTML);
           var menuItem = new MenuItem('/img/uploads/' + menuItemJson.image, menuItemJson.itemName, menuItemJson.rating, '$'+ menuItemJson.price)
           loadContent($(`#all-bottom-menu-container-menu-item-${orderlinesJson[index].orderLineId}`), menuItem);
-          registerAllMenuItemsButtonsInContainer(bottom_list_selector, removeOrder);
+          registerAllMenuItemsButtonsInContainer(bottom_list_selector, promptRemoveOrder);
         })
       
       
