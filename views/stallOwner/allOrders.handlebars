@@ -4,7 +4,6 @@
     <div class="row justify-content-center">
         <div class="col-md-12 p-lg-5">
             
-
             {{!-- Title --}}
             <div class="row">
                 <div class="col text-center">
@@ -27,15 +26,6 @@
                 {{#if allOrders}} 
                     {{!-- Body --}}
                     <div class="card container p-5">
-
-                        {{#ifCondition pages ">" 1}}
-                            {{!-- Pagination Start --}}
-                            <div class="row mb-3">
-                                <div class="col p-0">
-                                    {{> stallowner_items/allOrders_pagination}}
-                                </div>
-                            </div>
-                        {{/ifCondition}}
 
                         {{!-- Order Details --}}
                         {{#each allOrders as |order|}}                            
@@ -104,15 +94,6 @@
                             </div>
                         </div>
                         {{/each}}
-
-                        {{#ifCondition pages ">" 1}}
-                            {{!-- Pagination End --}}
-                            <div class="row">
-                                <div class="col">
-                                    {{> stallowner_items/allOrders_pagination}}
-                                </div>
-                            </div>
-                        {{/ifCondition}}
 
                     </div>
                 {{else}}

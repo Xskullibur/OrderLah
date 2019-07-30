@@ -195,7 +195,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 // Orders
-router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
+router.get('/orderDetails/allOrders/', (req, res, next) => {
 
     //Check for filters
     let orderFilter = req.query.orderNo
@@ -232,70 +232,28 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
             title += " (Filtered)"
         }
 
-        //Get total number of orders for the Stall
-        Order.count({ where: whereCondition }).then(orderCount => {
-
-            let currentPage = req.params.pageNo;                // Current page user is on
-            let offset = 0;                                     // Starting index of items
-            let limit = 5;                                      // Number of items per page
-            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
-
-    
-            /**
-             * If user is not on 1st page,
-             * calculate offset based on
-             * currentPage * limit (number of items per page)
-             */
-            if (currentPage !== 1) {
-                offset = (currentPage - 1) * limit
-            }
-
-            // Get paginated orders
-            Order.findAll({
-                where: whereCondition,                          // Filtered based on Status and Stall
-                offset,
-                limit,
-                order: Sequelize.col('orderTiming'),
-                include: [{
-                    model: MenuItem
-                }]
-            }).then(allOrders => {
-    
-                currentPage = parseInt(currentPage)
-    
-                res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
-                     nav: 'orderDetails',
-                     helpers: {
-    
-                        //Pagination previous button Helper
-                        getPrevious(currentPg){
-                            if (currentPg > 1) {
-                                return currentPg - 1
-                            }
-                         },
-    
-                         //Pagination next button Helper
-                         getNext(currentPg){
-                             if (currentPg < pages) {
-                                 return currentPg + 1
-                             }
-                         }, 
-                    }
-                })
+        // Get paginated orders
+        Order.findAll({
+            where: whereCondition,                          // Filtered based on Status and Stall
+            order: Sequelize.col('orderTiming'),
+            include: [{
+                model: MenuItem
+            }]
+        }).then(allOrders => {
+            res.render('stallOwner/allOrders',{
+                allOrders, orderFilter, dateFilter, error, title,
+                nav: 'orderDetails'
             })
-    
-    
         })
+            
     })
 
 });
 
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
-    
-    toDate = null
-    frDate = null
+
+    toDate = undefined, frDate = undefined
 
     filter = false
     title = "Charts"
@@ -304,8 +262,9 @@ router.get('/orderDetails/charts/', (req, res) =>{
     if (req.query.toDate || req.query.frDate) {
         toDate = SqlString.escape(req.query.toDate);
         frDate = SqlString.escape(req.query.frDate);
+
         filter = true
-        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN '${frDate}' AND '${toDate}' `    
+        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN ${frDate} AND ${toDate} `    
     }
 
     function getStallOwner() {

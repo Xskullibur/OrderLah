@@ -1,0 +1,47 @@
+<div class="form-group col">
+    <div id="daterange" class="row mx-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+        <i class="fa fa-calendar col-auto pt-1"></i>
+        <span class="col"></span> <i class="fa fa-caret-down pt-1 col-auto text-right"></i>
+        <input type="hidden" id="toDate" name="toDate">
+        <input type="hidden" id="frDate" name="frDate">
+    </div>
+</div>
+
+<script>
+
+    $(function() {
+        
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+
+        {{#if toDate}}
+            {{#if frDate}}                
+                start = moment({{{frDate}}})
+                end = moment({{{toDate}}})
+            {{/if}}
+        {{/if}}
+
+        function cb(start, end) {
+            $('#daterange span').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
+            $('#frDate').val(`${start.format('YYYY-MM-DD')}`)
+            $('#toDate').val(`${end.format('YYYY-MM-DD')}`) 
+        }
+
+        $('#daterange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+
+        cb(start, end);
+
+    });
+
+</script>
