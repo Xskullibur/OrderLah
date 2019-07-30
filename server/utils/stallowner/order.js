@@ -180,11 +180,13 @@ module.exports = {
 
         menuItemId = SqlString.escape(menuItemId);
 
-        if (item_filter || rating_filter) {
+        if (item_filter) {
             item_filter = SqlString.escape(item_filter);
+        }
+        
+        if (rating_filter) {
             rating_filter = SqlString.escape(rating_filter);
         }
-
 
         let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments, orderItems.image
         FROM orders

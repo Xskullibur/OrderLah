@@ -35,6 +35,7 @@ const app = globalHandle.get('app')
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
+const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
 var validator = require('validator')
@@ -293,17 +294,19 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
     
-    toDate = SqlString.escape(req.query.toDate);
-    frDate = SqlString.escape(req.query.frDate);
+    toDate = null
+    frDate = null
+
     filter = false
     title = "Charts"
     fitlerStatement = ""
-
-    if (toDate && frDate) {
+    
+    if (req.query.toDate || req.query.frDate) {
+        toDate = SqlString.escape(req.query.toDate);
+        frDate = SqlString.escape(req.query.frDate);
         filter = true
         fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN '${frDate}' AND '${toDate}' `    
-    }   
-
+    }
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
