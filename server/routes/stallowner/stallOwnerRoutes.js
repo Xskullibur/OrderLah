@@ -558,6 +558,9 @@ router.use(auth_login.auth)
 const op = Sequelize.Op
 var displayAlert = []
 var errorAlert = []
+var DisplayName = ""
+var DisplayPrice = ""
+var DisplayDesc = ""
 
 
 function toCap(str) {
@@ -586,12 +589,18 @@ router.get('/showMenu', uuid_middleware.generate, (req, res) => {
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
+                        DisplayName: DisplayName,
+                        DisplayPrice: DisplayPrice,
+                        DisplayDesc: DisplayDesc,
                         displayAlert: displayAlert,
                         errorAlert: errorAlert,
                         nav: 'manageMenu'
                     })
                     displayAlert = []
                     errorAlert = []
+                    DisplayName = ""
+                    DisplayPrice = ""
+                    DisplayDesc = ""
                 })    
             })
         }else{
@@ -625,6 +634,9 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
                 res.send('validation check failed')
             }
         }else{
+            DisplayName = itemName
+            DisplayPrice = price
+            DisplayDesc = itemDesc
             errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
             res.redirect('/stallOwner/showMenu')
         }
@@ -663,22 +675,7 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
                 res.redirect('/stallOwner/showMenu')
             }).catch(err => console.log(err))
         }else{
-            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')
-            //res.redirect('/stallOwner/showMenu')
-            Stall.findOne({where: {userId: id}}).then(myStall => {
-                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallOwner/stallowner-menu', {
-                        item:item,
-                        stall: myStall,
-                        showName: itemName,
-                        showPrice: price,
-                        showDesc: itemDesc,
-                        errorAlert: errorAlert,
-                        nav: 'manageMenu'
-                    })                  
-                    errorAlert = []
-                })    
-            })
+            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')          
         }
     })
 })

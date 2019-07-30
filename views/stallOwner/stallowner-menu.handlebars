@@ -23,7 +23,6 @@
             });
         </script>  
 {{/if}}
-
 <br>
 <div class="container">
     <div class="row">
@@ -118,7 +117,7 @@
                     <div class="form-group row">
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z\s]{1,50}" placeholder="enter item name" value="{{showName}}" required> 
+                            <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z\s]{1,50}" placeholder="enter item name" value="{{DisplayName}}" required> 
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required, max 50 letters </div>                                                    
                         </div>
@@ -128,7 +127,7 @@
                     <div class="form-group row">
                         <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
-                            <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" placeholder="enter price" value="{{showPrice}}" required>
+                            <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice" placeholder="enter price" value="{{DisplayPrice}}" required>
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required</div>
                         </div>                       
@@ -138,7 +137,7 @@
                     <div class="form-group row">
                         <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" pattern="[a-zA-Z0-9\s]{1,255}" value="{{showDesc}}" required>
+                            <input type="text" class="form-control" name="itemDescription" id="itemDescription" placeholder="enter description" pattern="[a-zA-Z0-9\s]{1,255}" value="{{DisplayDesc}}" required>
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required, max 255 characters</div>
                         </div>
@@ -280,6 +279,8 @@
         </div>
     {{/each}}
 {{/if}}
+
+<input style="visibility:hidden;" type="button">
 
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
