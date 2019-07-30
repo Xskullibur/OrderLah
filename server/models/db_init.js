@@ -34,7 +34,7 @@ const db = new Sequelize(connection_details.database, connection_details.usernam
     dialectOptions: {
         useUTC: false
     },
-
+    logging: false,
     pool:{
         max: 15, // MAX of 15 concurrent connections
         min: 0,

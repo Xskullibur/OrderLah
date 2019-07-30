@@ -1,21 +1,5 @@
 {{!-- Styling for profile.handlebars --}}
 <link rel="stylesheet" type="text/css" href="/css/profile.css"/>
-{{#if displayAlert}}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <center><strong>{{this.displayAlert}}</strong></center>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-{{/if}}
-{{#if failAlert}}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <center><strong>{{this.failAlert}} already exist!</strong></center>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-{{/if}}
 <br>
 <div class="container my-5">
     <div class="row justify-content-md-center" align="center">
@@ -23,10 +7,6 @@
             <div class="card">
                 <div class="card-header mb-2"><h3>Profile</h3></div>
                 <img class="card-img-top profile-img border border-danger" src="/img/profiles/{{user.id}}.png" onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';" alt="Profile Picture">
-                {{!-- Hidden form to update image --}}
-                <form>
-                    <input type="text" hidden>
-                </form>
                 <div class="card-body">
                     <h4 class="card-title text-center">{{user.username}}</h4>
                     <br><br>
@@ -84,6 +64,7 @@
                                                     <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
                                                 </div>
                                             </div>
+                                            <input name="csrf" type="hidden" value="{{csrf}}"/>
                                         <button type="submit" class="btn btn-outline-success">Apply</button>
                                     </form> 
                                 </div>
@@ -106,6 +87,7 @@
                 </button>
             </div>
             <form method="POST" action="/updateProfile" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <input name="csrf" type="hidden" value="{{csrf}}"/>
                 <div class="modal-body">
                     <br>
                     <div class="form-group row">
@@ -176,7 +158,6 @@
 </script>
 
 <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
         'use strict';
         window.addEventListener('load', function () {

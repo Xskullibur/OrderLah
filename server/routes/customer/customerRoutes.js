@@ -40,7 +40,7 @@ const menu_item_util = require('../../utils/main/menu_item')
 const order_utils = require('../../utils/stallowner/order')
 const stall_utils = require('../../utils/stallowner/stall')
 const cusine_util = require('../../utils/stallowner/cusine')
-//validation
+
 
 //Define main 'customer' paths
 
@@ -63,7 +63,7 @@ router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
     })
 });
 
-router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
+router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("reviewImage")], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
     let image = req.body.reviewImage;
@@ -132,15 +132,7 @@ router.get('/', (req, res) => {
     })
 })
 
-/**
- * GET '/profile' path
- * Get Profile page
- */
-router.get('/profile', (req, res) => {
-    res.render('profile', {
-        birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : ''
-    })
-})
+
 /**
  * Get '/menuItem' all menu items inside the database as JSON
  */

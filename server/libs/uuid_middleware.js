@@ -27,7 +27,7 @@ function verifyFromSession(session, csrf, removeAfterOneUse = true){
 
 module.exports = {
     /**
-     * Express middleware for generating uuidv4 id for embedding into handlebars
+     * Express middleware for generating uuidv4 id/csrf token for embedding into handlebars
      * @param {*} req 
      * @param {*} res 
      * @param {*} next 
@@ -42,6 +42,23 @@ module.exports = {
         }
 
         req.session.csrfs.push(csrf_token)
+        res.locals.csrf = csrf_token
+        next()
+    },
+
+    /**
+     * Express middleware for using existing uuidv4 id/csrf token for embedding into handlebars
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
+    embed: function (req, res, next) {
+        if(req.session.csrfs == undefined || req.session.csrfs.length <= 0){
+            console.warn("No CSRF token")
+            return
+        }
+        //Use the first csrf token
+        let csrf_token = req.session.csrfs[0]
         res.locals.csrf = csrf_token
         next()
     },
@@ -78,12 +95,14 @@ module.exports = {
      * @param {*} next 
      */
     debug: function(req,res){
-        if(res.locals.csrf == undefined) {
+        if(req.session.csrfs == undefined) {
             res.status(400)//Bad request
             res.send('Bad request')
         }
         else{
-            res.send(res.locals.csrf)
+            res.type('json')
+            console.log(req.session.csrfs)
+            res.send(JSON.stringify(req.session.csrfs))
         }
     },
 
