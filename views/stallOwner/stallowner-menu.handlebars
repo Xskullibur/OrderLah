@@ -107,7 +107,11 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
+            {{#if errorAlert}}
+                <div class="modal-body">
+                    <p>{{errorAlert}}</p>
+                </div>
+            {{/if}}
             {{!-- Add New Menu Item --}}
             <form method="POST" action="/stallOwner/submitItem" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div class="modal-body">
@@ -148,7 +152,7 @@
                         <div class="col-sm-2 imgUp">
                             <div class="imagePreview"></div>                            
                             <input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg" required>                                
-                        </div>
+                        </div>                        
                     </div>   
                     
                     {{!-- CSRF --}}
