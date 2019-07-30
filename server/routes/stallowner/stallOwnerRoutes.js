@@ -559,6 +559,7 @@ const op = Sequelize.Op
 var displayAlert = []
 var errorAlert = []
 
+
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
@@ -640,7 +641,7 @@ router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
+router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
@@ -650,7 +651,7 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
-    checkUnique(itemName).then(isUnique => {
+    await checkUnique(itemName).then(isUnique => {
         if(isUnique || (checkName === itemName)){
             MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
                 fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
@@ -663,7 +664,21 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
             }).catch(err => console.log(err))
         }else{
             errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')
-            res.redirect('/stallOwner/showMenu')
+            //res.redirect('/stallOwner/showMenu')
+            Stall.findOne({where: {userId: id}}).then(myStall => {
+                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                    res.render('stallOwner/stallowner-menu', {
+                        item:item,
+                        stall: myStall,
+                        showName: itemName,
+                        showPrice: price,
+                        showDesc: itemDesc,
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
+                    })                  
+                    errorAlert = []
+                })    
+            })
         }
     })
 })
