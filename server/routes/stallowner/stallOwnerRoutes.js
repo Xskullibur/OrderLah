@@ -558,14 +558,6 @@ router.use(auth_login.auth)
 const op = Sequelize.Op
 var displayAlert = []
 var errorAlert = []
-var updateError = []
-var DisplayName = ""
-var DisplayPrice = ""
-var DisplayDesc = ""
-//var DisplayNameUpdate = ""
-//var DisplayPriceUpdate = ""
-//var DisplayDescUpdate = ""
-
 
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
@@ -592,20 +584,13 @@ router.get('/showMenu', uuid_middleware.generate, (req, res) => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
-                        stall: myStall,                      
-                        DisplayName: DisplayName,
-                        DisplayPrice: DisplayPrice,
-                        DisplayDesc: DisplayDesc,
+                        stall: myStall,                                             
                         displayAlert: displayAlert,
                         errorAlert: errorAlert,
                         nav: 'manageMenu'
                     })
                     displayAlert = []
-                    errorAlert = []
-                    updateError = []
-                    DisplayName = ""
-                    DisplayPrice = ""
-                    DisplayDesc = ""                   
+                    errorAlert = []                                                
                 })    
             })
         }else{
@@ -643,7 +628,28 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
             DisplayPrice = price
             DisplayDesc = itemDesc
             errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
-            res.redirect('/stallOwner/showMenu')
+
+            User.findOne({where: currentUser}).then(user => {
+                if(user.role === 'Stallowner'){
+                   Stall.findOne({where: {userId: currentUser}}).then(myStall => {
+                       MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                           res.render('stallOwner/stallowner-menu', {
+                               item:item,
+                               stall: myStall,                      
+                               DisplayName: DisplayName,
+                               DisplayPrice: DisplayPrice,
+                               DisplayDesc: DisplayDesc,
+                               errorAlert: errorAlert,
+                               nav: 'manageMenu'
+                           })                         
+                           errorAlert = []
+                           DisplayName = ""
+                           DisplayPrice = ""
+                           DisplayDesc = ""                   
+                       })    
+                   })
+               }   
+            })
         }
     })
 })
