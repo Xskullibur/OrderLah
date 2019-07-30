@@ -558,9 +558,13 @@ router.use(auth_login.auth)
 const op = Sequelize.Op
 var displayAlert = []
 var errorAlert = []
+var updateError = []
 var DisplayName = ""
 var DisplayPrice = ""
 var DisplayDesc = ""
+var DisplayNameUpdate = ""
+var DisplayPriceUpdate = ""
+var DisplayDescUpdate = ""
 
 
 function toCap(str) {
@@ -592,15 +596,23 @@ router.get('/showMenu', uuid_middleware.generate, (req, res) => {
                         DisplayName: DisplayName,
                         DisplayPrice: DisplayPrice,
                         DisplayDesc: DisplayDesc,
+                        DisplayNameUpdate: DisplayNameUpdate,
+                        DisplayPriceUpdate: DisplayPriceUpdate,
+                        DisplayDescUpdate: DisplayDescUpdate,
                         displayAlert: displayAlert,
+                        updateError: updateError,
                         errorAlert: errorAlert,
                         nav: 'manageMenu'
                     })
                     displayAlert = []
                     errorAlert = []
+                    updateError = []
                     DisplayName = ""
                     DisplayPrice = ""
                     DisplayDesc = ""
+                    DisplayNameUpdate = ""
+                    DisplayPriceUpdate = ""
+                    DisplayDescUpdate = ""
                 })    
             })
         }else{
@@ -653,7 +665,7 @@ router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
+router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
@@ -663,7 +675,7 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
-    await checkUnique(itemName).then(isUnique => {
+    checkUnique(itemName).then(isUnique => {
         if(isUnique || (checkName === itemName)){
             MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
                 fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
@@ -675,7 +687,11 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
                 res.redirect('/stallOwner/showMenu')
             }).catch(err => console.log(err))
         }else{
-            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')          
+            updateError.push('The name ' + itemName + ' is already taken, item not updated!')
+            DisplayNameUpdate = itemName
+            DisplayPriceUpdate = price
+            DisplayDescUpdate = itemDesc  
+            res.redirect('/stallOwner/showMenu')        
         }
     })
 })
