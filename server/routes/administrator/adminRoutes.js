@@ -211,8 +211,37 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                 })
             })            
         })
-    })
-    
+    })   
+})
+
+router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
+    const userID = req.body.userID
+    const role = 'Stallowner'
+    const active = true
+    User.findOne({where: {id: userID}}).then((stallowner) =>{
+        User.update({role}, {where: {id:req.body.userID}}).then(function(){
+            Stall.findOne({where: {userId: userID}}).then(theStall =>{
+                MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
+                    var mailOptions = {
+                        from: 'Orderlah',
+                        to: stallowner.email,
+                        subject: 'Account unlock notice',
+                        text: 'Your account has been unlocked'
+                    }
+                
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    })   
+                    displayAlert.push("successully unlocked account!")
+                    res.redirect('/admin/adminPanel')
+                })
+            })            
+        })
+    })   
 })
 
 router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{

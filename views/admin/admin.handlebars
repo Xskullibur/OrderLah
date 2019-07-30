@@ -108,7 +108,7 @@
                                                     <h4 class="card__title">{{this.username}}</h4>
                                                 </center>
                                                 <center>
-                                                    <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="">Unlock</button>
+                                                    <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#unlock{{this.id}}">Unlock</button>
                                                     <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>
                                                 </center>
                                             </div>
@@ -138,6 +138,33 @@
                         </button>
                     </div>
                     <form method="POST" action="/admin/lockAccount">
+                        <br>
+                        <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <center>
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
+                            </center>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
+
+{{#if displayLocked}}
+    {{#each displayLocked}}
+        <div class="modal fade" id="unlock{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Unlock {{this.username}}?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/admin/unlockAccount">
                         <br>
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
