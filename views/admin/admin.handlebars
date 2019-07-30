@@ -81,6 +81,50 @@
         </div>
     </div>
 </div>
+<br>
+
+{{#if displayLocked}}
+    {{#each displayLocked}}
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="card border-secondary" style="background-color: #fff;  width: 100% !important; height: 100% !important;">
+                        <center><h2>Locked Stalls</h2></center>
+                        <br>
+                        <div class="row">                    
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="column">
+                                    <div class="container">
+                                        <div class="card">
+                                            <br>
+                                            <div class="card__image-container">
+                                                <center><img class="card__image" src="/img/profiles/{{this.id}}.png"
+                                                        onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';"
+                                                        height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
+                                            </div>
+                                            <br>
+                                            <div class="card__content">
+                                                <center>
+                                                    <h4 class="card__title">{{this.username}}</h4>
+                                                </center>
+                                                <center>
+                                                    <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="">Unlock</button>
+                                                    <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>
+                                                </center>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+    {{/each}}
+{{/if}}
 
 {{#if displayStallowner}}
     {{#each displayStallowner}}
