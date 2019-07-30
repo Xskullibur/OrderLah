@@ -48,6 +48,9 @@ module.exports = {
      * @return {Promise}
      */
     getAllPendingCustomersIDByStallID(stallId){
+
+        stallId = SqlString.escape(stallId);
+
         return db.query(`
             SELECT orders.userId
             FROM orders
@@ -63,6 +66,9 @@ module.exports = {
      * @return {Promise}
      */
     getStallIDFromOrderID(orderId){
+
+        orderId = SqlString.escape(orderId);
+
         return db.query(`
             SELECT orders.stallId
             FROM orders

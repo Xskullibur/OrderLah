@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="/css/md_list.css">
+
+<div class="modal-dialog modal-dialog-scrollable" role="document">
+<div class="modal-content">
+
+    {{!-- Header --}}
+    <div class="modal-header">
+        <div class="container-fluid">
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    <h5 class="modal-title" id="popup-model-title">{{menuItem.itemName}}</h5>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    {{!-- Body --}}
+    <div class="modal-body">
+        <div class="container">
+
+            {{!-- Item Desc --}}
+            <div class="row m-2">
+                {{!-- Image --}}
+                <div class="col-5 p-0">
+                    <img class="img-fluid rounded float-left" style="" {{#if menuItem.image}} src="/img/uploads/{{menuItem.image}}" {{/if}} alt="">
+                </div>
+
+                {{!-- Desc --}}
+                <div class="overflow-auto col-7">
+                    <small class="">{{menuItem.itemDesc}}</small>
+                </div>
+            </div>
+
+            <hr>
+
+            {{!-- Ratings --}}
+            <div class="row">
+                <div class="col">
+
+                    <div class="card">
+                        <div class="card-header">
+                            Reviews
+                        </div>
+
+                        <div class="card-body container-scoll p-2">
+                            <ul class="mdc-list mdc-list--two-line">
+
+                                {{#if ratings}}
+                                    
+                                    {{#each ratings as |rating|}}                                                
+                                        <li class="mdc-list-item">
+
+                                            <span class="mdc-list-item__graphic">
+                                                <img src="{{#if rating.image}}img/reviewimages/{{rating.image}}{{else}}img/no-image.jpg{{/if}}" style="border-radius: 50%; width: 50px; height: 50px;" alt="">
+                                            </span>
+
+                                            <span class="mdc-list-item__text">
+                                                <span class="mdc-list-item__primary-text">
+                                                    <span class="rating_{{rating.rating}}" style="font-size: 1em"></span>
+                                                </span>
+                                                <span class="mdc-list-item__secondary-text">
+                                                    <span>
+                                                        {{#if rating.comments}}
+                                                            {{rating.comments}}
+                                                        {{else}}
+                                                            [No Comments]
+                                                        {{/if}}
+                                                    </span>
+                                                </span>
+                                            </span>
+                                        </li>
+
+                                        {{#if @last}}
+                                        {{else}}
+                                            <li class="mdc-list-divider" role="separator"></li>
+                                        {{/if}}
+
+                                    {{/each}}
+
+                                {{else}}
+                                    <div class="alert alert-success" role="alert">
+                                        <p>No ratings at the moment, why not give it a try?</p>
+                                    </div>
+                                {{/if}}
+
+
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                
+        </div>
+    </div>
+
+    <div class="modal-footer d-block">
+        <h5 class="float-left m-0">${{menuItem.price}}</h5>
+        <button id="popup-model-accept" type="button" class="btn btn-primary float-right" data-dismiss="modal" onclick="addOrder({{menuItem.id}})">Purchase</button>
+        <button id="popup-model-reject" type="button" class="btn btn-secondary float-right" data-dismiss="modal">Close</button>
+    </div>
+</div>
+</div>
+
+<script>
+
+    $('.rating_5').each(function() {
+        $(this).mdbRate(5, true);
+    })
+
+    $('.rating_4').each(function() {
+        $(this).mdbRate(4, true);
+    })
+
+    $('.rating_3').each(function() {
+        $(this).mdbRate(3, true);
+    })
+
+    $('.rating_2').each(function() {
+        $(this).mdbRate(2, true);
+    })
+
+    $('.rating_1').each(function() {
+        $(this).mdbRate(1, true);
+    })
+
+</script>

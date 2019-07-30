@@ -353,6 +353,7 @@ router.post('/login',
             return next();
         });
     }, (req, res) => {
+
         if (req.user.role === "Customer") {
             res.redirect('/')
         }
@@ -376,6 +377,7 @@ router.get('/logout', (req, res) => {
     req.logout()
     //Destroy firstLogin
     req.session.firstLogin = undefined
+    req.session.destroy()
     res.redirect('/login')
 })
 
