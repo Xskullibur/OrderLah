@@ -236,19 +236,19 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
         var email = req.body.email
         var phone = req.body.phone
     
-        await checkUniqueUsername(username).then(isUnique => {
+        await user_utils.checkUniqueUsername(username).then(isUnique => {
             if(!isUnique){
                 registerFail.push(' username: ' + username + ' ')
             }
         })
     
-        await checkUniqueEmail(email).then(isUnique =>{
+        await user_utils.checkUniqueEmail(email).then(isUnique =>{
             if(!isUnique){
                 registerFail.push(' Email: ' + email + ' ')
             }
         })
     
-        await checkUniquePhone(phone).then(isUnique => {
+        await user_utils.checkUniquePhone(phone).then(isUnique => {
             if(!isUnique){
                 registerFail.push(' Phone: ' + phone + ' ')
             }
@@ -558,36 +558,6 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
 /* HsienXiang route */
 
 
-
-function checkUniqueEmail(theEmail){
-    return User.count({where: {email: theEmail}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-function checkUniqueUsername(theName){
-    return User.count({where: {username: theName}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-function checkUniquePhone(theNumber){
-    return User.count({where: {phone: theNumber}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-
-
 /**
  * GET '/profile' path
  * Get Profile page
@@ -615,24 +585,6 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
-function checkUniquePhone(theNumber){
-    return User.count({where: {phone: theNumber}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-function checkUniqueEmail(theEmail){
-    return User.count({where: {email: theEmail}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
 router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileImage')], async (req, res) =>{
     var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
@@ -645,7 +597,7 @@ router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileIma
     console.log(phone)
 
 
-    await checkUniqueEmail(email).then(isUnique =>{
+    await user_utils.checkUniqueEmail(email).then(isUnique =>{
         if(email === checkEmail){
 
         }else if(!isUnique){
@@ -653,7 +605,7 @@ router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileIma
         }
     })
 
-    await checkUniquePhone(phone).then(isUnique => {
+    await user_utils.checkUniquePhone(phone).then(isUnique => {
         if(phone === checkPhone){
 
         }else if(!isUnique){

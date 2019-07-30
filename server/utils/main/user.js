@@ -71,5 +71,52 @@ module.exports = {
     },
     getUserByID(userId){
         return User.findByPk(userId)
+    },
+
+
+    
+    checkUniqueEmail(theEmail){
+        return User.count({where: {email: theEmail}}).then(count =>{
+            if(count !== 0){
+                return false
+            }
+            return true
+        })
+    },
+
+    checkUniqueUsername(theName){
+        return User.count({where: {username: theName}}).then(count =>{
+            if(count !== 0){
+                return false
+            }
+            return true
+        })
+    },
+
+    checkUniquePhone(theNumber){
+        return User.count({where: {phone: theNumber}}).then(count =>{
+            if(count !== 0){
+                return false
+            }
+            return true
+        })
+    },
+    checkUniquePhone(theNumber){
+        return User.count({where: {phone: theNumber}}).then(count =>{
+            if(count !== 0){
+                return false
+            }
+            return true
+        })
+    },
+    
+    checkUniqueEmail(theEmail){
+        return User.count({where: {email: theEmail}}).then(count =>{
+            if(count !== 0){
+                return false
+            }
+            return true
+        })
     }
+
 }

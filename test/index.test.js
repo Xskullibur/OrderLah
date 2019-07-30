@@ -71,17 +71,20 @@ describe('Users', () => {
       user_test.login(request, 'johnny123@gmail.com', 'funnyguy101')
       .then(res => {
         done()
-      }).catch(err => done(err))
-
-      it('Update user', (done) => {
-        
       })
+      .catch(err => done(err))
 
     })
     
+    // it('Update user', (done) => {
+    //   user_test.updateProfile(request, {
+    //     email: 'johnny321@gmail.com',
+    //     phone: '98765432'
+    //   }, '../public/img/no-image.jpg').then(() => {
+    //     done()
+    //   }).catch(err => done(err))
+    // })
     
-
-    it('Delete user')
   });
 
 describe('Orders', () => {
