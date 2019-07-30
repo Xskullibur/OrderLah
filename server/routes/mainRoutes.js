@@ -235,7 +235,7 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
         var username = req.body.username
         var email = req.body.email
         var phone = req.body.phone
-    
+
         await user_utils.checkUniqueUsername(username).then(isUnique => {
             if(!isUnique){
                 registerFail.push(' username: ' + username + ' ')

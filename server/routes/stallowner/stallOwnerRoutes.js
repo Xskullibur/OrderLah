@@ -696,4 +696,12 @@ router.post('/filterItem', (req, res) =>{
       })
 })
 
+router.get('/showAddMenu', uuid_middleware.generate, (req, res) =>{
+    res.render('stallOwner/stallOwnerModel/addMenuModel', {layout: 'empty_layout'})
+})
+
+router.post('/showEditMenu', uuid_middleware.generate, (req, res) =>{
+    res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout'})
+})
+
 module.exports = router;

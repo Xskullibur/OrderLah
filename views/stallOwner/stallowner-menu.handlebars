@@ -46,7 +46,7 @@
         {{!-- Add Menu --}}
         <div class="col-sm-12 col-md-3 col-lg-4">
             <center>
-                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createForm">Add Menu</button>
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" onclick="showCustomDialog('/stallowner/showAddMenu')">Add Menu</button>
             </center>
             <br> 
         </div>
@@ -92,7 +92,7 @@
     </div>
 </div>
 <br>
-
+{{!-- 
 <div class="modal fade" id="createForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -273,11 +273,9 @@
             </div>
         </div>
     {{/each}}
-{{/if}}
+{{/if}} 
 
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
-<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>    
+   
 <script>
     $(".imgAdd").click(function () {
             $(this).closest(".row").find('.imgAdd').before('<div class="col-sm-2 imgUp"><div class="imagePreview"></div><label class="btn btn-primary">Upload<input type="file" class="uploadFile img" name="itemImage" id="itemImage" accept="image/png,image/jpeg,image/jpg" style="width:0px;height:0px;overflow:hidden;"></label><i class="fa fa-times del"></i></div>');
@@ -323,4 +321,4 @@
             });
         }, false);
     })();
-</script>
+</script> 
