@@ -47,7 +47,6 @@ async function createData(stallId, menuItem) {
     const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth()-1))
 
     for (var d = threeMonthsAgo; d <= now; d.setDate(d.getDate() + 1)) {
-        console.log(`\n\n DATE: ${new Date(d)}\n\n`)
         randomNo = await getRandomNumberInRange(1, 5)
     
         for (let i = 0; i < randomNo; i++) {

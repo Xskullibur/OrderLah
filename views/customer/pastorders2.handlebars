@@ -1,0 +1,20 @@
+<li class="mdc-list-item">
+    <span class="mdc-list-item__graphic">
+        <img src="{{#if rating.image}}img/reviewimages/{{rating.image}}{{else}}img/no-image.jpg{{/if}}" style="border-radius: 50%; width: 50px; height: 50px;" alt="">
+    </span>
+
+    <span class="mdc-list-item__text">
+        <span class="mdc-list-item__primary-text">
+            <span class="rating_{{rating.rating}}" style="font-size: 1em"></span>
+        </span>
+        <span class="mdc-list-item__secondary-text">
+            <span>
+                {{#if rating.comments}}
+                    {{rating.comments}}
+                {{else}}
+                    [No Comments]
+                {{/if}}
+            </span>
+        </span>
+    </span>
+</li>
