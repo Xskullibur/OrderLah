@@ -36,14 +36,7 @@
 
                             <div class="form-row">
 
-                                <div class="form-group col">
-                                    <div id="daterange" class="row mx-2" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                                        <i class="fa fa-calendar col-auto pt-1"></i>
-                                        <span class="col"></span> <i class="fa fa-caret-down pt-1 col-auto text-right"></i>
-                                        <input type="hidden" id="toDate" name="toDate">
-                                        <input type="hidden" id="frDate" name="frDate">
-                                    </div>
-                                </div>
+                                {{> date_range_picker}}
 
                             </div>
 
@@ -54,25 +47,6 @@
                                 </div>
                             </div>
 
-                            {{!-- <div class="row">
-
-                                <div class="col text-right">
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="filter_date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Filter Date
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="filter_date">
-                                            <a class="dropdown-item" href="/All_Time">All Time</a>
-                                            <a class="dropdown-item disabled" href="#">Disabled action</a>
-                                            <h6 class="dropdown-header">Section header</h6>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">After divider action</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div> --}}
                         </form>
 
                     </div>
@@ -208,6 +182,7 @@
 
 </div>
 
+<!--
 <script>
 
     $(function() {
@@ -217,8 +192,8 @@
 
         {{#if toDate}}
             {{#if frDate}}                
-                start = moment('{{frDate}}')
-                end = moment('{{toDate}}')
+                start = moment({{{frDate}}})
+                end = moment({{{toDate}}})
             {{/if}}
         {{/if}}
 
@@ -246,3 +221,4 @@
     });
 
 </script>
+-->
