@@ -33,26 +33,42 @@ io.on('connection', function(socket){
     console.log('a user connected');
     
     // On User Connect
-    socket.on('sessionid', function (msg) {
-        console.log(msg);
-        var sessionId = msg
+    socket.on('sessionid', function ({sessionId, csrf}) {
+        console.log(sessionId);
 
         //Store session id with socket id
         storeSocketIdForSessionId(socket.id, sessionId)
         storeSessionIdForSocketId(socket.id, sessionId)
+
+        client.get('socketToSession:'+socket.id, async function(err, sessionId){
+            getSessionBySessionID(sessionId, async (err, session) => {
+                let valid = verifyCSRFTokenFromSession(session, csrf)
+                if(!valid){
+                    socket.disconnect(true)
+                    return 
+                }
+            })
+        })
+
     })
 
     /**
      * Customer will send the order id upon connecting to socket
      */
-    socket.on('customer-init', function({publicOrderId}) {
+    socket.on('customer-init', function({publicOrderId, csrf}) {
 
+        client.get('socketToSession:'+socket.id, async function(err, sessionId){
+            getSessionBySessionID(sessionId, async (err, session) => {
 
-        order_util.getOrderFromPublicOrderID(publicOrderId).then(order =>{
+            let valid = verifyCSRFTokenFromSession(session, csrf)
+            if(!valid){
+                socket.disconnect(true)
+                return 
+            }
 
-            let orderId = order.id
-            client.get('socketToSession:'+socket.id, function(err, sessionId){
-                getSessionBySessionID(sessionId, async (err, session) => {
+            order_util.getOrderFromPublicOrderID(publicOrderId).then(async order =>{
+
+                let orderId = order.id
                     if(session.passport.user){
                         let valid = await order_util.checkOrderIsInUser(session.passport.user, orderId)
                         
@@ -66,8 +82,6 @@ io.on('connection', function(socket){
                     }
                 })
             })
-
-            
         })
 
     })
@@ -76,9 +90,6 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
-
-    // Customers events
-    socket.on('', function(){ })
 
     var STATUS = {
         OrderPending: 'Order Pending',
@@ -89,13 +100,21 @@ io.on('connection', function(socket){
 
     // Stallowners events
     // [On Update Order Status]
-    socket.on('update-status', async function({publicOrderId, qrcode}) {
+    socket.on('update-status', async function({publicOrderId, qrcode, csrf}) {
 
         let stallownerId = null
 
         //Update customer timing
         client.get('socketToSession:'+socket.id, async function(err, sessionId){
             await getSessionBySessionID(sessionId, async (err, stallownerSession) => {
+
+                //Check 
+                let valid = verifyCSRFTokenFromSession(stallownerSession, csrf)
+                if(!valid){
+                    socket.disconnect(true)
+                    return 
+                }
+
                 stallownerId = stallownerSession.passport.user
                 let stallOwner = await order_util.getStallInfo(stallownerId)
     
@@ -326,6 +345,12 @@ function storeSessionIdForSocketId(socketId, sessionId){
             }
         }
     })
+}
+
+const uuid_middleware = require('../uuid_middleware')
+function verifyCSRFTokenFromSession(session, csrf){
+    let valid = uuid_middleware.verifyFromSession(session, csrf, false)
+    return valid
 }
 
 module.exports = {sendOrderToStallOwner}

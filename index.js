@@ -171,25 +171,6 @@ app.use('/admin', adminRoutes)
 app.use('/customDialog', customDialogRoutes)
 
 
-// process.on('SIGTERM', () => {
-//     close()
-// });
-
-// process.on('SIGINT', () => {
-//     close()
-// });
-
-// process.on('exit', () => {
-//     close()
-// });
-
-// function close(){
-//     console.log('Closing http server.');
-//     server.close(() => {
-//         console.log('Http server closed.');
-//     });
-// }
-
 app.set('port', port);
 server.listen(port, () => {
     console.log(`Server is listening ${port}`);

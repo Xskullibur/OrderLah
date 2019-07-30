@@ -15,8 +15,8 @@ router.use(auth_login.auth)
  * GET 'sample'
  * Send sample dialog html
  */
-router.get('/sample', (req, res)=>{
-    res.render('customDialogs/sample', {layout: 'empty_layout'})
+router.get('/sample/:title', (req, res)=>{
+    res.render('customDialogs/sample', {layout: 'empty_layout', title:req.params.title})
 })
 
 module.exports = router

@@ -46,7 +46,7 @@ router.use(auth_login.authStallOwner)
  */
 
 //Current Orders Route
-router.get('/', (req, res, next) => {
+router.get('/', uuid_middleware.generate, (req, res) => {
     
     //Get Stall ID
     order_util.getStallInfo(req.user.id).then((stallOwner) => {
