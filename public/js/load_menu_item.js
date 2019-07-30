@@ -31,7 +31,7 @@ function generateRecommendedMenuCardItem(){
         insertContentToDivContainer($(recommended_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtonsInContainer(recommended_menu_container_selector, addOrder);
+        registerAllMenuItemsButtonsInContainer(recommended_menu_container_selector, showDescDialog);
     });
     
 }
@@ -44,7 +44,7 @@ function generateMenuCardItem(cusine = ''){
         insertContentToDivContainer($(all_menu_container_selector), json)
         //Do staggering animations for the items
         doStaggerAnimation();
-        registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
+        registerAllMenuItemsButtonsInContainer(all_menu_container_selector, showDescDialog);
     });
 }
 
@@ -55,7 +55,7 @@ function generateSearchMenuCardItem(query){
       insertContentToDivContainer($(all_menu_container_selector), json)
       //Do staggering animations for the items
       doStaggerAnimation();
-      registerAllMenuItemsButtonsInContainer(all_menu_container_selector, addOrder);
+      registerAllMenuItemsButtonsInContainer(all_menu_container_selector, showDescDialog);
   });
 }
 
@@ -69,6 +69,10 @@ function registerAllMenuItemsButtonsInContainer(containerSelector, fn){
       fn(menuItemId);
       
     });
+}
+
+function showDescDialog(menuItemId) {
+  showCustomDialog(`/customDialog/itemDesc?id=${menuItemId}`)
 }
 
 function addOrder(menuItemId){

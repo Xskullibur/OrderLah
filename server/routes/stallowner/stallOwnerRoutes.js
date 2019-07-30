@@ -293,8 +293,8 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
     
-    toDate = req.query.toDate
-    frDate = req.query.frDate
+    toDate = SqlString.escape(req.query.toDate);
+    frDate = SqlString.escape(req.query.frDate);
     filter = false
     title = "Charts"
     fitlerStatement = ""
@@ -356,6 +356,9 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
     // Get Rating Count
     function getRatingCount(menuItemId, rating) {
+
+        menuItemId = SqlString.escape(menuItemId);
+        rating = SqlString.escape(rating);
 
         return new Promise(function(resolve, reject) {
             db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating

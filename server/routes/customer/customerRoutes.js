@@ -101,9 +101,6 @@ router.get('/pastOrders', (req, res) => {
             },
         },currentOrders})
     })
-
-
-
 });
 
 router.post('/checkOrder', (req, res) =>{

@@ -108,7 +108,7 @@ async function getTotalAmount(req){
 
     for(var orderline of req.cart.items){ 
         console.log(orderline.itemId)
-        await menuItem.findOne({where:{id: orderline.itemId}}).then(setPrice =>{
+        await menu_item_util.getMenuItemByID(orderline.itemId).then(setPrice =>{
             totalAmount = totalAmount + parseFloat(setPrice.price)
         })
     }
