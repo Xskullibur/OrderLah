@@ -41,9 +41,9 @@ describe('Users', () => {
       
     })
 
-    // it('Register user (Bad)', (err) => {
-    //   user_test.registerUser('3434', '/;', 's', '1', '19999-34-12', 'sdsdsd')
-    // })
+    it('Register user (Bad)', (err) => {
+      user_test.registerUser('3434', '/;', 's', '1', '19999-34-12', 'sdsdsd')
+    })
 
 
     it('Login user (Good)', (done) => {

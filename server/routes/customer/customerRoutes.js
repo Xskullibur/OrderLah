@@ -91,14 +91,14 @@ router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_midd
  */
 router.get('/pastOrders', (req, res) => {
     order_utils.getOrdersWithMenuItemsByUserId(req.user.id).then(currentOrders => {
-        res.render('customer/pastorders', {helpers: {
+        res.render('customer/pastorders', {nav: 'pastOrders', helpers: {
             calcTotal(order){
                 let sum = 0;
                 order.menuItems.forEach(order => {
                     sum += order.price*order.orderItem.quantity
                 });
                 return sum.toFixed(2);
-            },
+            }
         },currentOrders})
     })
 });

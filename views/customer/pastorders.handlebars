@@ -28,10 +28,12 @@
                                             </div>
                                             {{#ifCondition order.status '!=' 'Collection Confirmed'}}
                                             <div class="col-2 d-flex">
-                                                <div class="ring-container" style="min-height: 40px; min-width: 40px;">
-                                                    <div class="ring small-ping"></div> <a class="dot" href="/orderStatus/{{order.publicOrderID}}"></a>
+                                                <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
+                                                    <div class="ring-container" style="min-height: 40px; min-width: 40px;">
+                                                        <div class="ring small-ping"></div> <a class="dot"></a>
+                                                    </div>
+                                                    <div><span class="text-bold" style="position: absolute;top:16%;">Live</span></div>
                                                 </div>
-                                                <div><span class="text-bold" style="position: absolute;top:16%;">Live</span></div>
                                             </div>
                                             {{/ifCondition}}
                                             <div class="col text-right">
@@ -88,3 +90,4 @@
 {{else}}
     <h3>No Orders</h3>
 {{/if}}
+<script text="application/javascript" src="/js/pastorder.js"></script>

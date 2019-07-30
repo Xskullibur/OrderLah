@@ -5,6 +5,7 @@ const Stall = globalHandle.get('stall')
 
 //Sequelize
 const Sequelize = require('sequelize')
+var SqlString = require('sequelize/lib/sql-string');
 
 /**
 * Stall object
