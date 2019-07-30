@@ -48,8 +48,9 @@ async function createData(stallId, menuItem) {
 
     for (var d = threeMonthsAgo; d <= now; d.setDate(d.getDate() + 1)) {
         console.log(`\n\n DATE: ${new Date(d)}\n\n`)
+        randomNo = await getRandomNumberInRange(1, 5)
     
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < randomNo; i++) {
             userId = await getRandomNumberInRange(1, 7)
             ratings = await getRandomNumberInRange(1, 5)
             quantity = await getRandomNumberInRange(1, 3)
