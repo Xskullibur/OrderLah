@@ -146,7 +146,7 @@ $(document).ready(function (){
 
                         <div class="row">
                             <div class="col text-right">
-                                ${orderTotal}   
+                                $${orderTotal}   
                             </div>
                         </div>
     

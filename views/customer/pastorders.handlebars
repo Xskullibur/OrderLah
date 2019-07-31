@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="/css/effect/ping.css">
+<link rel="stylesheet" href="/css/md/md_chip.css">
+<script text="application/javascript" src="/js/load_menu_item.js"></script>
 <div class="container" style="position: relative; top: 5vh; width:">
 
 <div class="row">
@@ -7,12 +9,13 @@
 
     <div class="row pb-4">
         <div class="col">
-            <div class="card text-white bg-light">
+            <div class="card bg-light">
                 <div class="card-body container-fluid">
 
                     <form class="form" action="/pastOrders">
                         <div class="form-row">
                             <div class="form-group col">
+                                <label for="daterange">Date Range:</label>
                                 {{> date_range_picker}}
                             </div>
                         </div>
@@ -32,7 +35,7 @@
     </div>
 
     {{#if currentOrders}}
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col-md-12">
 
                 <div class="list-group">
@@ -40,20 +43,26 @@
                 {{#each currentOrders as |order|}}
                     <div class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1 font-weight-bold">
-                                Order: {{substringTo5 order.publicOrderID}}
-                                {{#ifCondition order.status '!=' 'Collection Confirmed'}}
-                                <div class="col-2 d-flex">
-                                    <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
-                                        <div class="ring-container" style="min-height: 40px; min-width: 40px;">
-                                            <div class="ring small-ping"></div> <a class="dot"></a>
+                            <h5 class="font-weight-bold">
+                                <div class="row">
+                                    <div class="col p-0">
+                                        {{#ifCondition order.status '!=' 'Collection Confirmed'}}
+                                        <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
+                                            <div class="ring-container" style="min-height: 40px; min-width: 40px;">
+                                                <div class="ring small-ping"></div> <a class="dot"></a>
+                                            </div>
+                                            <div><span class="text-small" style="position: absolute;top:30%;font-size: .69em;">Live</span></div>
                                         </div>
-                                        <div><span class="text-bold" style="position: absolute;top:16%;">Live</span></div>
+                                        {{/ifCondition}}
                                     </div>
                                 </div>
-                                {{/ifCondition}}
+                                <div class="row">
+                                    <div class="col">
+                                        Order: {{substringTo5 order.publicOrderID}}
+                                    </div>
+                                </div>
                             </h5>
-                            <small class="text-right font-weight-bold">
+                            <small class="float-right font-weight-bold">
                                 <div class="row">
                                     <div class="col">
                                         Order Timing: {{formatDate order.orderTiming "hh:mm:ss"}}
@@ -65,21 +74,39 @@
                                     </div>
                                 </div>
                             </small>
+                            
                         </div>
+
+                        <hr>
+
                         <p class="mb-1">
                             {{#each order.menuItems as |item|}}
-                            <div class="row">
-                                <div class="col">
-                                    {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                            <div class="row mb-2">
+                                <div class="col-9">
+                                    {{item.itemName}}
+                                    
+                                        <span class="badge  mx-0 mx-lg-3 p-2" style="background-color: lightgray; width: 38px; height: 25px;"><i class="material-icons fas fa-times d-inline"></i> <span class="font-weight-bold m-0 d-inline">{{item.orderItem.quantity}}</h6></span>
+
+                                     
+                                    {{!-- <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span> --}}
                                 </div>
                                 <div class="col text-right">
-                                    <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
-                                    <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
+                                    ${{doCalc item.price "*" item.orderItem.quantity}}
+                                </div>
+                            </div>
+                            <div class="row mb-3 mt-2">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-danger my-2 my-sm-0" type="submit" onclick="showCustomDialog('/customDialog/itemDesc?id={{item.id}}')">View product page</button>
+                                    <button class="btn btn-sm btn-danger my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
                                 </div>
                             </div>
                             {{/each}}
                         </p>
-                        <small>Total Amount: ${{calcOrderTotal order}}</small>
+
+                        <hr>
+
+                        <p class="text-right">Total Amount: ${{calcOrderTotal order}}</p>
+
                     </div>
 
                     <!--

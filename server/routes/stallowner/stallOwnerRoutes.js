@@ -35,6 +35,7 @@ const app = globalHandle.get('app')
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
@@ -197,35 +198,29 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 // Orders
 router.get('/orderDetails/allOrders/', (req, res, next) => {
 
-    //Check for filters
-    let orderFilter = req.query.orderNo
-    let dateFilter = req.query.orderDate
+    // let dateFilter = req.query.orderDate
     let title = "Orders"
     let filter = false
     let error
 
-    if (orderFilter && dateFilter) {
-        error = "Only one filter is allowed to be applied..."
-    }
-    else if (orderFilter){
-        if (isNaN(orderFilter)) {
-            error = "Please input a valid Order Number"
-        }
-        filterCondition = { id: orderFilter }
-        filter = true
-    }
-    else if (dateFilter) {
-        if (!Date.parse(dateFilter)) {
-            error = "Please input a valid Order Date"
-        }
-        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
-        filter = true
+    frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    toDate = moment().toString('YYYY-MM-DD')
+
+    if (req.query.toDate && req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
     }
 
     //Get StallID of logged in stallowner
     order_util.getStallInfo(req.user.id).then(stallOwner => {
 
-        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
+        whereCondition = [{
+            stallId: stallOwner.stall.id, 
+            status: 'Collection Confirmed',
+        },
+            db.where(db.fn('DATE', Sequelize.col('orderTiming')), '<=', toDate),
+            db.where(db.fn('DATE', Sequelize.col('orderTiming')), '>=', frDate),
+        ]
 
         if (filter) {
             whereCondition.push(filterCondition)
@@ -241,7 +236,7 @@ router.get('/orderDetails/allOrders/', (req, res, next) => {
             }]
         }).then(allOrders => {
             res.render('stallOwner/allOrders',{
-                allOrders, orderFilter, dateFilter, error, title,
+                allOrders, error, title, toDate, frDate,
                 nav: 'orderDetails'
             })
         })
