@@ -1,25 +1,16 @@
 
 function submitToken(){
-  //TODO: Implement token submission
-  var mail = $('#registerForm input[name=email]').val();
+  if(document.getElementById('registerForm').reportValidity()){
+    stepToSlide(2);
+    var mail = $('#registerForm input[name=email]').val();
   
-  $.ajax({
-    method: "POST",
-    url: "requesttoken",
-    data: {email: mail} //to be replaced by the email user submits in the form
-  })
+    $.ajax({
+      method: "POST",
+      url: "requesttoken",
+      data: {email: mail} //to be replaced by the email user submits in the form
+    })
+  }
 }
-
-/*function checkToken(){
-  var code = $('#registerForm2 input[name=code]').val();
-
-  $.ajax({
-    method: "POST",
-    url: "checktoken",
-    data: {code: code} 
-  })
-}*/
-
 /**
  * Submit form
  */
@@ -34,11 +25,6 @@ function submitForm(){
 
   form_data.code = $('#registerForm2 input[name=code]').val();
 
-  /*$.ajax({
-    method: "POST",
-    url: "register",
-    data: {code: code} 
-  })*/
 
   $.ajax({
     method: "POST",
@@ -52,7 +38,7 @@ function submitForm(){
   }).catch(err => {
     registerMessage.removeClass('text-success')
     registerMessage.addClass('text-danger');
-    registerMessage.text('Failed to create user account!');
+    registerMessage.text(err);
     stepToSlide(3);
   });
 }
