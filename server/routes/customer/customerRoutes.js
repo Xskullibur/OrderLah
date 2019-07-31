@@ -51,16 +51,27 @@ router.use(auth_login.auth)
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review/:id/:orderid', (req, res)=> {
-    OrderItem.findOne({
+    Order.findOne({
         where: {
-            menuItemId: req.params.id,
-            orderId: req.params.orderid
-        }
+            id: req.params.orderid,
+        }        
     })
-    .then((orderItem) => {
-        res.render('customer/review', {
-            orderItem
-        });
+    .then((order) =>{
+        if(order.userId == req.user.id){
+            OrderItem.findOne({
+                where: {
+                    menuItemId: req.params.id,
+                    orderId: req.params.orderid
+                }
+            })
+            .then((orderItem) => {
+                res.render('customer/review', {
+                    orderItem
+                });
+            })
+        }else{
+            res.redirect('/logout')
+        }
     })
 });
 

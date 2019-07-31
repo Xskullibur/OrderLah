@@ -115,16 +115,6 @@ router.post('/resetpassword/:id', (req, res) =>{
             console.log('reset password success! New password is: ', hash)
         }).catch((err) => console.error(err));
       });
-    // User.update({
-    //     password
-    // }, {
-    //     where: {
-    //         id: req.params.id
-    //     }
-    // }).then(() => {
-    //     res.redirect('/login');
-    //     console.log('reset password success! New password is: ', password)
-    // }).catch((err) => console.error(err));
 })
 
 passport.use(new LocalStrategy({usernameField: 'email',},
