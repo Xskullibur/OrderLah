@@ -112,7 +112,7 @@ function addOrder(menuItemId){
 function promptRemoveOrder(orderLineId){
   showDialog({title: 'Warning', body:'Are you sure you want to remove this order?'}).then(() =>{
     removeOrder(orderLineId);
-  }).catch)_
+  })
 }
 
 function removeOrder(orderLineId){

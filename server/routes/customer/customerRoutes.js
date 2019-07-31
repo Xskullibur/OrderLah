@@ -91,7 +91,7 @@ router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("
  */
 router.get('/pastOrders', (req, res) => {
     order_utils.getOrdersWithMenuItemsByUserId(req.user.id).then(currentOrders => {
-        res.render('customer/pastorders', {nav: 'pastOrders', helpers: {
+        res.render('customer/pastorders2', {nav: 'pastOrders', helpers: {
             calcTotal(order){
                 let sum = 0;
                 order.menuItems.forEach(order => {

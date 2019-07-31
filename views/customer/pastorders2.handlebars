@@ -1,20 +1,46 @@
-<li class="mdc-list-item">
-    <span class="mdc-list-item__graphic">
-        <img src="{{#if rating.image}}img/reviewimages/{{rating.image}}{{else}}img/no-image.jpg{{/if}}" style="border-radius: 50%; width: 50px; height: 50px;" alt="">
-    </span>
+<link rel="stylesheet" href="/css/md/md_list.css">
+    <div class="card p-4">
+        <div class="card-body container-scoll p-2">
+            {{#if currentOrders}}
+                
+                {{#each currentOrders as |order|}}                                               
+                <ul class="mdc-list">
 
-    <span class="mdc-list-item__text">
-        <span class="mdc-list-item__primary-text">
-            <span class="rating_{{rating.rating}}" style="font-size: 1em"></span>
-        </span>
-        <span class="mdc-list-item__secondary-text">
-            <span>
-                {{#if rating.comments}}
-                    {{rating.comments}}
-                {{else}}
-                    [No Comments]
-                {{/if}}
-            </span>
-        </span>
-    </span>
-</li>
+                    <li class="mdc-list-item-subheader">
+                        Order: {{substringTo5 order.publicOrderID}}
+                    </li>
+
+                    <ul class="mdc-list-group mdc-list--three-line">
+
+                        {{#each order.menuItems as |item|}}
+                        <li class="mdc-list-item">
+
+                            <span class="mdc-list-item__graphic">
+                                <img src="/img/{{#if item.image}}uploads/{{item.image}}{{else}}no-image.jpg{{/if}}" style="border-radius: 50%; width: 50px; height: 50px;" alt"">
+                            </span>
+
+
+                            <span class="mdc-list-item__text">
+                                <span class="mdc-list-item__primary-text">
+                                    {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}  
+                                </span>
+                                {{!-- <span class="mdc-list-item__secondary-text">
+                                </span> --}}
+                            </span>
+
+                        </li>
+                        <hr class="mdc-list-divider">
+                        {{/each}}
+
+                    </ul>
+
+                </ul>
+                {{/each}}
+
+            {{else}}
+                <div class="alert alert-success" role="alert">
+                    <p>You have not ordered anything yet.</p>
+                </div>
+            {{/if}}
+        </div>
+    </div>
