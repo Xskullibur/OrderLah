@@ -3,12 +3,24 @@
     var alertCount = 0;
     /**
     * Show alert message box
-    * @param {message} message to be shown on the alert
-    * @param {timeout} set the timeout time (ms) for the alert to be dismissed, 
+    * @param message {string} - message to be shown on the alert
+    * @param timeout {number} - set the timeout time (ms) for the alert to be dismissed, 
         setting this to -1 will make the alert show indefinitely (default: 3000ms)
-    * @param {type} set the bootstrap alert type (default: alert-primary)
+    * @param type {string} - set the bootstrap alert type (default: alert-primary)
     */
     function showAlert(message, timeout=3000, type="alert-primary"){
+        showAlertInSelector(message, '#popup-container', timeout, type);
+    }
+
+    /**
+    * Show alert message box inside a selector element
+    * @param message {string} - message to be shown on the alert
+    * @param selectorContainer {string} - selector for the element container
+    * @param timeout {number} - set the timeout time (ms) for the alert to be dismissed, 
+        setting this to -1 will make the alert show indefinitely (default: 3000ms)
+    * @param type {string} -  set the bootstrap alert type (default: alert-primary)
+    */
+    function showAlertInSelector(message, selectorContainer, timeout=3000, type="alert-primary"){
         const popup_html = $(`<div id="popup-alert-${alertCount}" class="popup-item">
                 <div class="alert m-0 ${type}" role="alert">
                 <button type="button" class="close" aria-label="Close" onclick="removeAlert($('#popup-alert-${alertCount}'))">
@@ -17,7 +29,7 @@
                 ${message}
                 </div>
                 </div>`);
-        popup_html.appendTo('#popup-container');
+        popup_html.appendTo(selectorContainer);
         //Reflow
         popup_html.css('opacity');
 

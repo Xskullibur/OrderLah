@@ -42,6 +42,8 @@ const db = globalHandle.get('db')
 
 var validator = require('validator')
 
+
+
 router.use(auth_login.authStallOwner)
 
 /**
@@ -584,17 +586,21 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
                     const stallId = theStall.id
             
                     MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
-                        displayAlert.push('Item successfully added')
-                        res.redirect('/stallOwner/showMenu')
+                        req.session.alerts = [{
+                            message: 'Item successfully added'
+                        }]
+                        res.send('success')                      
                     }).catch(err => console.log(err))
                 })
             }else{
+                uuid_middleware.registerToken(req, req.body.csrf)
+                res.status(400)
                 res.send('validation check failed')
             }
         }else{
-            errorAlert = []
-            errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
-            res.render('stallOwner/stallOwnerModel/failMenuModel', {layout: 'empty_layout', errorAlert: errorAlert, displayName: itemName, displayPrice: price, displayDesc: itemDesc})          
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The name ' + itemName + ' is already taken, item not added!')          
         }
     })
 })
