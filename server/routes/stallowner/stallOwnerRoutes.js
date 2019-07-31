@@ -592,32 +592,9 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
                 res.send('validation check failed')
             }
         }else{
-            DisplayName = itemName
-            DisplayPrice = price
-            DisplayDesc = itemDesc
+            errorAlert = []
             errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
-
-            User.findOne({where: currentUser}).then(user => {
-                if(user.role === 'Stallowner'){
-                   Stall.findOne({where: {userId: currentUser}}).then(myStall => {
-                       MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                           res.render('stallOwner/stallowner-menu', {
-                               item:item,
-                               stall: myStall,                      
-                               DisplayName: DisplayName,
-                               DisplayPrice: DisplayPrice,
-                               DisplayDesc: DisplayDesc,
-                               errorAlert: errorAlert,
-                               nav: 'manageMenu'
-                           })                         
-                           errorAlert = []
-                           DisplayName = ""
-                           DisplayPrice = ""
-                           DisplayDesc = ""                   
-                       })    
-                   })
-               }   
-            })
+            res.render('stallOwner/stallOwnerModel/failMenuModel', {layout: 'empty_layout', errorAlert: errorAlert, displayName: itemName, displayPrice: price, displayDesc: itemDesc})          
         }
     })
 })
@@ -660,30 +637,8 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
             }).catch(err => console.log(err))
         }else{           
             updateError.push('The name ' + itemName + ' is already taken, item not updated!')
-            DisplayNameUpdate = itemName
-            DisplayPriceUpdate = price
-            DisplayDescUpdate = itemDesc  
-            User.findOne({ where: {id: currentUser} }).then(user => {
-                if(user.role === 'Stallowner'){
-                   Stall.findOne({where: {userId: currentUser}}).then(myStall => {
-                       MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                           res.render('stallOwner/stallowner-menu', {
-                               item:item,
-                               stall: myStall,                             
-                               DisplayNameUpdate: DisplayNameUpdate,
-                               DisplayPriceUpdate: DisplayPriceUpdate,
-                               DisplayDescUpdate: DisplayDescUpdate,                      
-                               updateError: updateError,
-                               nav: 'manageMenu'
-                           })                          
-                           updateError = []                         
-                           DisplayNameUpdate = ""
-                           DisplayPriceUpdate = ""
-                           DisplayDescUpdate = ""
-                       })    
-                   })     
-                }
-            })
+            
+            
         }
     })
 })
