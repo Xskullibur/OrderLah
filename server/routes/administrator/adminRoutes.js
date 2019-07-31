@@ -16,6 +16,8 @@ const MenuItem = globalHandle.get('menuItem');
 const Stall = globalHandle.get('stall');
 const User = globalHandle.get('user')
 
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 //Get App
 const app = globalHandle.get('app')
 
@@ -88,7 +90,7 @@ function checkUniquePhone(theNumber){
     })
 }
 
-router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
+router.get('/adminPanel', uuid_middleware.generate, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
         User.findAll({where: {role: "Inactive"}}).then((inactive) =>{
             res.render('admin/admin', {
@@ -103,7 +105,7 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     })
 })
 
-router.post('/submitStall', auth_login.authAdmin, async (req, res) =>{
+router.post('/submitStall', uuid_middleware.verify, async (req, res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true
@@ -122,30 +124,38 @@ router.post('/submitStall', auth_login.authAdmin, async (req, res) =>{
 
     await checkUniqueUsername(username).then(isUnique => {
         if(!isUnique){
-            errorAlert.push(' username: ' + username + ' ')
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The username ' + username + ' is already taken')
         }
     })
 
     await checkUniqueEmail(email).then(isUnique =>{
         if(!isUnique){
-            errorAlert.push(' Email: ' + email + ' ')
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The email ' + email + ' is already taken')
         }
     })
 
     await checkUniquePhone(phone).then(isUnique => {
         if(!isUnique){
-            errorAlert.push(' Phone: ' + phone + ' ')
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The Phone Number ' + phone + ' is already taken')
         }
     })
 
     await checkUniqueStall(stallName).then(isUnique => {
         if(!isUnique){
-            errorAlert.push(' Stall name: ' + stallName + ' ')
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The stall name ' + stallName + ' is already taken')
         }
     })
 
     if(errorAlert.length > 0){
-        res.redirect('/admin/adminPanel')
+        //      
     }else{
         User.create({
             username, firstName, lastName, email, birthday, password, phone, role
@@ -172,11 +182,11 @@ router.post('/submitStall', auth_login.authAdmin, async (req, res) =>{
                             console.log('Email sent: ' + info.response);
                         }
                     })   
-                })
-    
-                //res.render('./successErrorPages/createStallSuccess')
-                displayAlert.push("successfully added stall!")
-                res.redirect('/admin/adminPanel')
+                })  
+                req.session.alerts = [{
+                    message: 'Item successfully added'
+                }]
+                res.send('success')          
             }).catch(err => console.log(err))
     
         }).catch(err => console.log(err))
@@ -285,6 +295,10 @@ router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
             displayStallowner: stallowner,
         })
     })  
+})
+
+router.get('/showCreateStall', uuid_middleware.generate, (req, res) =>{
+    res.render('admin/stallCreateModel', {layout: 'empty_layout'})
 })
 
 module.exports = router;
