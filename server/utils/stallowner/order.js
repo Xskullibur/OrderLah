@@ -18,6 +18,7 @@ const uuidv4 = require('uuid/v4')
 
 //Sequelize
 const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 var SqlString = require('sequelize/lib/sql-string');
 
 /**
@@ -91,13 +92,20 @@ module.exports = {
     /**
      * Get all user orders (includes MenuItem) 
      * @param {number} userId - User id of all the orders
+     * @param {Date} toDate
+     * @param {Date} frDate
      * @return {Promise}
      */
-    getOrdersWithMenuItemsByUserId: function(userId){
+    getOrdersWithMenuItemsByUserId: function(userId, toDate = null, frDate = null){
+
+        whereCondition = {userId}
+
+        if (toDate && frDate) {
+            whereCondition.orderTiming = { [Op.between]:[frDate, toDate] }
+        }
+
         return Order.findAll({
-            where: {
-                userId
-            },
+            where: [whereCondition],
             order: Sequelize.literal('orderTiming DESC'),
             include: [{
                 model: MenuItem

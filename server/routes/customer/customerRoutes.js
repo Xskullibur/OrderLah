@@ -30,6 +30,7 @@ const Order = globalHandle.get('order')
 
 //Sequelize
 const Sequelize = require('sequelize')
+const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
 //Get App
@@ -90,8 +91,19 @@ router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("
  * returns all past orders page, displaying all orders user had
  */
 router.get('/pastOrders', (req, res) => {
-    order_utils.getOrdersWithMenuItemsByUserId(req.user.id).then(currentOrders => {
-        res.render('customer/pastorders2', {nav: 'pastOrders', helpers: {
+    
+    frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    toDate = moment().toString('YYYY-MM-DD')
+
+    if (req.query.toDate && req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
+    }
+
+
+    order_utils.getOrdersWithMenuItemsByUserId(req.user.id, toDate, frDate).then(currentOrders => {
+
+        res.render('customer/pastorders', {nav: 'pastOrders', helpers: {
             calcTotal(order){
                 let sum = 0;
                 order.menuItems.forEach(order => {
@@ -99,7 +111,7 @@ router.get('/pastOrders', (req, res) => {
                 });
                 return sum.toFixed(2);
             }
-        },currentOrders})
+        }, currentOrders, toDate, frDate})
     })
 });
 

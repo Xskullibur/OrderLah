@@ -260,11 +260,11 @@ router.get('/orderDetails/charts/', (req, res) =>{
     fitlerStatement = ""
     
     if (req.query.toDate || req.query.frDate) {
-        toDate = SqlString.escape(req.query.toDate);
-        frDate = SqlString.escape(req.query.frDate);
+        toDate = req.query.toDate
+        frDate = req.query.frDate
 
         filter = true
-        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN ${frDate} AND ${toDate} `    
+        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN ${SqlString.escape(frDate)} AND ${SqlString.escape(toDate)} `    
     }
 
     function getStallOwner() {
