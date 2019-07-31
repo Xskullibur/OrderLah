@@ -116,12 +116,7 @@
     });
 
     function createMenuItem(){
-        //Get form values 
-        var form_data = {csrf: $('#csrf-token').val()};
-        //Get form data as array and convert it into a json object
-        $('#createMenu').serializeArray().forEach(e => {
-            form_data[e.name] = e.value;
-        });
+        var form_data = new FormData(document.getElementById('createMenu'));
 
 
         $.ajax({
@@ -129,6 +124,8 @@
             url: "/stallOwner/submitItem",
             data: form_data,
             dataType: 'text',
+            contentType: false,
+            processData: false,
             success: function (html, status, response) {
                 location.reload();
             },
