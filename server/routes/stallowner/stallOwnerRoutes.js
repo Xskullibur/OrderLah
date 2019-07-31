@@ -11,6 +11,9 @@ const upload = multer({storage : storage })
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
 
+//Setup uuid for csrf authentication
+const uuid_middleware = require('../../libs/uuid_middleware')
+
 //MomentJS
 const moment = require('moment')
 
@@ -32,6 +35,7 @@ const app = globalHandle.get('app')
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
+const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
 var validator = require('validator')
@@ -43,7 +47,7 @@ router.use(auth_login.authStallOwner)
  */
 
 //Current Orders Route
-router.get('/', (req, res, next) => {
+router.get('/', uuid_middleware.generate, (req, res) => {
     
     //Get Stall ID
     order_util.getStallInfo(req.user.id).then((stallOwner) => {
@@ -68,7 +72,8 @@ router.get('/', (req, res, next) => {
         }).then((currentOrders) => {
 
             res.render('stallOwner/currentOrders2', {
-                currentOrders
+                currentOrders,
+                nav: 'currentOrders'
             });
 
         }).catch((err) => console.error(err));
@@ -94,7 +99,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
             if (req.params.monthYear == undefined) {                    // Check if date(Month-Year) is selected
                 dateNotSelected = true;                                 // Indicate that a date(Month-Year) is selected
                 res.render('../views/stallOwner/monthlySummary',{       // Render page w/o pulling data
-                    month, dateNotSelected, title
+                    month, dateNotSelected, title,
+                    nav: 'monthlySummary'
                })
             }
             else{                                                               // date(Month-Year) indicated
@@ -176,7 +182,8 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
                     }
 
                     res.render('stallOwner/monthlySummary',{
-                        month, formatedOrder, title, selectedDate, stallOwner
+                        month, formatedOrder, title, selectedDate, stallOwner,
+                        nav: 'monthlySummary'
                     })
                 })
             }
@@ -188,7 +195,7 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 // Orders
-router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
+router.get('/orderDetails/allOrders/', (req, res, next) => {
 
     //Check for filters
     let orderFilter = req.query.orderNo
@@ -225,78 +232,40 @@ router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
             title += " (Filtered)"
         }
 
-        //Get total number of orders for the Stall
-        Order.count({ where: whereCondition }).then(orderCount => {
-
-            let currentPage = req.params.pageNo;                // Current page user is on
-            let offset = 0;                                     // Starting index of items
-            let limit = 5;                                      // Number of items per page
-            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
-
-    
-            /**
-             * If user is not on 1st page,
-             * calculate offset based on
-             * currentPage * limit (number of items per page)
-             */
-            if (currentPage !== 1) {
-                offset = (currentPage - 1) * limit
-            }
-
-            // Get paginated orders
-            Order.findAll({
-                where: whereCondition,                          // Filtered based on Status and Stall
-                offset,
-                limit,
-                order: Sequelize.col('orderTiming'),
-                include: [{
-                    model: MenuItem
-                }]
-            }).then(allOrders => {
-    
-                currentPage = parseInt(currentPage)
-    
-                res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
-                     helpers: {
-    
-                        //Pagination previous button Helper
-                        getPrevious(currentPg){
-                            if (currentPg > 1) {
-                                return currentPg - 1
-                            }
-                         },
-    
-                         //Pagination next button Helper
-                         getNext(currentPg){
-                             if (currentPg < pages) {
-                                 return currentPg + 1
-                             }
-                         }, 
-                    }
-                })
+        // Get paginated orders
+        Order.findAll({
+            where: whereCondition,                          // Filtered based on Status and Stall
+            order: Sequelize.col('orderTiming'),
+            include: [{
+                model: MenuItem
+            }]
+        }).then(allOrders => {
+            res.render('stallOwner/allOrders',{
+                allOrders, orderFilter, dateFilter, error, title,
+                nav: 'orderDetails'
             })
-    
-    
         })
+            
     })
 
 });
 
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
-    
-    toDate = req.query.toDate
-    frDate = req.query.frDate
+
+    toDate = undefined, frDate = undefined
+
     filter = false
     title = "Charts"
     fitlerStatement = ""
+    
+    if (req.query.toDate || req.query.frDate) {
+        toDate = SqlString.escape(req.query.toDate);
+        frDate = SqlString.escape(req.query.frDate);
 
-    if (toDate && frDate) {
         filter = true
-        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN '${frDate}' AND '${toDate}' `    
-    }   
-
+        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN ${frDate} AND ${toDate} `    
+    }
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
@@ -349,6 +318,9 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
     // Get Rating Count
     function getRatingCount(menuItemId, rating) {
+
+        menuItemId = SqlString.escape(menuItemId);
+        rating = SqlString.escape(rating);
 
         return new Promise(function(resolve, reject) {
             db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating
@@ -437,7 +409,8 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
         // res.send(EachItemRating)
         res.render('stallOwner/orderCharts', {
-            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate
+            OrdersPerItem, AvgRatingPerItem, EachItemRating, title, frDate, toDate,
+            nav: 'orderDetails'
         });
     }
 
@@ -532,7 +505,8 @@ router.get('/orderDetails/ratings/', (req, res) => {
         // res.send(items)
 
         res.render('stallOwner/ratingsView', {
-            allRatings, title, menu_items, item_filter, rating_filter
+            allRatings, title, menu_items, item_filter, rating_filter,
+            nav: 'orderDetails'
         })
 
     }
@@ -567,29 +541,32 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', (req, res) => {
+router.get('/showMenu', uuid_middleware.generate, (req, res) => {
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
                         displayAlert: displayAlert,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     displayAlert = []
                     errorAlert = []
                 })    
             })
         }else{
-            res.render('./successErrorPages/error')
+            res.render('./successErrorPages/error', {
+                nav: 'manageMenu'
+            })
         }      
       })
 })
 
-router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{
+router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
@@ -618,7 +595,7 @@ router.post('/submitItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
     displayAlert.push('Item deleted!')
     const active = false
     const id = req.body.itemID
@@ -628,7 +605,7 @@ router.post('/deleteItem', auth_login.authStallOwner, (req, res) =>{
     }).catch(err => console.log(err))
 })
 
-router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage"), (req, res) =>{   
+router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
@@ -656,17 +633,18 @@ router.post('/updateItem', auth_login.authStallOwner, upload.single("itemImage")
     })
 })
 
-router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
+router.post('/filterItem', (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
-                    res.render('stallowner-menu', {
+                    res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,
-                        errorAlert: errorAlert
+                        errorAlert: errorAlert,
+                        nav: 'manageMenu'
                     })
                     errorAlert = []
                 })    
@@ -677,24 +655,12 @@ router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
       })
 })
 
-router.post('/viewComment', auth_login.authStallOwner, (req, res) => {
-    const itemID = req.body.itemID
-    console.log(itemID)
-    const id = req.user.id
-    MenuItem.findOne({where : {id: itemID}}).then(menu =>{
-        User.findOne({ where: id }).then(user => {
-            if(user.role === 'Stallowner'){
-               OrderItem.findAll({where: {menuItemId: itemID}}).then((items) =>{
-                   res.render('stallmenu-comment', {
-                       items: items,
-                       menu: menu
-                   })
-               })
-           }else{
-               res.render('./successErrorPages/error')
-           }      
-         })
-    })   
+router.get('/showAddMenu', uuid_middleware.generate, (req, res) =>{
+    res.render('stallOwner/stallOwnerModel/addMenuModel', {layout: 'empty_layout'})
+})
+
+router.post('/showEditMenu', uuid_middleware.generate, (req, res) =>{
+    res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout'})
 })
 
 module.exports = router;

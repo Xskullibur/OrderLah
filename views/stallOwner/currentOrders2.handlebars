@@ -49,12 +49,15 @@
                     <div class="row">
                         <div class="col">
                             <div class="card p-4" id="card-view">
-                                <div class="card-columns" id="all-orders-column">
+                                {{!-- <div class="card-columns" id="all-orders-column"> --}}
+
+                                <div id="all-orders-column" class="container-fluid">
                                 {{#if currentOrders}}
 
                                         {{!-- Order Cards --}}
                                         {{#each currentOrders as |order|}}
-                                            <div class="card shadow-sm" id="orderCard_{{order.publicOrderID}}">
+                                        <div class="d-inline-block p-3">
+                                            <div class="card shadow-sm" id="orderCard_{{order.publicOrderID}}" style="width: 15rem">
 
                                                 {{!-- Header / Order ID, Order Timing --}}
                                                 <div class="card-header font-weight-bold bg-danger text-right text-white">
@@ -65,7 +68,7 @@
                                                     </div>
                                                     <div class="row justify-content-between">
                                                         <div class="col">
-                                                            <h6>{{formatDate order.orderTiming "HH:MM:SS"}}</h6>
+                                                            <h6>{{formatDate order.orderTiming "hh:mm:ss"}}</h6>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -124,13 +127,15 @@
                                                 </div>
 
                                             </div>
+                                        </div>
                                         {{/each}}
                                         
                                 {{else}}
                                     </div>
                                     {{> current_orders/no_orders_alert}}    
                                 {{/if}}
-                            </div>
+                                </div>
+                            {{!-- </div> --}}
 
                         </div>
                     </div>

@@ -6,6 +6,11 @@ const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
 const User = globalHandle.get('user')
 const Stall = globalHandle.get('stall')
+const MenuItem = globalHandle.get('menuItem')
+
+
+//MomentJS
+const moment = require('moment')
 
 //Secure Random 
 const uuidv4 = require('uuid/v4')
@@ -13,6 +18,8 @@ const uuidv4 = require('uuid/v4')
 
 //Sequelize
 const Sequelize = require('sequelize')
+var SqlString = require('sequelize/lib/sql-string');
+
 /**
  * Order
  * @typedef {Object} Order
@@ -37,7 +44,7 @@ module.exports = {
      * @param {Order} order - to be created inside database
      * @return {Promise} 
      */
-    createOrder: function({status, userId, stallId, orderTiming = new Date}){
+    createOrder: function({status, userId, stallId, orderTiming = moment().local().format('YYYY-MM-DD HH:mm:ss')}){
         const buffer = Buffer.allocUnsafe(16);
         uuidv4(null, buffer, 0)
 
@@ -82,6 +89,25 @@ module.exports = {
     },
 
     /**
+     * Get all user orders (includes MenuItem) 
+     * @param {number} userId - User id of all the orders
+     * @return {Promise}
+     */
+    getOrdersWithMenuItemsByUserId: function(userId){
+        return Order.findAll({
+            where: {
+                userId
+            },
+            order: Sequelize.literal('orderTiming DESC'),
+            include: [{
+                model: MenuItem
+            }]
+        })
+    },
+
+
+
+    /**
      * Get order by order id
      * @param {number} orderId - order id
      * @return {Promise}
@@ -115,6 +141,9 @@ module.exports = {
      * @param {Number} stallId 
      */
     getStallOwnerMenuItems: function (stallId) {
+
+        stallId = SqlString.escape(stallId);
+
         return db.query(`SELECT menuItems.id, menuItems.itemName
         FROM menuItems
         WHERE menuItems.stallId = ${stallId};`)
@@ -149,7 +178,17 @@ module.exports = {
      */
     getMenuItemRatings: function (menuItemId, item_filter = null, rating_filter = null) {
 
-        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments
+        menuItemId = SqlString.escape(menuItemId);
+
+        if (item_filter) {
+            item_filter = SqlString.escape(item_filter);
+        }
+        
+        if (rating_filter) {
+            rating_filter = SqlString.escape(rating_filter);
+        }
+
+        let query = `SELECT IFNULL(CONCAT(users.firstName, " ", users.lastName), users.firstName) AS CUSTOMER_NAME, orderItems.rating, orderItems.comments, orderItems.image
         FROM orders
         INNER JOIN orderItems ON orderItems.orderId = orders.id
         INNER JOIN menuItems ON orderItems.menuItemId = menuItems.id
@@ -177,6 +216,9 @@ module.exports = {
      * @return {Promise}
      */
     getMenuItemRating: function(menuItemId){
+
+        menuItemId = SqlString.escape(menuItemId);
+
         return db.query(`
         SELECT CEIL(AVG(orderItems.rating) - 1) AVG
         FROM orders
@@ -193,6 +235,9 @@ module.exports = {
      * @return {Promise}
      */
     getNumberOfOrdersBeforeOrder: function(orderId){
+
+        orderId = SqlString.escape(orderId);
+
         return db.query(`SELECT COUNT(*) AS "ordersCount"
         FROM orders, (
             SELECT id, stallId, orderTiming
@@ -207,6 +252,9 @@ module.exports = {
     },
 
     getOrderIDFromUserId(userId){
+
+        userId = SqlString.escape(userId);
+
         return db.query(`
             SELECT orders.id
             FROM orders

@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/effect/ping.css">
 <div class="container" style="position: relative; top: 5vh; width:">
 {{#if currentOrders}}
     <div class="row justify-content-center">
@@ -12,7 +13,7 @@
                                     <button class="btn btn-link container-fluid text-white font-weight-bold" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
                                         <span class="float-left">
                                             {{inc @index}})
-                                            {{getTitle order.menuItems}}
+                                            Order: {{substringTo5 order.publicOrderID}}
                                         </span>
                                     </button>
                             </div>
@@ -22,11 +23,21 @@
                                     <div class="card-body">
                                         {{!-- Order Details --}}
                                         <div class="row">
-                                            <div class="col">
+                                            <div class="col-5 col-md-3">
                                                 <h3 class="mb-0">Order: {{substringTo5 order.publicOrderID}}</h3>    
                                             </div>
+                                            {{#ifCondition order.status '!=' 'Collection Confirmed'}}
+                                            <div class="col-2 d-flex">
+                                                <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
+                                                    <div class="ring-container" style="min-height: 40px; min-width: 40px;">
+                                                        <div class="ring small-ping"></div> <a class="dot"></a>
+                                                    </div>
+                                                    <div><span class="text-bold" style="position: absolute;top:16%;">Live</span></div>
+                                                </div>
+                                            </div>
+                                            {{/ifCondition}}
                                             <div class="col text-right">
-                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "HH:MM:SS"}}</p>
+                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "hh:mm:ss"}}</p>
                                                 <p class="mb-0">User ID: {{order.userId}}</p>
                                             </div>
                                         </div>
@@ -36,7 +47,7 @@
                                         <div class="card mb-3">
                                             <div class="card-body row">
                                                 <div class="col-2">
-                                                    <img class="img-thumbnail" src="{{#if item.image}}/img/uploads/{{item.image}}{{else}}img/no-image.jpg{{/if}}" alt"">
+                                                    <img class="img-thumbnail" src="/img/{{#if item.image}}uploads/{{item.image}}{{else}}no-image.jpg{{/if}}" alt"">
                                                 </div>
                                                 <div class="col-8">
                                                     <div class="row">
@@ -44,7 +55,6 @@
                                                     </div>
                                                     <div class="row my-5">
                                                         <div class="col">
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.publicOrderID}}';">Check Status</button>
                                                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
                                                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
                                                     
@@ -61,7 +71,7 @@
                                         <hr>  
                                         <div class="row text-right">
                                             <div class="col">
-                                                <b>Total Amount: ${{calcTotal order}}</b>
+                                                <b>Total Amount: ${{calcOrderTotal order}}</b>
                                             </div>
                                         </div>
                                         <hr>
@@ -80,3 +90,4 @@
 {{else}}
     <h3>No Orders</h3>
 {{/if}}
+<script text="application/javascript" src="/js/pastorder.js"></script>

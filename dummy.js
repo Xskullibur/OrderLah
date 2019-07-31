@@ -15,8 +15,62 @@ function getRandomDate() {
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
-function getRandomNumberInRange(start, end) {
-    return Math.floor(Math.random() * end - start)
+async function getRandomNumberInRange(start, end) {
+    return Math.floor(Math.random() * (end - start + 1)) + start
+}
+
+commentArray_1 = ["Disgusting to eat", "Too dry", "Not Fresh", "Hard to eat", "Not recommended"]
+commentArray_2 = ["Ok to eat i geuss", "Can be improved", "Serving too little", "Not filling", "Can be improved"]
+commentArray_3 = ["Not to my liking but not bad either", "Too little ingredient", "Satisfactory experience, will come again.", "Nice but menu does not reflect the food produced", "Food was sublime"]
+
+async function getComment(rating) {
+    comment = null
+
+    randomNo = await getRandomNumberInRange(1, 5)
+
+    if (rating < 3) {
+        comment = commentArray_1[randomNo]
+    }
+    else if(rating == 3){
+        comment = commentArray_2[randomNo]
+    }
+    else{
+        comment = commentArray_3[randomNo]
+    }
+
+    return comment
+}
+
+async function createData(stallId, menuItem) {
+
+    const now = new Date()
+    const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth()-1))
+
+    for (var d = threeMonthsAgo; d <= now; d.setDate(d.getDate() + 1)) {
+        randomNo = await getRandomNumberInRange(1, 5)
+    
+        for (let i = 0; i < randomNo; i++) {
+            userId = await getRandomNumberInRange(1, 7)
+            ratings = await getRandomNumberInRange(1, 5)
+            quantity = await getRandomNumberInRange(1, 3)
+            comments = await getComment(ratings)
+    
+            let order1 = await order_util.createOrder({
+                status: 'Collection Confirmed',
+                userId,
+                stallId: stallId,
+                orderTiming: d
+            })
+            await order_util.createOrderItem({
+                quantity,
+                orderId: order1.id,
+                menuItemId: menuItem.id,
+                rating: `${ratings}`,
+                comments,
+            })
+        }
+    }
+
 }
 
 const previousDate = new Date()
@@ -218,6 +272,12 @@ async function createTestData() {
             image: '8FishAndChips.jpeg'
         })
 
+
+        await createData(stall.id, chickenCutletItem)
+        await createData(stall.id, spaghettiItem)
+        await createData(stall.id, fishAndChipItem)
+
+
         /**
          * Create Orders
          */
@@ -319,6 +379,10 @@ async function createTestData() {
             stallId: stall.id
         })
 
+        await createData(stall.id, chickenItem)
+        await createData(stall.id, duckRiceItem)
+        await createData(stall.id, porkRiceItem)
+
         //Orders (Pending Status)
         let order = await order_util.createOrder({
             status: 'Order Pending',
@@ -388,7 +452,7 @@ async function createTestData() {
         })
         await order_util.createOrderItem({
             quantity: 1,
-            orderId: order5.id,
+            orderId: order6.id,
             menuItemId: porkRiceItem.id
         })
 
@@ -564,6 +628,9 @@ async function createTestData() {
             image: '10WantonNoodle.jpeg'
         })
 
+        await createData(stall.id, fishballNoodle)
+        await createData(stall.id, wantonNoodleItem)
+
         //Orders
         let order = await order_util.createOrder({
             status: 'Order Pending',
@@ -706,6 +773,9 @@ async function createTestData() {
             image: '11MisoNikomiUdon.jpeg'
         })
 
+        await createData(stall.id, katsuItem)
+        await createData(stall.id, misoItem)
+
         //Orders
         let order = await order_util.createOrder({
             status: 'Collection Confirmed',
@@ -786,6 +856,9 @@ async function createTestData() {
             stallId: stall.id,
             image: '12IceLemonTea.jpeg'
         })
+
+        await createData(stall.id, barleyItem)
+        await createData(stall.id, iceLemonTeaItem)
 
         //Orders
         let order = await order_util.createOrder({

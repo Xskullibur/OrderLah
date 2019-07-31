@@ -1,0 +1,74 @@
+{{!-- Styling for menu_item.handlebars --}}
+<link rel="stylesheet" type="text/css" href="/css/menu_item.css"/>
+<script
+    src="https://www.paypal.com/sdk/js?client-id={{client_id}}&currency=SGD">
+</script>
+<script
+    src="/js/rating.js">
+</script>
+<script
+    src="/js/menu_item.js">
+</script>
+<script
+    src="/js/load_menu_item.js">
+</script>
+<div class="container">
+    <div class="row" align="center">
+        <div class="col">
+            <div class="card my-5">
+                <div class="card-header"><h3>1.Confirm Orders</h3></div>
+                <div class="card-body">
+                    <div class="row">
+                        {{> list_menu_items}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" align="center">
+        <div class="col">
+            <div class="card">
+                <div class="card-header"><h3>2.Payment Method</h3></div>
+                <div class="card-body">
+                    <div id="paypal-button-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if({{totalAmount}} === 0){
+        showAlert('Cart is empty', -1, 'alert-danger');
+    }else{
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return fetch('/payment/create', {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        csrf: $('#csrf-token').val()
+                    })
+                }).then(function(res) {
+                    return res.json();
+                }).then(function(data) {
+                    return data.orderID;
+                });
+            },
+            onApprove: function(data, actions) {                
+                return fetch('/payment/confirm/' + data.orderID, {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        csrf: $('#csrf-token').val()
+                    })
+                }).then(function(res) {
+                    return res.json();
+                }).then(function(details) {
+                    // Show a success message to the buyer
+                    showAlert('Transaction completed by ' + details.payer.name.given_name + '!', -1, 'alert-success');
+                });                           
+            }
+        }).render('#paypal-button-container');
+    }
+</script>

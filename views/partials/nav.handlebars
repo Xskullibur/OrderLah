@@ -1,92 +1,51 @@
-{{!-- 
-<link href="css/nav.css" rel="stylesheet">
-<!-- Fixed navbar -->
-  <div id="navigation" class="navbar navbar-default navbar-fixed-top nav-fixed grow-scroll">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand smothscroll" href="#home"><img class="logo-fixed grow-scroll"  src="img/logo.png"></b></a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#home" class="smothscroll">Home</a></li>
-        </ul>
-      </div>
-      <!--/.nav-collapse -->
-    </div>
-  </div>
-<script type="text/javascript" src="js/nav.js"></script> --}}
 <div class="sticky-top">
 <nav class="navbar sticky-top navbar-expand-lg navbar-light border-bottom rounded-bottom">
   <div class="nav navbar-nav">
     
-  <a class="navbar-brand" href="/"><img class="logo-fixed grow-scroll"  src="/img/logo.png"></a>
+  <a class="navbar-brand" href="{{#if isCustomer}}/{{else if isAdmin}}/pastOrders{{else}}/stallOwner/{{/if}}"><img class="logo-fixed grow-scroll"  src="/img/logo.png"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-          </li>
           {{#if isCustomer}}
-            {{!-- CUSTOMER NAV --}}
-            <li class="nav-item">
+            {{!-- Home --}}
+            <li class="nav-item {{#ifCondition nav "==" "home"}}active{{/ifCondition}}">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+
+            {{!-- Past Order --}}
+            <li class="nav-item {{#ifCondition nav "==" "pastOrders"}}active{{/ifCondition}}">
               <a class="nav-link" href="/pastOrders">Past Orders</a>
             </li>
           {{else if isAdmin}}
-            <li class="nav-item">
+            {{!-- Admin Panel --}}
+            <li class="nav-item {{#ifCondition nav "==" "adminPanel"}}active{{/ifCondition}}">
               <a class="nav-link" href="/admin/adminPanel">Manage Stalls</a>
             </li>
           {{else}}
-            {{!-- STALL OWNER NAV --}}
-            <li class="nav-item">
+            {{!-- Current Orders --}}
+            <li class="nav-item {{#ifCondition nav "==" "currentOrders"}}active{{/ifCondition}}">
               <a class="nav-link" href="/stallOwner/">Current Orders</a>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" href="/stallOwner/orderDetails/allOrders/1/">Order Details</a>
+            {{!-- All Orders --}}
+            <li class="nav-item {{#ifCondition nav "==" "orderDetails"}}active{{/ifCondition}}">
+              <a class="nav-link" href="/stallOwner/orderDetails/allOrders/">Order Details</a>
             </li>
 
-            <li class="nav-item">
+            {{!-- Monthly Summary --}}
+            <li class="nav-item {{#ifCondition nav "==" "monthlySummary"}}active{{/ifCondition}}">
               <a class="nav-link" href="/stallOwner/monthlySummary/">Monthly Summary</a>
             </li>
 
-            <li class="nav-item">
+            {{!-- Manage Menu --}}
+            <li class="nav-item {{#ifCondition nav "==" "manageMenu"}}active{{/ifCondition}}">
               <a class="nav-link" href="/stallOwner/showMenu">Manage Menu</a>
             </li>
           {{/if}}
 
-          
-
-
-          {{!-- <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Dropdown
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form> --}}
         {{!-- Profile navbar for sm --}}
         <div class="nav navbar-nav pull-right d-inline-block d-md-none">
             
@@ -97,12 +56,17 @@
   {{!-- Profile navbar for md --}}
   <div class="nav navbar-nav pull-right d-none d-md-inline-block">
       
-        <div class="shake-effect d-inline-block px-5">
-          <a class="" href="#">
-            <i class="coral-1 fas fa-shopping-cart fa-lg"></i>
-            <span id="nav-cart-count" class="badge badge-pill badge-danger" style="position: relative; top: -15px;">0</span>
-          </a>
-        </div>
+        {{!-- Shopping cart --}}
+        {{#if isCustomer}}
+          <div class="shake-effect d-inline-block px-5">
+            <a class="" href="/payment" style="text-decoration: none;">
+              <i class="coral-1 fas fa-shopping-cart fa-lg"></i>
+              <span id="nav-cart-count" class="badge badge-pill badge-danger" style="position: relative; top: -15px;">0</span>
+              <span class="text-danger font-weight-bold" style="font-size: .95em; color: #BF0303;">Checkout</span>
+            </a>
+          </div>
+        {{/if}}
+
         <div class="d-inline-block">
           {{> profile_nav}}</div>
         
