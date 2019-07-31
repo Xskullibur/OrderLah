@@ -555,12 +555,8 @@ router.get('/showMenu', uuid_middleware.generate, (req, res) => {
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
                         stall: myStall,                                             
-                        displayAlert: displayAlert,
-                        errorAlert: errorAlert,
                         nav: 'manageMenu'
-                    })
-                    displayAlert = []
-                    errorAlert = []                                                
+                    })                                                                
                 })    
             })
         }else{
@@ -616,9 +612,6 @@ router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
 })
 
 router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
-    var DisplayNameUpdate = ""
-    var DisplayPriceUpdate = ""
-    var DisplayDescUpdate = ""
     updateError = [] 
 
     const currentUser = req.user.id
@@ -638,13 +631,15 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
                         console.log(err)
                     }
                 })
-                displayAlert.push('Item updated!')
-                res.redirect('/stallOwner/showMenu')
+                req.session.alerts = [{
+                    message: 'Item successfully added'
+                }]
+                res.send('success') 
             }).catch(err => console.log(err))
         }else{           
-            updateError.push('The name ' + itemName + ' is already taken, item not updated!')
-            
-            
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('The name ' + itemName + ' is already taken, item not added!')          
         }
     })
 })

@@ -107,18 +107,14 @@
 </script>
 
 <script>
-
     $(document).ready(function (){
         $('#create-menu-btn').click(function(){
-            console.log('asd')
             createMenuItem();
         });
     });
 
     function createMenuItem(){
         var form_data = new FormData(document.getElementById('createMenu'));
-
-
         $.ajax({
             method: "POST",
             url: "/stallOwner/submitItem",
@@ -133,7 +129,5 @@
                 showAlertInSelector(error.responseText, '#modal-alerts', 3000, 'alert-danger');
             }
         })
-
-
     }
 </script>

@@ -1,5 +1,4 @@
-
-    <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">Update Menu Item</h5>
@@ -7,9 +6,10 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
+            <div id="modal-alerts"></div>
+            
             {{!-- Update Menu Item --}}
-            <form method="POST" action="/stallOwner/updateItem" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form method="POST" action="/stallOwner/updateItem" id="updateMenu" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <br>
                 <div class="modal-body">
                     <div class="form-group row">
@@ -53,7 +53,7 @@
                     <input type="hidden" id="imgName" name="imgName" value="{{DisplayMenu.image}}">
                     <input name="csrf" type="hidden" value="{{csrf}}" />
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-danger">Update</button>
+                        <button type="button" id="updateButton" name="updateButton" class="btn btn-outline-danger">Update</button>
                     </div>
                 </div>
             </form>
@@ -101,5 +101,31 @@
                 }, false);
             });
     })
+</script>
+
+<script>
+    $(document).ready(function (){
+        $('#updateButton').click(function(){
+            updateMenuItem();
+        });
+    });
+
+    function updateMenuItem(){
+        var form_data = new FormData(document.getElementById('updateMenu'));
+        $.ajax({
+            method: "POST",
+            url: "/stallOwner/updateItem",
+            data: form_data,
+            dataType: 'text',
+            contentType: false,
+            processData: false,
+            success: function (html, status, response) {
+                location.reload();
+            },
+            error: function (error) {
+                showAlertInSelector(error.responseText, '#modal-alerts', 3000, 'alert-danger');
+            }
+        })
+    }
 </script>
 
