@@ -9,17 +9,6 @@ function submitToken(){
     data: {email: mail} //to be replaced by the email user submits in the form
   })
 }
-
-/*function checkToken(){
-  var code = $('#registerForm2 input[name=code]').val();
-
-  $.ajax({
-    method: "POST",
-    url: "checktoken",
-    data: {code: code} 
-  })
-}*/
-
 /**
  * Submit form
  */
@@ -34,11 +23,6 @@ function submitForm(){
 
   form_data.code = $('#registerForm2 input[name=code]').val();
 
-  /*$.ajax({
-    method: "POST",
-    url: "register",
-    data: {code: code} 
-  })*/
 
   $.ajax({
     method: "POST",

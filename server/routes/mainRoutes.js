@@ -585,7 +585,7 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
-router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileImage')], async (req, res) =>{
+router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
     var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
     var birthday = req.body.birthday
@@ -597,11 +597,17 @@ router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileIma
     console.log(phone)
 
 
+    req.session.alerts = []
+
     await user_utils.checkUniqueEmail(email).then(isUnique =>{
         if(email === checkEmail){
 
         }else if(!isUnique){
-            // failAlert.push(' Email: ' + email + ' ')
+            req.session.alerts.push({
+                message: ' Email: ' + email + ' ',
+                type: 'alert-danger',
+                timeout: -1
+            })
         }
     })
 
@@ -609,18 +615,24 @@ router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileIma
         if(phone === checkPhone){
 
         }else if(!isUnique){
-            // failAlert.push(' Phone: ' + phone + ' ')
+            req.session.alerts.push({
+                message: ' Phone: ' + phone + ' ',
+                type: 'alert-danger',
+                timeout: -1
+            })
         }
     })
 
-    // if(failAlert.length > 0){
-    //     res.redirect('/profile')
-    // }else{
-    //     User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-    //         displayAlert.push('profile successfully updated')
-    //         res.redirect('/profile')
-    //     })
-    // }
+    if(req.session.alerts.length > 0){
+        res.redirect('/profile')
+    }else{
+        User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+            req.session.alerts.push({
+                message: 'profile successfully updated'
+            })
+            res.redirect('/profile')
+        })
+    }
 })
 
 
