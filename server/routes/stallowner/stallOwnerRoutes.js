@@ -18,8 +18,10 @@ const uuid_middleware = require('../../libs/uuid_middleware')
 const moment = require('moment')
 
 // Utils
+const user_util = require('../../utils/main/user')
 const order_util = require('../../utils/stallowner/order')
 const update_util = require('../../utils/stallowner/update_status')
+const stall_util = require('../../utils/stallowner/stall')
 
 //Global
 //Models
@@ -543,7 +545,8 @@ function checkUnique(theName){
 
 router.get('/showMenu', uuid_middleware.generate, (req, res) => {
     const id = req.user.id
-    User.findOne({ where: id }).then(user => {
+
+   user_util.getUserByID(id).then(user => {
          if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
@@ -711,8 +714,14 @@ router.get('/showAddMenu', uuid_middleware.generate, (req, res) =>{
     res.render('stallOwner/stallOwnerModel/addMenuModel', {layout: 'empty_layout'})
 })
 
-router.post('/showEditMenu', uuid_middleware.generate, (req, res) =>{
-    res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout'})
+router.get('/showEditMenu/:menuID', uuid_middleware.generate, (req, res) =>{
+    let menuID = req.params.menuID
+    User.findOne({ where: {id: req.user.id }}).then(user => {
+        if(user.role === 'Stallowner'){
+            menuItem.findOne({where: {id: menuID}}).then(menu =>{
+                res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+            })        
+        }
+    })
 })
-
 module.exports = router;

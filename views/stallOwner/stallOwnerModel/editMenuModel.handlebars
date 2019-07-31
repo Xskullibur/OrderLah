@@ -1,5 +1,4 @@
-<div class="modal fade" id="updateForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
+
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,7 +17,7 @@
                         <label for="itemName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="itemName" id="itemName" pattern="[a-zA-Z\s]+"
-                                maxlength="50" value="{{this.itemName}}" required>
+                                maxlength="50" value="{{DisplayMenu.itemName}}" required>
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required, letters only</div>
                         </div>
@@ -27,7 +26,7 @@
                         <label for="itemPrice" class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
                             <input type="number" step=".01" min="0" class="form-control" name="itemPrice" id="itemPrice"
-                                value="{{this.price}}" required>
+                                value="{{DisplayMenu.price}}" required>
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required</div>
                         </div>
@@ -36,7 +35,7 @@
                         <label for="itemDescription" class="col-sm-2 col-form-label">Desc</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="itemDescription" id="itemDescription"
-                                maxlength="255" value="{{this.itemDesc}}" required>
+                                maxlength="255" value="{{DisplayMenu.itemDesc}}" required>
                             <div class="valid-feedback">Valid</div>
                             <div class="invalid-feedback">required</div>
                         </div>
@@ -44,15 +43,15 @@
                     <div class="form-group row">
                         <div class="col-sm-2 imgUp">
                             <div class="imagePreview"
-                                style="background: url(/img/uploads/{{this.image}}); background-size: 225px 140px;">
+                                style="background: url(/img/uploads/{{DisplayMenu.image}}); background-size: 225px 140px;">
                             </div>
                             <input type="file" class="uploadFile img" name="itemImage" id="itemImage"
                                 accept="image/png,image/jpeg,image/jpg">
                         </div>
                     </div>
-                    <input type="hidden" id="checkName" name="checkName" value="{{this.itemName}}">
-                    <input type="hidden" id="itemID" name="itemID" value="{{this.id}}">
-                    <input type="hidden" id="imgName" name="imgName" value="{{this.image}}">
+                    <input type="hidden" id="checkName" name="checkName" value="{{DisplayMenu.itemName}}">
+                    <input type="hidden" id="itemID" name="itemID" value="{{DisplayMenu.id}}">
+                    <input type="hidden" id="imgName" name="imgName" value="{{DisplayMenu.image}}">
                     <input name="csrf" type="hidden" value="{{csrf}}" />
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-outline-danger">Update</button>
@@ -61,7 +60,6 @@
             </form>
         </div>
     </div>
-</div>
 
 <script>
     $(".imgAdd").click(function () {
