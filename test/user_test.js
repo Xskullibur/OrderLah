@@ -43,8 +43,10 @@ module.exports = {
     return request.post('/updateProfile')
     .accept('text/html')
     .type('multipart/form-data')
-    .send({checkEmail: data.email})
-    .send({checkPhone: data.phone})
+    .field('csrf', data.csrf)
+    .field('email', data.email)
+    .field('phone', data.phone)
+    .field('birthday', data.birthday)
     .attach('profileImage', imagePath)
     .catch(err => console.log(err))
   }

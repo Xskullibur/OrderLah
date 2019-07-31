@@ -50,6 +50,9 @@ const Op = Sequelize.Op
 const alert = require('../libs/alert')
 router.use(alert)
 
+//Validator
+const validator = require('validator')
+
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(passport.authenticate('remember-me'))
@@ -217,7 +220,6 @@ const profile_gen = require('../libs/profile_img_generator')
  */
 router.get('/register', uuid_middleware.generate, (req, res) => {
     res.render('register', {layout: 'blank_layout'})
-    registerFail = []
 })
 
 /**
@@ -235,36 +237,45 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
         var username = req.body.username
         var email = req.body.email
         var phone = req.body.phone
+        var fname = req.body.fname
+        var lname = req.body.lname
+        var dob = req.body.dob
 
-        await user_utils.checkUniqueUsername(username).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' username: ' + username + ' ')
-            }
-        })
+        //Validate inputs
+        if(validator.isEmail(email) && validator.isAlphanumeric(username) &&
+          validator.isAlpha(fname) && validator.isAlpha(lname) && 
+          validator.isBefore(dob, new Date().toString()) &&
+          validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
+            
+            //Check if user values is already inside database
+            await user_utils.checkUniqueUsername(username).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Username: ' + username + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniqueEmail(email).then(isUnique =>{
+                if(!isUnique){
+                    res.send(' Email: ' + email + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniquePhone(phone).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Phone: ' + phone + ' ')
+                    return 
+                }
+            })
     
-        await user_utils.checkUniqueEmail(email).then(isUnique =>{
-            if(!isUnique){
-                registerFail.push(' Email: ' + email + ' ')
-            }
-        })
-    
-        await user_utils.checkUniquePhone(phone).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' Phone: ' + phone + ' ')
-            }
-        })
-    
-        if(registerFail.length > 0){
-            res.send('fail')
-        }
-        else{
             //Create the user account
             User.create({
                 username,
                 email,
-                firstName: req.body.fname,
-                lastName: req.body.lname,
-                birthday: req.body.dob,
+                firstName: fname,
+                lastName: lname,
+                birthday: dob,
                 phone,
                 password: req.body.password
             }).then(user => {
@@ -280,10 +291,17 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
                 res.status(400)//Bad request
                 res.send('Failed')
             })
+
+        }else{
+            res.status(400)//Bad request
+            res.send('Failed')
         }
+
+
+        
     }
     else {
-        console.log('error occured, verification failed!')
+        console.log('Invalid token, verification failed!')
         res.status(400)//Bad request
         res.send('Failed')
     }
@@ -589,50 +607,51 @@ router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.ve
     var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
     var birthday = req.body.birthday
-    const checkEmail = req.body.checkEmail.replace(/\s/g, "")
-    const checkPhone = req.body.checkPhone.replace(/\s/g, "")
-    console.log(checkEmail)
-    console.log(email)
-    console.log(checkPhone)
-    console.log(phone)
 
+    //Validate inputs
+    if(validator.isEmail(email) &&
+    validator.isBefore(birthday, new Date().toString()) &&
+    validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
 
-    req.session.alerts = []
+        req.session.alerts = []
 
-    await user_utils.checkUniqueEmail(email).then(isUnique =>{
-        if(email === checkEmail){
-
-        }else if(!isUnique){
-            req.session.alerts.push({
-                message: ' Email: ' + email + ' ',
-                type: 'alert-danger',
-                timeout: -1
-            })
-        }
-    })
-
-    await user_utils.checkUniquePhone(phone).then(isUnique => {
-        if(phone === checkPhone){
-
-        }else if(!isUnique){
-            req.session.alerts.push({
-                message: ' Phone: ' + phone + ' ',
-                type: 'alert-danger',
-                timeout: -1
-            })
-        }
-    })
-
-    if(req.session.alerts.length > 0){
-        res.redirect('/profile')
-    }else{
-        User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-            req.session.alerts.push({
-                message: 'profile successfully updated'
-            })
-            res.redirect('/profile')
+        await user_utils.checkUniqueEmail(email).then(isUnique =>{
+            if(!isUnique){
+                req.session.alerts.push({
+                    message: ' Email: ' + email + ' ',
+                    type: 'alert-danger',
+                    timeout: -1
+                })
+            }
         })
+    
+        await user_utils.checkUniquePhone(phone).then(isUnique => {
+            if(!isUnique){
+                req.session.alerts.push({
+                    message: ' Phone: ' + phone + ' ',
+                    type: 'alert-danger',
+                    timeout: -1
+                })
+            }
+        })
+    
+        if(req.session.alerts.length > 0){
+            res.status(400)
+            res.send('Failed')
+            //res.redirect('/profile')
+        }else{
+            User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+                req.session.alerts.push({
+                    message: 'profile successfully updated'
+                })
+                res.redirect('/profile')
+            })
+        }
+
     }
+
+
+    
 })
 
 
