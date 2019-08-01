@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="/css/menu_item.css"/>
 <div style="min-height: 1000px; width: 100vw; max-width: 100%;">
     <div class="container-fluid p-5">
-        <div class="row d-md-none mb-5">
+        <div class="row d-xl-none mb-5">
             <div class="col">
                 <select class="form-control">
                     <option onclick="generateMenuCardItem('')" selected>All Menu Items</option>
@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-3 d-none d-md-block position-fixed border-right border-secondary">
+            <div class="col-3 d-none d-xl-block position-fixed ">
                 <div class="container">
                     <div class="row mt-5 justify-content-center">
                         <div class="col-md-7 w-100 align-self-center">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col offset-md-3 pl-md-5"> 
+            <div class="col offset-xl-3 pl-xl-5"> 
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col">
@@ -66,12 +66,12 @@
             </div>
         </div>
     </div>
-    <div class="row d-md-none mb-5">
+    <div class="row d-xl-none mb-5">
         {{!-- FAB button checkout for mobile --}}
         {{> fixed_button icon='fas fa-shopping-cart icon-default'}}
 
     </div>
-    <div class="d-none d-md-block">
+    <div class="d-none d-xl-block">
         {{!-- Bottom Order items --}}
         {{> bottom_list}}
 

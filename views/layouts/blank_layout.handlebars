@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>OrderLah</title>
+    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
     <!-- Google Fonts -->
     {{!-- <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic|Raleway:400,300,700" rel="stylesheet"> --}}
 
     <!-- Main Stylesheet File -->
     <link href="/css/main.css" rel="stylesheet" type="text/css">
+    {{!-- Blank Layout css --}}
+    <link href="/css/blank_layout_card.css" rel="stylesheet" type="text/css">
 
   <!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -19,7 +22,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 </head>
-<body>
+<body style="overflow-x: hidden;">
     {{#if isDev}}
             <span style="color:red;">Warning! you are running dev build, login authentications are disabled in this build. Run using production scripts for testing authentications</span>
             {{#if autoLogin}}
@@ -27,7 +30,7 @@
             {{/if}}
     {{/if}}
     <div style="background-image: url('/img/Homepage-3.jpg'); min-width: 100vw; min-height: 100vh;">
-    <div style="position: fixed; min-width: 100%; min-height: 100%; overflow-y: auto; overflow-x: hidden; background-color: rgba(0, 17, 38, .7) ">
+    <div style="background-color: rgba(0, 17, 38, .7); min-width: 100vw; min-height: 100vh; ">
         {{!-- Popup --}}
         {{> alerts/top-popup}}
 

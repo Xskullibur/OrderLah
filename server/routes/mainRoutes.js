@@ -50,6 +50,9 @@ const Op = Sequelize.Op
 const alert = require('../libs/alert')
 router.use(alert)
 
+//Validator
+const validator = require('validator')
+
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(passport.authenticate('remember-me'))
@@ -217,7 +220,6 @@ const profile_gen = require('../libs/profile_img_generator')
  */
 router.get('/register', uuid_middleware.generate, (req, res) => {
     res.render('register', {layout: 'blank_layout'})
-    registerFail = []
 })
 
 /**
@@ -235,36 +237,45 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
         var username = req.body.username
         var email = req.body.email
         var phone = req.body.phone
+        var fname = req.body.fname
+        var lname = req.body.lname
+        var dob = req.body.dob
 
-        await user_utils.checkUniqueUsername(username).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' username: ' + username + ' ')
-            }
-        })
+        //Validate inputs
+        if(validator.isEmail(email) && validator.isAlphanumeric(username) &&
+          validator.isAlpha(fname) && validator.isAlpha(lname) && 
+          validator.isBefore(dob, new Date().toString()) &&
+          validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
+            
+            //Check if user values is already inside database
+            await user_utils.checkUniqueUsername(username).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Username: ' + username + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniqueEmail(email).then(isUnique =>{
+                if(!isUnique){
+                    res.send(' Email: ' + email + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniquePhone(phone).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Phone: ' + phone + ' ')
+                    return 
+                }
+            })
     
-        await user_utils.checkUniqueEmail(email).then(isUnique =>{
-            if(!isUnique){
-                registerFail.push(' Email: ' + email + ' ')
-            }
-        })
-    
-        await user_utils.checkUniquePhone(phone).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' Phone: ' + phone + ' ')
-            }
-        })
-    
-        if(registerFail.length > 0){
-            res.send('fail')
-        }
-        else{
             //Create the user account
             User.create({
                 username,
                 email,
-                firstName: req.body.fname,
-                lastName: req.body.lname,
-                birthday: req.body.dob,
+                firstName: fname,
+                lastName: lname,
+                birthday: dob,
                 phone,
                 password: req.body.password
             }).then(user => {
@@ -280,10 +291,17 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
                 res.status(400)//Bad request
                 res.send('Failed')
             })
+
+        }else{
+            res.status(400)//Bad request
+            res.send('Failed')
         }
+
+
+        
     }
     else {
-        console.log('error occured, verification failed!')
+        console.log('Invalid token, verification failed!')
         res.status(400)//Bad request
         res.send('Failed')
     }
@@ -307,7 +325,29 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        html: 'Your Orderlah verfication code is: ' + req.session.token
+        html: `
+        <div style="border: 1px solid rgba(200,200,200,1.00);">
+            <div style="background-color: darkorange; padding: 1px 20px;">
+                <h3>Login Verification</h3>
+            </div>
+            <div style="padding: 20px 20px 0;">
+                <p>Verification Code: ${req.session.token}</p>
+                <hr/>
+                <div>
+                    <p style="text-align: right;">
+                        <img src="tuturu" width="20%" height="auto"/>
+                    </p>
+                    <p style="text-align: right;">
+                        OrderLah!
+                    </p>
+                </div>
+            </div>
+        </div>`,
+        attachments: [{
+            filename: 'logo.png',
+            path: process.cwd()+ '/public/img/logo.png',
+            cid: 'tuturu' //same cid value as in the html img src
+        }]
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -459,7 +499,29 @@ router.post('/forgotPassword', (req, res) =>{
                     from:'Orderlah Team',
                     to: req.body.email,
                     subject: 'Reset password',
-                    html: '<p>Click <a href="http://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
+                    html: `
+                    <div style="border: 1px solid rgba(200,200,200,1.00);">
+                        <div style="background-color: darkorange; padding: 1px 20px;">
+                            <h3>Login Verification</h3>
+                        </div>
+                        <div style="padding: 20px 20px 0;">
+                            <p>Click <a href="https://localhost:3000/resetpassword/${resetpassword.userId}/${resetpassword.token}">here</a> to reset your password</p>
+                            <hr/>
+                            <div>
+                                <p style="text-align: right;">
+                                    <img src="tuturu" width="20%" height="auto"/>
+                                </p>
+                                <p style="text-align: right;">
+                                    OrderLah!
+                                </p>
+                            </div>
+                        </div>
+                    </div>`,
+                    attachments: [{
+                        filename: 'logo.png',
+                        path: process.cwd()+ '/public/img/logo.png',
+                        cid: 'tuturu' //same cid value as in the html img src
+                    }]
                 };
             
                 transporter.sendMail(mailOptions, function(err, data){
@@ -585,21 +647,55 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
-router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileImage')], async (req, res) =>{
+router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
+    var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
-    var currentUser = req.user.id
-    await user_utils.checkUniquePhone(phone).then(isUnique => {
-        if(isUnique){
+    var birthday = req.body.birthday
 
+    //Validate inputs
+    if(validator.isEmail(email) &&
+    validator.isBefore(birthday, new Date().toString()) &&
+    validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
+
+        req.session.alerts = []
+
+        await user_utils.checkUniqueEmail(email).then(isUnique =>{
+            if(!isUnique){
+                req.session.alerts.push({
+                    message: ' Email: ' + email + ' ',
+                    type: 'alert-danger',
+                    timeout: -1
+                })
+            }
+        })
+    
+        await user_utils.checkUniquePhone(phone).then(isUnique => {
+            if(!isUnique){
+                req.session.alerts.push({
+                    message: ' Phone: ' + phone + ' ',
+                    type: 'alert-danger',
+                    timeout: -1
+                })
+            }
+        })
+    
+        if(req.session.alerts.length > 0){
+            res.status(400)
+            res.send('Failed')
+            //res.redirect('/profile')
+        }else{
+            User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+                req.session.alerts.push({
+                    message: 'profile successfully updated'
+                })
+                res.redirect('/profile')
+            })
         }
-    })
-})
 
-router.get('/showProfileUpdate', uuid_middleware.generate, (req, res) =>{
-    var currentUser = req.user.id
-    User.findOne({where: {id: currentUser}}).then(user =>{
-        res.render('profileUpdateModel', {layout: 'empty_layout', displayPhone: user.phone, displayID: user.id})
-    })
+    }
+
+
+    
 })
 
 

@@ -1,18 +1,13 @@
 <div class="card bg-light">
     
     <div class="card-body">
-        <form action="/stallOwner/orderDetails/allOrders/1" method="GET">
+        <form action="/stallOwner/orderDetails/allOrders/" method="GET">
 
             {{!-- Inputs --}}
             <div class="form-row">
-                <div class="form-group col-12 col-lg-6">
-                    <label for="orderNo">Order No.</label>
-                    <input type="number" name="orderNo" id="orderNo" class="form-control" placeholder="eg. 1" aria-describedby="Order Number" value="{{#if orderFilter}}{{orderFilter}}{{/if}}">
-                </div>
-
-                <div class="form-group col-12 col-lg-6">
-                    <label for="date">Order Date</label>
-                    <input type="date" name="orderDate" id="orderDate" class="form-control" placeholder="01/06/2019" aria-describedby="Order Date" value="{{#if dateFilter}}{{dateFilter}}{{/if}}">
+                <div class="form-group col-12">
+                    <label for="daterange">Date Range:</label>
+                    {{> date_range_picker}}   
                 </div>
             </div>
 
@@ -28,7 +23,7 @@
     </div>
 </div>
 
-<script>
+{{!-- <script>
 
     let orderNo = document.getElementById('orderNo')
     let orderDate = document.getElementById('orderDate')
@@ -52,4 +47,4 @@
         }
     }
 
-</script>
+</script> --}}

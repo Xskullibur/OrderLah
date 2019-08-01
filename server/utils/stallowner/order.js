@@ -91,13 +91,21 @@ module.exports = {
     /**
      * Get all user orders (includes MenuItem) 
      * @param {number} userId - User id of all the orders
+     * @param {Date} toDate
+     * @param {Date} frDate
      * @return {Promise}
      */
-    getOrdersWithMenuItemsByUserId: function(userId){
+    getOrdersWithMenuItemsByUserId: function(userId, toDate = null, frDate = null){
+
+        whereCondition = [{userId}]
+
+        if (toDate && frDate) {
+            whereCondition.push(db.where(db.fn('DATE', Sequelize.col('orderTiming')), '<=', toDate))
+            whereCondition.push(db.where(db.fn('DATE', Sequelize.col('orderTiming')), '>=', frDate))
+        }
+
         return Order.findAll({
-            where: {
-                userId
-            },
+            where: whereCondition,
             order: Sequelize.literal('orderTiming DESC'),
             include: [{
                 model: MenuItem
