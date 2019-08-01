@@ -10,7 +10,7 @@ const moment = require('moment')
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./customerupload');
-const upload = multer({storage : storage })
+const upload = multer({storage : storage})
 
 //Global
 const globalHandle = require('../../libs/global/global')
@@ -67,7 +67,7 @@ router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
 router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("reviewImage")], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
-    let image = req.body.reviewImage;
+    let image = req.user.id + Date.now() + '.jpeg';
 
     if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
         fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 

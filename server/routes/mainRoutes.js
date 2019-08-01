@@ -477,7 +477,7 @@ router.post('/forgotPassword', (req, res) =>{
                     from:'Orderlah Team',
                     to: req.body.email,
                     subject: 'Reset password',
-                    html: '<p>Click <a href="http://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
+                    html: '<p>Click <a href="https://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
                 };
             
                 transporter.sendMail(mailOptions, function(err, data){
