@@ -29,16 +29,19 @@ function submitForm(){
   $.ajax({
     method: "POST",
     url: "register",
-    data: form_data
-  }).done(function() {
-    registerMessage.removeClass('text-danger');
-    registerMessage.addClass('text-success');
-    registerMessage.text('Account is created!');
-    stepToSlide(3);
-  }).catch(err => {
-    registerMessage.removeClass('text-success')
-    registerMessage.addClass('text-danger');
-    registerMessage.text(err);
-    stepToSlide(3);
+    data: form_data,
+    dataType: 'text',
+    success: function(html, status, response) {
+      registerMessage.removeClass('text-danger');
+      registerMessage.addClass('text-success');
+      registerMessage.text('Account is created!');
+      stepToSlide(3);
+    },
+    error: function(err){
+      registerMessage.removeClass('text-success')
+      registerMessage.addClass('text-danger');
+      registerMessage.text(err.responseText);
+      stepToSlide(3);
+    }
   });
 }
