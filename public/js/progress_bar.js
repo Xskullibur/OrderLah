@@ -11,7 +11,12 @@ function setProgressBarValue(progress_bar, step, max_step){
         width: (step-1) / (max_step-1) * 100 + "%"
     },  { duration: 1000 }).then(() => {
         //Change circle color
-        $.Velocity.animate($('.progress-bar-' + step), {stroke: '#D80416'})
+        for (var i = 0; i <= step; i++) {
+            $.Velocity.animate($('.progress-bar-' + i), {stroke: '#D80416'});
+        }
+        for (var i = step+1; i <= 3; i++) {
+            $.Velocity.animate($('.progress-bar-' + i), {stroke: '#F2B8B3'});
+        }
     });
 }
 

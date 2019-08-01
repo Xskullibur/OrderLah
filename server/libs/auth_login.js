@@ -40,8 +40,12 @@ module.exports = {
             next()
         }else {
             //User is not login
-            res.status(404)
-            res.send('Not logged in!')
+            req.session.alerts = [{
+                message: "Not Logged In",
+                type: 'alert-warning',
+                timeout: -1
+            }]
+            res.redirect('/login')
         } 
     },
     

@@ -44,10 +44,10 @@ async function getComment(rating) {
 async function createData(stallId, menuItem) {
 
     const now = new Date()
-    const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth()-1))
+    const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth()-2))
 
     for (var d = threeMonthsAgo; d <= now; d.setDate(d.getDate() + 1)) {
-        randomNo = await getRandomNumberInRange(1, 5)
+        randomNo = await getRandomNumberInRange(0, 3)
     
         for (let i = 0; i < randomNo; i++) {
             userId = await getRandomNumberInRange(1, 7)
