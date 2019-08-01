@@ -611,7 +611,6 @@ router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
 })
 
 router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
-    updateError = [] 
 
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
@@ -622,25 +621,36 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
-    await checkUnique(itemName).then(isUnique => {
-        if((checkName === itemName) || isUnique){           
-            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                    if(err){
-                        console.log(err)
+    await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
+        MenuItem.findOne({where:{id}}).then(checkMenu =>{
+            if(checkStall.id === checkMenu.stallId){
+                 checkUnique(itemName).then(isUnique => {
+                    if((checkName === itemName) || isUnique){           
+                        MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+                            fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+                                if(err){
+                                    console.log(err)
+                                }
+                            })
+                            req.session.alerts = [{
+                                message: 'Item successfully added'
+                            }]
+                            res.send('success') 
+                        }).catch(err => console.log(err))
+                    }else{           
+                        uuid_middleware.registerToken(req, req.body.csrf)
+                        res.status(400)
+                        res.send('The name ' + itemName + ' is already taken, item not added!')          
                     }
                 })
-                req.session.alerts = [{
-                    message: 'Item successfully added'
-                }]
-                res.send('success') 
-            }).catch(err => console.log(err))
-        }else{           
-            uuid_middleware.registerToken(req, req.body.csrf)
-            res.status(400)
-            res.send('The name ' + itemName + ' is already taken, item not added!')          
-        }
+            }else{
+                uuid_middleware.registerToken(req, req.body.csrf)
+                res.status(400)
+                res.send('This Menu Item does not belong to you')
+            }
+        })
     })
+  
 })
 
 router.post('/filterItem', (req, res) =>{
