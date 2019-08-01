@@ -34,7 +34,7 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 
 var displayAlert = []
-var errorAlert = []
+
 
 const op = Sequelize.Op
 
@@ -106,6 +106,7 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
 })
 
 router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
+    var errorAlert = []
     var passGen = generator.generate({
         length: 15,
         numbers: true
@@ -155,7 +156,10 @@ router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
     })
 
     if(errorAlert.length > 0){
-        //      
+            req.session.alerts = [{
+                message: 'Item successfully added'
+            }]
+            res.send("success")
     }else{
         User.create({
             username, firstName, lastName, email, birthday, password, phone, role
