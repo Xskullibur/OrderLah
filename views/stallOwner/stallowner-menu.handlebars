@@ -56,8 +56,8 @@
                                                 <center>
                                                     <h5 class="card__title">{{this.itemName}}</h5>
                                                     <h5 class="card__title">${{this.price}}</h5>                                                    
-                                                    <button type="button" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallowner/showEditMenu/{{this.id}}')" title="edit" style="background-color: #fff; color:#343a40;">Edit</button>                                                                                            
-                                                    <button type="submit" class="btn btn-outline" data-toggle="modal" data-target="#deleteForm{{this.id}}" title="delete" style="background-color: #fff; color:#343a40;">Delete</button>                                                                                 
+                                                    <button type="button" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallOwner/showEditMenu/{{this.id}}')" title="edit" style="background-color: #fff; color:#343a40;">Edit</button>                                                                                            
+                                                    <button type="submit" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallOwner/deletePrompt/{{this.id}}')" title="delete" style="background-color: #fff; color:#343a40;">Delete</button>                                                                                 
                                                 </center>
                                             </div>
                                         </div>
@@ -75,7 +75,7 @@
 </div>
 <br>
 
-{{#if item}}
+{{!-- {{#if item}}
     {{#each item}}
         <div class="modal fade" id="deleteForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -101,4 +101,4 @@
             </div>
         </div>
     {{/each}}
-{{/if}}
+{{/if}} --}}

@@ -612,8 +612,15 @@ router.post('/deleteItem', uuid_middleware.verify, async (req, res) =>{
         MenuItem.findOne({where:{id}}).then(checkMenu =>{
             if(checkStall.id === checkMenu.stallId){
                 MenuItem.update({active}, {where:{id}}).then(function(){      
-                    res.redirect('/stallOwner/showMenu')
+                    req.session.alerts = [{
+                        message: 'Item successfully added'
+                    }]
+                    res.send('success')
                 }).catch(err => console.log(err))
+            }else{
+                uuid_middleware.registerToken(req, req.body.csrf)
+                res.status(400)
+                res.send('This Menu Item does not belong to you')
             }
         })
     })
@@ -692,10 +699,23 @@ router.get('/showEditMenu/:menuID', uuid_middleware.generate, (req, res) =>{
     let menuID = req.params.menuID
     User.findOne({ where: {id: req.user.id }}).then(user => {
         if(user.role === 'Stallowner'){
-            menuItem.findOne({where: {id: menuID}}).then(menu =>{
+            MenuItem.findOne({where: {id: menuID}}).then(menu =>{
                 res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
             })        
         }
     })
 })
+
+router.get('/deletePrompt/:menuID' , uuid_middleware.generate, async (req, res) =>{
+    var currentUser = req.user.id
+    var menuID = req.params.menuID
+    User.findOne({ where: {id: currentUser }}).then(user => {
+        if(user.role === 'Stallowner'){
+            MenuItem.findOne({where: {id: menuID}}).then(menu => {
+                res.render('stallOwner/stallOwnerModel/deleteMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+            })        
+        }
+    })
+})
+
 module.exports = router;

@@ -1,0 +1,51 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Are you sure to delete {{DisplayMenu.itemName}}?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="modal-alerts"></div>
+        <form id="deleteForm">
+            <br>
+            <input type="hidden" id="itemID" name="itemID" value="{{DisplayMenu.id}}">
+            <input name="csrf" type="hidden" value="{{csrf}}" />
+            <div class="modal-body">
+                <center>
+                    <button type="button" id="deleteBtn" class="btn btn-outline-danger">Yes</button>
+                    <button data-dismiss="modal" class="btn btn-outline-danger">No</button>
+                </center>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (){
+        $('#deleteBtn').click(function(){
+            deleteStall();
+        });
+    });
+
+    function deleteStall(){
+        var form_data = {csrf: $('#csrf-token').val()};
+        //Get form data as array and convert it into a json object
+        $('#deleteForm').serializeArray().forEach(e => {
+            form_data[e.name] = e.value;
+        });
+        console.log(form_data)
+        $.ajax({
+            method: "POST",
+            url: "/stallOwner/deleteItem",
+            data: form_data,
+            dataType: 'text',
+            success: function (html, status, response) {
+                location.reload();
+            },
+            error: function (error) {
+                showAlertInSelector(error.responseText, '#modal-alerts', 3000, 'alert-danger');
+            }
+        })
+    }
+</script>
