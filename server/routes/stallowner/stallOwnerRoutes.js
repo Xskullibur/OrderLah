@@ -633,14 +633,13 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
-    var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
     await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
         MenuItem.findOne({where:{id}}).then(checkMenu =>{
             if(checkStall.id === checkMenu.stallId){
                  checkUnique(itemName).then(isUnique => {
-                    if((checkName === itemName) || isUnique){           
+                    if((checkMenu.itemName === itemName) || isUnique){           
                         MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
                             fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
                                 if(err){

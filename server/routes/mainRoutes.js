@@ -562,7 +562,7 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
  * GET '/profile' path
  * Get Profile page
  */
-router.get('/profile', uuid_middleware.generate, (req, res) => {
+router.get('/profile', (req, res) => {
     const UserID = req.user.id
     res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', UserID:UserID})
 })
@@ -586,41 +586,20 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
 })
 
 router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileImage')], async (req, res) =>{
-    var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
-    var birthday = req.body.birthday
-    const checkEmail = req.body.checkEmail.replace(/\s/g, "")
-    const checkPhone = req.body.checkPhone.replace(/\s/g, "")
-    console.log(checkEmail)
-    console.log(email)
-    console.log(checkPhone)
-    console.log(phone)
-
-
-    await user_utils.checkUniqueEmail(email).then(isUnique =>{
-        if(email === checkEmail){
-
-        }else if(!isUnique){
-            // failAlert.push(' Email: ' + email + ' ')
-        }
-    })
-
+    var currentUser = req.user.id
     await user_utils.checkUniquePhone(phone).then(isUnique => {
-        if(phone === checkPhone){
+        if(isUnique){
 
-        }else if(!isUnique){
-            // failAlert.push(' Phone: ' + phone + ' ')
         }
     })
+})
 
-    // if(failAlert.length > 0){
-    //     res.redirect('/profile')
-    // }else{
-    //     User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-    //         displayAlert.push('profile successfully updated')
-    //         res.redirect('/profile')
-    //     })
-    // }
+router.get('/showProfileUpdate', uuid_middleware.generate, (req, res) =>{
+    var currentUser = req.user.id
+    User.findOne({where: {id: currentUser}}).then(user =>{
+        res.render('profileUpdateModel', {layout: 'empty_layout', displayPhone: user.phone, displayID: user.id})
+    })
 })
 
 
