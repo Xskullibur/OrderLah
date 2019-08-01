@@ -9,7 +9,7 @@
             <div id="modal-alerts"></div>
             
             {{!-- Update Menu Item --}}
-            <form method="POST" action="/stallOwner/updateItem" id="updateMenu" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form id="updateMenu" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <br>
                 <div class="modal-body">
                     <div class="form-group row">
@@ -88,11 +88,11 @@
 
 <script>
     $(document).ready(function() {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
+            var forms = document.getElementsByClassName('needs-validation')          
+            var createBtn = document.getElementById("updateButton")
+           
             var validation = Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
+                createBtn.addEventListener('click', function (event) {
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();
