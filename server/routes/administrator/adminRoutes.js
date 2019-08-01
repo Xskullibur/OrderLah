@@ -96,11 +96,9 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
             res.render('admin/admin', {
                 displayStallowner: stallowner,
                 displayAlert: displayAlert,
-                displayLocked: inactive,
-                errorAlert: errorAlert
+                displayLocked: inactive,      
             })
             displayAlert = []
-            errorAlert = []
         })        
     })
 })
