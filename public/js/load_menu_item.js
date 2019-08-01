@@ -224,7 +224,7 @@ function getMenuItemHTML(containerId, menuItemId, index=0, no_animation=false, h
         <div class="card-body menu-item-body py-3 px-3">
           <div>
             <lines class="card-title my-1 shine"></lines>
-            <h5 class="card-title" hidden>Card title</h5>
+            <h5 class="card-title" style="white-space: normal;" hidden>Card title</h5>
           </div>
           <div>
             <lines class="card-text shine"></lines>
