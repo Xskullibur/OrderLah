@@ -313,7 +313,9 @@ function storeSocketIdForSessionId(socketId, sessionId){
 
     //Store userid as well
     getSessionBySessionID(sessionId, (err, session) => {
-        storeUserIdForSessionId(session.passport.user, sessionId)
+        if (session !== null && session.passport.user) {
+            storeUserIdForSessionId(session.passport.user, sessionId)
+        }
     })
 }
 
