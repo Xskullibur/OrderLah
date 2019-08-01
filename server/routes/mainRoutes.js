@@ -325,7 +325,29 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        html: 'Your Orderlah verfication code is: ' + req.session.token
+        html: `
+        <div style="border: 1px solid rgba(200,200,200,1.00);">
+            <div style="background-color: darkorange; padding: 1px 20px;">
+                <h3>Login Verification</h3>
+            </div>
+            <div style="padding: 20px 20px 0;">
+                <p>Verification Code: ${req.session.token}</p>
+                <hr/>
+                <div>
+                    <p style="text-align: right;">
+                        <img src="tuturu" width="20%" height="auto"/>
+                    </p>
+                    <p style="text-align: right;">
+                        OrderLah!
+                    </p>
+                </div>
+            </div>
+        </div>`,
+        attachments: [{
+            filename: 'logo.png',
+            path: process.cwd()+ '/public/img/logo.png',
+            cid: 'tuturu' //same cid value as in the html img src
+        }]
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -477,7 +499,29 @@ router.post('/forgotPassword', (req, res) =>{
                     from:'Orderlah Team',
                     to: req.body.email,
                     subject: 'Reset password',
-                    html: '<p>Click <a href="https://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
+                    html: `
+                    <div style="border: 1px solid rgba(200,200,200,1.00);">
+                        <div style="background-color: darkorange; padding: 1px 20px;">
+                            <h3>Login Verification</h3>
+                        </div>
+                        <div style="padding: 20px 20px 0;">
+                            <p>Click <a href="https://localhost:3000/resetpassword/${resetpassword.userId}/${resetpassword.token}">here</a> to reset your password</p>
+                            <hr/>
+                            <div>
+                                <p style="text-align: right;">
+                                    <img src="tuturu" width="20%" height="auto"/>
+                                </p>
+                                <p style="text-align: right;">
+                                    OrderLah!
+                                </p>
+                            </div>
+                        </div>
+                    </div>`,
+                    attachments: [{
+                        filename: 'logo.png',
+                        path: process.cwd()+ '/public/img/logo.png',
+                        cid: 'tuturu' //same cid value as in the html img src
+                    }]
                 };
             
                 transporter.sendMail(mailOptions, function(err, data){
