@@ -574,8 +574,7 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
         if(user.role === 'Stallowner'){
             checkUnique(itemName).then(isUnique => {
                 if(isUnique){
-                    if(validator.isAlpha(itemName) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
-                    && !validator.isEmpty(itemDesc)){
+                    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
                         Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
                             const stallId = theStall.id
                     
@@ -641,18 +640,20 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
         MenuItem.findOne({where:{id}}).then(checkMenu =>{
             if(checkStall.id === checkMenu.stallId){
                  checkUnique(itemName).then(isUnique => {
-                    if((checkMenu.itemName === itemName) || isUnique){           
-                        MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                            fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                                if(err){
-                                    console.log(err)
-                                }
-                            })
-                            req.session.alerts = [{
-                                message: 'Item successfully added'
-                            }]
-                            res.send('success') 
-                        }).catch(err => console.log(err))
+                    if((checkMenu.itemName === itemName) || isUnique){
+                        if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){           
+                            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+                                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+                                    if(err){
+                                        console.log(err)
+                                    }
+                                })
+                                req.session.alerts = [{
+                                    message: 'Item successfully added'
+                                }]
+                                res.send('success') 
+                            }).catch(err => console.log(err))
+                        }
                     }else{           
                         uuid_middleware.registerToken(req, req.body.csrf)
                         res.status(400)
@@ -666,7 +667,6 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
             }
         })
     })
-  
 })
 
 router.post('/filterItem', (req, res) =>{
