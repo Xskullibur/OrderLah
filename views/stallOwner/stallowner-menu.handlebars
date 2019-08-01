@@ -1,35 +1,5 @@
 
 <link rel="stylesheet" href="/css/stallowner.css">
-{{#if displayAlert}}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <center><strong>{{this.displayAlert}}</strong></center>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-{{/if}}
-
-{{#if errorAlert}}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <center><strong>{{this.errorAlert}}</strong></center>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $("#showMenu").click();
-            });
-        </script>  
-{{/if}}
-    
-{{#if updateError}}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $("#updateError").click();
-        });
-    </script>
-{{/if}}
 <br>
 <div class="container">
     <div class="row">

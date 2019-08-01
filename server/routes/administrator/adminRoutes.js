@@ -90,7 +90,7 @@ function checkUniquePhone(theNumber){
     })
 }
 
-router.get('/adminPanel', uuid_middleware.generate, (req, res) =>{
+router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     User.findAll({where: {role: "Stallowner"}}).then((stallowner) =>{
         User.findAll({where: {role: "Inactive"}}).then((inactive) =>{
             res.render('admin/admin', {
@@ -105,7 +105,7 @@ router.get('/adminPanel', uuid_middleware.generate, (req, res) =>{
     })
 })
 
-router.post('/submitStall', uuid_middleware.verify, async (req, res) =>{
+router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true

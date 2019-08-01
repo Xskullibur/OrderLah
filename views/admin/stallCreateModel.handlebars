@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/admin.css">
 <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -102,19 +103,19 @@
 <script>
     $(document).ready(function (){
         $('#createStall').click(function(){
-            createMenuItem();
+            createStall();
         });
     });
 
-    function createMenuItem(){
+    function createStall(){
         var form_data = new FormData(document.getElementById('stallForm'));
         $.ajax({
             method: "POST",
             url: "/admin/submitStall",
             data: form_data,
             dataType: 'text',
-            contentType: false,
             processData: false,
+            contentType: false,
             success: function (html, status, response) {
                 location.reload();
             },

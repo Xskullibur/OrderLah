@@ -576,7 +576,7 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     checkUnique(itemName).then(isUnique => {
         if(isUnique){
-            if(validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
+            if(validator.isAlpha(itemName) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
             && !validator.isEmpty(itemDesc)){
                 Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
                     const stallId = theStall.id
