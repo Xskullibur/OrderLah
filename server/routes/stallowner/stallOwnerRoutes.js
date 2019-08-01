@@ -591,7 +591,6 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
             }else{
                 uuid_middleware.registerToken(req, req.body.csrf)
                 res.status(400)
-                res.send('validation check failed')
             }
         }else{
             uuid_middleware.registerToken(req, req.body.csrf)
