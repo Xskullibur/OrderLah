@@ -33,6 +33,10 @@ const Sequelize = require('sequelize')
 const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
+//Alerts 
+const alert = require('../../libs/alert')
+router.use(alert)
+
 //Get App
 const app = globalHandle.get('app')
 
@@ -50,21 +54,37 @@ router.use(auth_login.auth)
 
 //Paths to get to customer pages, can be accessed by: /<whatever>
 router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
-    OrderItem.findOne({
+    Order.findOne({
         where: {
-            menuItemId: req.params.id,
-            orderId: req.params.orderid
-        }
+            id: req.params.orderid,
+        }        
     })
-    .then((orderItem) => {
-        res.render('customer/review', {
-            orderItem,
-            nav: 'pastOrders'
-        });
+    .then((order) =>{
+        if(order.userId == req.user.id){
+            OrderItem.findOne({
+                where: {
+                    menuItemId: req.params.id,
+                    orderId: req.params.orderid
+                }
+            })
+            .then((orderItem) => {
+                res.render('customer/review', {
+                    orderItem
+                });
+            })
+        }else{
+            req.session.alerts = [
+                {
+                    message: 'Unauthorized access!',
+                    type: 'alert-danger'
+                }
+            ]
+            res.redirect('/logout')
+        }
     })
 });
 
-router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("reviewImage")], (req, res) => {
+router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
     let image = req.user.id + Date.now() + '.jpeg';

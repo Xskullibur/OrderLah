@@ -87,6 +87,8 @@ module.exports = async () => {
     await createUsers()
     await createTestData()
     await createStalls()
+
+    console.log(`\n\n\nData Added\n\n\n`)
 }
 
 /**
