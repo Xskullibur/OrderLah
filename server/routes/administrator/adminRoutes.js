@@ -277,7 +277,7 @@ router.post('/unlockAccount', auth_login.authAdmin, uuid_middleware.verify, (req
     })   
 })
 
-router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
+router.post('/resetPassword', auth_login.authAdmin, uuid_middleware.verify, (req,res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true
@@ -304,8 +304,10 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
                         }
                     })   
                 })
-                displayAlert.push("account password reset!")
-                res.redirect('/admin/adminPanel')              
+                req.session.alerts = [{
+                    message: 'successfuly reset account'
+                }]   
+                res.redirect('/admin/adminPanel')             
             })          
         })
     })   
@@ -320,22 +322,29 @@ router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
     })  
 })
 
-router.get('/showCreateStall', uuid_middleware.generate, (req, res) =>{
+router.get('/showCreateStall', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
     var CurrentDate = moment().format('YYYY-MM-DD');
     res.render('admin/stallCreateModel', {layout: 'empty_layout', maxDate: CurrentDate})
 })
 
-router.get('/showLock/:theUserID', uuid_middleware.generate, (req, res) =>{
+router.get('/showLock/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
     let stallID = req.params.theUserID  
     User.findOne({where: {id: stallID}}).then((stallowner) =>{
         res.render('admin/lockModel', {layout: 'empty_layout', displayID: stallowner})
     })             
 })
 
-router.get('/showUnlock/:theUserID', uuid_middleware.generate, (req, res) =>{
+router.get('/showUnlock/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
     let stallID = req.params.theUserID  
     User.findOne({where: {id: stallID}}).then((stallowner) =>{
         res.render('admin/unlockModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
+})
+
+router.get('/showDelete/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/deleteModel', {layout: 'empty_layout', displayID: stallowner})
     })             
 })
 
