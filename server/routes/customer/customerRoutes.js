@@ -52,22 +52,33 @@ router.use(auth_login.auth)
 router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
     OrderItem.findOne({
         where: {
-            menuItemId: req.params.id,
-            orderId: req.params.orderid
-        }
+            id: req.params.orderid,
+        }        
     })
-    .then((orderItem) => {
-        res.render('customer/review', {
-            orderItem,
-            nav: 'pastOrders'
-        });
+    .then((order) =>{
+        if(order.userId == req.user.id){
+            OrderItem.findOne({
+                where: {
+                    menuItemId: req.params.id,
+                    orderId: req.params.orderid
+                }
+            })
+            .then((orderItem) => {
+                res.render('customer/review', {
+                    orderItem,
+                    nav: 'pastOrders'
+                });
+            })
+        }else{
+            res.redirect('/logout')
+        }
     })
 });
 
 router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("reviewImage")], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
-    let image = req.user.id + Date.now() + '.jpeg';
+    let image = req.user.id + req.params.id + req.params.orderid + ".jpeg";
 
     if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
         fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
