@@ -234,8 +234,10 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                         } else {
                             console.log('Email sent: ' + info.response);
                         }
-                    })   
-                    displayAlert.push("successully locked account!")
+                    })
+                    req.session.alerts = [{
+                        message: 'successfuly locked'
+                    }]   
                     res.redirect('/admin/adminPanel')
                 })
             })            
@@ -319,6 +321,13 @@ router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
 router.get('/showCreateStall', uuid_middleware.generate, (req, res) =>{
     var CurrentDate = moment().format('YYYY-MM-DD');
     res.render('admin/stallCreateModel', {layout: 'empty_layout', maxDate: CurrentDate})
+})
+
+router.get('/showLock/:theUserID', uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/lockModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
 })
 
 module.exports = router;

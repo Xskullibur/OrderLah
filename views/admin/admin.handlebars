@@ -65,7 +65,7 @@
                                                 <div class="card__content">
                                                     <center><h4 class="card__title">{{this.username}}</h4></center>
                                                     <center>                                                                                                         
-                                                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#freeze{{this.id}}">Lock</button> 
+                                                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" onclick="showCustomDialog('/admin/showLock/{{this.id}}')">Lock</button> 
                                                         <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>                                        
                                                     </center>
                                                 </div>
@@ -126,7 +126,7 @@
     {{/each}}
 {{/if}}
 
-{{#if displayStallowner}}
+{{!-- {{#if displayStallowner}}
     {{#each displayStallowner}}
         <div class="modal fade" id="freeze{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -151,7 +151,7 @@
             </div>
         </div>
     {{/each}}
-{{/if}}
+{{/if}} --}}
 
 {{#if displayLocked}}
     {{#each displayLocked}}
