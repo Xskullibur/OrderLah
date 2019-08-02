@@ -319,7 +319,8 @@ router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
 })
 
 router.get('/showCreateStall', uuid_middleware.generate, (req, res) =>{
-    res.render('admin/stallCreateModel', {layout: 'empty_layout'})
+    var CurrentDate = moment().format('YYYY-MM-DD');
+    res.render('admin/stallCreateModel', {layout: 'empty_layout', maxDate: CurrentDate})
 })
 
 module.exports = router;
