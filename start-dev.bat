@@ -3,11 +3,7 @@
 @ECHO OFF
 
 
-<<<<<<< HEAD
-: Redis server
-=======
 :: Redis server
->>>>>>> origin/order-update
 REM SET REDIS_PORT=24679
 REM SET REDIS_HOST=ec2-52-215-0-174.eu-west-1.compute.amazonaws.com
 REM SET REDIS_PASSWORD=pa76aff90d50e3f88f437112949793703de773528b51be81478babf490af7180d

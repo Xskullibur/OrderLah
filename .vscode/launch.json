@@ -32,7 +32,7 @@
                 "REDIS_HOST": "192.168.99.100",
                 "REDIS_PORT": "6379",
                 "NODE_ENV":"dev",
-                "DB_HOST":"192.168.99.100",
+                "DB_HOST":"localhost",
                 "DB_NAME":"orderlah_db",
                 "DB_USERNAME":"orderlah_web_user",
                 "DB_PASSWORD":"mysecurepassword",

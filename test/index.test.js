@@ -27,7 +27,7 @@ describe('Users', () => {
 
     it('Register user (Good)', (done) => {
       //Request for token
-      user_test.requestToken(request, 'orderlah.nyp@gmail.com')
+      user_test.requestToken(request, '194897L@mymail.nyp.edu.sg')
       .then(res => {
 
         //get token

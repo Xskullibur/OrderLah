@@ -158,7 +158,7 @@ const user_utils = require ('../utils/main/user')
 passport.use(new GoogleStrategy({
     clientID: '284136247085-bemrg8vspbvg4ruh4k2c5bvde4dotj1m.apps.googleusercontent.com',
     clientSecret: 'ot4lMcPHgGDBdWdQgT_KVHZs',
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: "https://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, cb){
       User.findOne({
@@ -307,7 +307,18 @@ router.post('/requesttoken',(req, res) => {
         from:'Orderlah Team',
         to: req.body.email,
         subject: 'testing',
-        html: 'Your Orderlah verfication code is: ' + req.session.token
+        html: `<div style="border: 1px solid rgba(200,200,200,1.00);">
+            <div style="background-color: darkorange; padding: 1px 20px;">
+                <h1>OrderLah Login Verification</h1>
+            </div>
+            <div style="padding: 20px 20px 0;">
+                <p>Verification Code: ${req.session.token}</p>
+                <hr>
+                <p align="right">
+                    <b>MIRA ITE</b>
+                </p>
+            </div>
+        </div>` //'Your Orderlah verfication code is: ' + req.session.token
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -585,7 +596,7 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
-router.post('/updateProfile', [uuid_middleware.verify, upload.single('profileImage')], async (req, res) =>{
+router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
     var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
     var birthday = req.body.birthday
