@@ -644,12 +644,7 @@ router.post('/updateItem', auth_login.authStallOwner, [upload.single("itemImage"
                 if(checkStall.id === checkMenu.stallId){
                     checkUnique(itemName).then(isUnique => {
                         if((checkMenu.itemName === itemName) || isUnique){                                  
-                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                                    fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                                        if(err){
-                                            console.log(err)
-                                        }
-                                    })
+                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {                                       
                                     req.session.alerts = [{
                                         message: 'Item successfully updated'
                                     }]
