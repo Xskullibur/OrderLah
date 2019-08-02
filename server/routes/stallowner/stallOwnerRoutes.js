@@ -610,7 +610,7 @@ router.post('/deleteItem', uuid_middleware.verify, async (req, res) =>{
             if(checkStall.id === checkMenu.stallId){
                 MenuItem.update({active}, {where:{id}}).then(function(){      
                     req.session.alerts = [{
-                        message: 'Item successfully added'
+                        message: 'Item successfully deleted'
                     }]
                     res.send('success')
                 }).catch(err => console.log(err))
@@ -654,7 +654,7 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
                         }else{           
                             uuid_middleware.registerToken(req, req.body.csrf)
                             res.status(400)
-                            res.send('The name ' + itemName + ' is already taken, item not added!')          
+                            res.send('The name ' + itemName + ' is already taken, item not updated!')          
                         }
                     })
                 }else{
