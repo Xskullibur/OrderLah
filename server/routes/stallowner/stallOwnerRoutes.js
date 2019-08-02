@@ -547,7 +547,7 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', uuid_middleware.generate, (req, res) => {
+router.get('/showMenu', auth_login.authStallOwner, (req, res) => {
     const id = req.user.id
 
    user_util.getUserByID(id).then(user => {

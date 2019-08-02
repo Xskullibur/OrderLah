@@ -101,7 +101,6 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
 })
 
 router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
-    var errorAlert = []
     var passGen = generator.generate({
         length: 15,
         numbers: true
