@@ -33,16 +33,15 @@ const bcrypt = require('bcrypt')
 
 const saltRounds = 10
 
-var displayAlert = []
-
-
 const op = Sequelize.Op
+
+var validator = require('validator')
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'acelearninghx@gmail.com',
-      pass: 'feifi@85@#*#vjslrfieefe'
+      user: 'orderlah54@gmail.com',
+      pass: 'orderlahpassword'
     }
   });
 
@@ -95,20 +94,18 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
         User.findAll({where: {role: "Inactive"}}).then((inactive) =>{
             res.render('admin/admin', {
                 displayStallowner: stallowner,
-                displayAlert: displayAlert,
                 displayLocked: inactive,      
             })
-            displayAlert = []
         })        
     })
 })
 
-router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
-    var errorAlert = []
+router.post('/submitStall', auth_login.authAdmin, uuid_middleware.verify, async (req, res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true
     })
+
     const username = toCap(req.body.username.replace(/\s/g, ""))
     const firstName = toCap(req.body.firstName.replace(/\s/g, ""))
     const lastName = toCap(req.body.lastName.replace(/\s/g, ""))
@@ -118,85 +115,105 @@ router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
     const phone = req.body.phone.replace(/\s/g, "")
     const role = 'Stallowner'
 
+    var allUnique = true    
+    var userUnique = true
+    var emailUnique = true
+    var phoneUnique = true
+    var stallUnique = true
+
     const stallName = toCap(req.body.stallName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const description = req.body.description.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
 
-    await checkUniqueUsername(username).then(isUnique => {
-        if(!isUnique){
-            uuid_middleware.registerToken(req, req.body.csrf)
-            res.status(400)
-            res.send('The username ' + username + ' is already taken')
-        }
-    })
-
-    await checkUniqueEmail(email).then(isUnique =>{
-        if(!isUnique){
-            uuid_middleware.registerToken(req, req.body.csrf)
-            res.status(400)
-            res.send('The email ' + email + ' is already taken')
-        }
-    })
-
-    await checkUniquePhone(phone).then(isUnique => {
-        if(!isUnique){
-            uuid_middleware.registerToken(req, req.body.csrf)
-            res.status(400)
-            res.send('The Phone Number ' + phone + ' is already taken')
-        }
-    })
-
-    await checkUniqueStall(stallName).then(isUnique => {
-        if(!isUnique){
-            uuid_middleware.registerToken(req, req.body.csrf)
-            res.status(400)
-            res.send('The stall name ' + stallName + ' is already taken')
-        }
-    })
-
-    if(errorAlert.length > 0){
-            req.session.alerts = [{
-                message: 'Item successfully added'
-            }]
-            res.send("success")
-    }else{
-        User.create({
-            username, firstName, lastName, email, birthday, password, phone, role
-        }).then(function(){
-            const emailcheck = req.body.email
-            User.findOne({ where: {email: emailcheck}}).then(user => {
+    if(!validator.isEmpty(username) && !validator.isEmpty(firstName) && !validator.isEmpty(lastName) && !validator.isEmpty(email) && !validator.isEmpty(birthday) && !validator.isEmpty(phone) && !validator.isEmpty(stallName) && !validator.isEmpty(description)
+    && validator.isAlphanumeric(username.replace(/\s/g,'')) && validator.isAlpha(firstName.replace(/\s/g,'')) && validator.isAlpha(lastName.replace(/\s/g,'')) && validator.isNumeric(phone) && validator.isAlpha(stallName.replace(/\s/g,''))
+    && validator.isEmail(email) && validator.isBefore(birthday, new Date().toString()) && validator.isLength(username, {min:0, max:50}) && validator.isLength(firstName, {min:0, max:50}) && validator.isLength(lastName, {min:0, max:50}) 
+    && validator.isLength(stallName, {min:0, max:50}) && validator.isLength(description, {min:0, max:255})){
+        console.log('pass validation')
+        await checkUniqueUsername(username).then(isUnique => {
+            if(!isUnique){            
+                userUnique = false
+                allUnique = false
+            }
+        })
     
-                userId = user.id
+        await checkUniqueEmail(email).then(isUnique =>{
+            if(!isUnique){               
+                emailUnique = false
+                allUnique = false
+            }
+        })
     
-                Stall.create({
-                    userId, stallName, description
-                }).then(function(){  
-                    var mailOptions = {
-                        from: 'Orderlah',
-                        to: email,
-                        subject: 'Account creation notice',
-                        text: 'Hi your username is ' + email + ' and password is ' + password
-                    }
-                
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
+        await checkUniquePhone(phone).then(isUnique => {
+            if(!isUnique){               
+                phoneUnique = false
+                allUnique = false
+            }
+        })
+    
+        await checkUniqueStall(stallName).then(isUnique => {
+            if(!isUnique){               
+                stallUnique = false
+                allUnique = false
+            }
+        })
+    
+        if(allUnique){               
+            User.create({username, firstName, lastName, email, birthday, password, phone, role }).then(function(){
+                const emailcheck = req.body.email
+                User.findOne({ where: {email: emailcheck}}).then(user => {
+        
+                    userId = user.id
+        
+                    Stall.create({
+                        userId, stallName, description
+                    }).then(function(){  
+                        var mailOptions = {
+                            from: 'Orderlah',
+                            to: email,
+                            subject: 'Account creation notice',
+                            text: 'Hi your username is ' + email + ' and password is ' + password
                         }
-                    })   
-                })  
-                req.session.alerts = [{
-                    message: 'Item successfully added'
-                }]
-                res.send('success')          
+                    
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        })   
+                    })  
+                    req.session.alerts = [{
+                        message: 'Item successfully added'
+                    }]
+                    res.send('success')
+                    console.log('all unique')          
+                }).catch(err => console.log(err))
+        
             }).catch(err => console.log(err))
-    
-        }).catch(err => console.log(err))
-    }
-   
+        }else{
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            if(!userUnique){
+                res.send('The username ' + username + ' is already taken')
+            }
+            if(!emailUnique){
+                res.send('The email ' + email + ' is already taken')
+            }
+            if(!phoneUnique){
+                res.send('The Phone Number ' + phone + ' is already taken')
+            }
+            if(!stallUnique){
+                res.send('The stall name ' + stallName + ' is already taken')
+            }
+        }
+    }else{
+        console.log('validation fail')
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)           
+    }  
 })
 
-router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
+router.post('/lockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, res) =>{
     const userID = req.body.userID
     const role = 'Inactive'
     const active = false
@@ -217,8 +234,10 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                         } else {
                             console.log('Email sent: ' + info.response);
                         }
-                    })   
-                    displayAlert.push("successully locked account!")
+                    })
+                    req.session.alerts = [{
+                        message: 'successfuly locked account'
+                    }]   
                     res.redirect('/admin/adminPanel')
                 })
             })            
@@ -226,7 +245,7 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
     })   
 })
 
-router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
+router.post('/unlockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, res) =>{
     const userID = req.body.userID
     const role = 'Stallowner'
     const active = true
@@ -248,7 +267,9 @@ router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
                             console.log('Email sent: ' + info.response);
                         }
                     })   
-                    displayAlert.push("successully unlocked account!")
+                    req.session.alerts = [{
+                        message: 'successfuly unlocked account'
+                    }]   
                     res.redirect('/admin/adminPanel')
                 })
             })            
@@ -256,7 +277,7 @@ router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
     })   
 })
 
-router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
+router.post('/resetPassword', auth_login.authAdmin, uuid_middleware.verify, (req,res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true
@@ -283,8 +304,10 @@ router.post('/resetPassword', auth_login.authAdmin, (req,res) =>{
                         }
                     })   
                 })
-                displayAlert.push("account password reset!")
-                res.redirect('/admin/adminPanel')              
+                req.session.alerts = [{
+                    message: 'successfuly reset account'
+                }]   
+                res.redirect('/admin/adminPanel')             
             })          
         })
     })   
@@ -299,8 +322,30 @@ router.post('/filterItem', auth_login.authAdmin, (req, res) =>{
     })  
 })
 
-router.get('/showCreateStall', uuid_middleware.generate, (req, res) =>{
-    res.render('admin/stallCreateModel', {layout: 'empty_layout'})
+router.get('/showCreateStall', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
+    var CurrentDate = moment().format('YYYY-MM-DD');
+    res.render('admin/stallCreateModel', {layout: 'empty_layout', maxDate: CurrentDate})
+})
+
+router.get('/showLock/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/lockModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
+})
+
+router.get('/showUnlock/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/unlockModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
+})
+
+router.get('/showDelete/:theUserID', auth_login.authAdmin, uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/deleteModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
 })
 
 module.exports = router;

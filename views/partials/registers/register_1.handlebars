@@ -3,9 +3,9 @@
     <form id="registerForm" class="needs-validation" novalidate>
          <div class="form-group">
             <label for="username" class="col-form-label">Username</label>
-            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,20}" placeholder="Username" required>
+            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,50}" placeholder="Username" required>
             <div class="valid-feedback">Valid!</div>
-            <div class="invalid-feedback">required, max 20 characters</div>
+            <div class="invalid-feedback">required, max 50 characters</div>
         </div>
         <div class="form-group">
             <label for="email" class="col-form-label">Email address</label>
@@ -16,15 +16,15 @@
         <div class="form-group form-row">
             <div class="col">
                 <label for="fname" class="col-form-label">First Name</label>
-                <input type="text" id="fname" name="fname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]+" maxlength="50" required>
+                <input type="text" id="fname" name="fname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]{1,100}" maxlength="50" required>
                 <div class="valid-feedback">Valid!</div>
-                <div class="invalid-feedback">required, max 20 characters</div>        
+                <div class="invalid-feedback">required, max 100 characters</div>        
             </div>
             <div class="col ml-1">
                 <label for="lname" class="col-form-label">Last Name</label>
-                <input type="text" id="lname" name="lname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]+" maxlength="50" required>
+                <input type="text" id="lname" name="lname" class="form-control" placeholder="First name" pattern="[a-zA-Z\s]{1,100}" maxlength="50" required>
                 <div class="valid-feedback">Valid!</div>
-                <div class="invalid-feedback">required, max 20 characters</div>
+                <div class="invalid-feedback">required, max 100 characters</div>
             </div>
         </div>
         <div class="form-group">
@@ -48,24 +48,22 @@
             </div>
             <div class="col-12 col-md ml-1">
                 <label for="confirm_password" class="col-form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="comfirm_password" placeholder="Confirm Password">
+                <input type="password" class="form-control" id="comfirm_password" placeholder="Confirm Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
                 <div class="valid-feedback">Valid!</div>
                 <div class="invalid-feedback">required, Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters!</div>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-success float-right mt-2" onclick="submitToken();">Next</button>
+        <button type="button" id="regisBtn" class="btn btn-outline-success float-right mt-2" onclick="submitToken();">Next</button>
     </form>
 </section>
 
 <script>
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
+    $(document).ready(function() {
+            var forms = document.getElementsByClassName('needs-validation')          
+            var createBtn = document.getElementById("regisBtn")
+           
             var validation = Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
+                createBtn.addEventListener('click', function (event) {
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -77,6 +75,5 @@
                     form.classList.add('was-validated');
                 }, false);
             });
-        }, false);
-    })();
+    })
 </script>

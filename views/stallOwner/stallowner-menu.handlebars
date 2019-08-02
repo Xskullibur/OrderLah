@@ -57,7 +57,7 @@
                                                     <h5 class="card__title">{{this.itemName}}</h5>
                                                     <h5 class="card__title">${{this.price}}</h5>                                                    
                                                     <button type="button" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallOwner/showEditMenu/{{this.id}}')" title="edit" style="background-color: #fff; color:#343a40;">Edit</button>                                                                                            
-                                                    <button type="submit" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallOwner/deletePrompt/{{this.id}}')" title="delete" style="background-color: #fff; color:#343a40;">Delete</button>                                                                                 
+                                                    <button type="button" class="btn btn-outline" data-toggle="modal" onclick="showCustomDialog('/stallOwner/deletePrompt/{{this.id}}')" title="delete" style="background-color: #fff; color:#343a40;">Delete</button>                                                                                 
                                                 </center>
                                             </div>
                                         </div>
@@ -70,35 +70,7 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <br>
 
-{{!-- {{#if item}}
-    {{#each item}}
-        <div class="modal fade" id="deleteForm{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Are you sure to delete?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form method="POST" action="/stallOwner/deleteItem">
-                        <br>
-                        <input type="hidden" id="itemID" name="itemID" value="{{this.id}}"> 
-                        <input name="csrf" type="hidden" value="{{../csrf}}"/> 
-                        <div class="modal-body">
-                            <center>
-                                <button type="submit" class="red-btn">Yes</button>
-                                <button data-dismiss="modal" class="red-btn">No</button>  
-                            </center>
-                        </div>            
-                    </form>
-                </div>
-            </div>
-        </div>
-    {{/each}}
-{{/if}} --}}

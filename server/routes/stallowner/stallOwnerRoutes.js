@@ -6,7 +6,16 @@ const router = express.Router();
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./upload');
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage ,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    }
+})
 
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
@@ -528,8 +537,6 @@ router.get('/orderDetails/ratings/', (req, res) => {
 
 router.use(auth_login.auth)
 const op = Sequelize.Op
-var displayAlert = []
-var errorAlert = []
 
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
@@ -548,38 +555,34 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', uuid_middleware.generate, (req, res) => {
+router.get('/showMenu', auth_login.authStallOwner, (req, res) => {
     const id = req.user.id
 
-   user_util.getUserByID(id).then(user => {
-         if(user.role === 'Stallowner'){
-            Stall.findOne({where: {userId: id}}).then(myStall => {
-                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallOwner/stallowner-menu', {
-                        item:item,
-                        stall: myStall,                                             
-                        nav: 'manageMenu'
-                    })                                                                
-                })    
-            })
-        }else{
-            res.render('./successErrorPages/error', {
-                nav: 'manageMenu'
-            })
-        }      
-      })
+    user_util.getUserByID(id).then(user => {
+        Stall.findOne({where: {userId: id}}).then(myStall => {
+            MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                res.render('stallOwner/stallowner-menu', {
+                    item:item,
+                    stall: myStall,                                             
+                    nav: 'manageMenu'
+                })                                                                
+            })    
+        })   
+    })
 })
 
-router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
+router.post('/submitItem', auth_login.authStallOwner, [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
-        user_util.getUserByID(currentUser).then(user => {
-            if(user.role === 'Stallowner'){
+    
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
+        if(fs.existsSync(process.cwd() + '/public/img/uploads/' + image)){
+            user_util.getUserByID(currentUser).then(user => {           
                 checkUnique(itemName).then(isUnique => {
                     if(isUnique){                   
                             Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
@@ -596,20 +599,20 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
                         res.status(400)
                         res.send('The name ' + itemName + ' is already taken, item not added!')          
                     }
-                })
-            }else{
-                res.render('./successErrorPages/error', {
-                    nav: 'manageMenu'
-                })
-            }
-        })
+                })               
+            })
+        }else{
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('Image is required')
+        }      
     }else{
         uuid_middleware.registerToken(req, req.body.csrf)
         res.status(400)
     }
 })
 
-router.post('/deleteItem', uuid_middleware.verify, async (req, res) =>{
+router.post('/deleteItem', auth_login.authStallOwner, uuid_middleware.verify, async (req, res) =>{
     currentUser = req.user.id
     const active = false
     const id = req.body.itemID
@@ -632,7 +635,7 @@ router.post('/deleteItem', uuid_middleware.verify, async (req, res) =>{
 
 })
 
-router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
+router.post('/updateItem', auth_login.authStallOwner, [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
 
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
@@ -642,18 +645,14 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     const id = req.body.itemID
     var imageName = req.body.imgName
 
-    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
         await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
             MenuItem.findOne({where:{id}}).then(checkMenu =>{
                 if(checkStall.id === checkMenu.stallId){
                     checkUnique(itemName).then(isUnique => {
                         if((checkMenu.itemName === itemName) || isUnique){                                  
-                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                                    fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                                        if(err){
-                                            console.log(err)
-                                        }
-                                    })
+                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {                                       
                                     req.session.alerts = [{
                                         message: 'Item successfully updated'
                                     }]
@@ -678,53 +677,40 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     }   
 })
 
-router.post('/filterItem', (req, res) =>{
+router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
-         if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
-                        stall: myStall,
-                        errorAlert: errorAlert,
+                        stall: myStall,                  
                         nav: 'manageMenu'
                     })
                     errorAlert = []
                 })    
-            })
-        }else{
-            res.render('./successErrorPages/error')
-        }      
+            })      
       })
 })
 
-router.get('/showAddMenu', uuid_middleware.generate, (req, res) =>{
+router.get('/showAddMenu', auth_login.authStallOwner, uuid_middleware.generate, (req, res) =>{
     res.render('stallOwner/stallOwnerModel/addMenuModel', {layout: 'empty_layout'})
 })
 
-router.get('/showEditMenu/:menuID', uuid_middleware.generate, (req, res) =>{
+router.get('/showEditMenu/:menuID', auth_login.authStallOwner, uuid_middleware.generate, (req, res) =>{
     let menuID = req.params.menuID
-    User.findOne({ where: {id: req.user.id }}).then(user => {
-        if(user.role === 'Stallowner'){
-            MenuItem.findOne({where: {id: menuID}}).then(menu =>{
-                res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
-            })        
-        }
-    })
+    MenuItem.findOne({where: {id: menuID}}).then(menu =>{
+        res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+    })        
 })
 
-router.get('/deletePrompt/:menuID' , uuid_middleware.generate, async (req, res) =>{
+router.get('/deletePrompt/:menuID', auth_login.authStallOwner, uuid_middleware.generate, async (req, res) =>{
     var currentUser = req.user.id
     var menuID = req.params.menuID
-    User.findOne({ where: {id: currentUser }}).then(user => {
-        if(user.role === 'Stallowner'){
-            MenuItem.findOne({where: {id: menuID}}).then(menu => {
-                res.render('stallOwner/stallOwnerModel/deleteMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
-            })        
-        }
-    })
+    MenuItem.findOne({where: {id: menuID}}).then(menu => {
+        res.render('stallOwner/stallOwnerModel/deleteMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+    })        
 })
 
 module.exports = router;

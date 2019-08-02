@@ -6,21 +6,21 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="POST" action="/updateProfile" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form method="POST" action="/updateProfile" enctype="multipart/form-data" class="needs-validation">
                 <input name="csrf" type="hidden" value="{{csrf}}"/>
                 <div class="modal-body">
                     <br>
                     <div class="form-group row">
                         <label for="itemPrice" class="col-sm-2 col-form-label">Phone</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" value="{{user.phone}}" required>
+                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" value="{{DisplayUser.phone}}" required>
                             <div class="valid-feedback">Valid!</div>
                             <div class="invalid-feedback">required, 8-10 numbers</div>
                         </div>
                     </div>               
                     <div class="form-group row">
                         <div class="col-sm-2 imgUp">
-                            <div class="imagePreview"style="background: url(/uploads/{{UserID}}.jpeg); background-size: 140px 140px;"></div>                            
+                            <div class="imagePreview"style="background: url(/img/profiles/{{DisplayUser.id}}.png); background-size: 140px 140px;"></div>                            
                                 <input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg">
                             </div>
                     </div>              
@@ -60,6 +60,7 @@
 </script>
 
 <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
         'use strict';
         window.addEventListener('load', function () {
