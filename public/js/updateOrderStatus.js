@@ -108,9 +108,8 @@ $(document).ready(function (){
                     }
                 }
     
-                var card = `   
-                <div class="d-inline-block p-3">                                         
-                <div class="card shadow-sm" id="orderCard_${orderDetails.publicOrderID}" style="width: 15rem">
+                var card = `                                          
+                <div class="d-inline-block m-3 p-0 card shadow-sm col-md-3 col-11" id="orderCard_${orderDetails.publicOrderID}">
     
                     <div class="card-header font-weight-bold bg-danger text-right text-white">
                         <div class="row justify-content-between">
@@ -163,7 +162,6 @@ $(document).ready(function (){
                             </form>
                         </div>
                     </div>
-                </div>
                 </div>`
     
                 all_orders_column.innerHTML += card
