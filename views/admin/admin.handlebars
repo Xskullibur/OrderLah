@@ -66,7 +66,7 @@
                                                     <center><h4 class="card__title">{{this.username}}</h4></center>
                                                     <center>                                                                                                         
                                                         <button type="button" class="btn btn-outline-secondary" data-toggle="modal" onclick="showCustomDialog('/admin/showLock/{{this.id}}')">Lock</button> 
-                                                        <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>                                        
+                                                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" >Reset</button>                                        
                                                     </center>
                                                 </div>
                                             </div>
@@ -110,8 +110,7 @@
                                                 <h4 class="card__title">{{this.username}}</h4>
                                             </center>
                                             <center>
-                                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                                                    data-target="#unlock{{this.id}}">Unlock</button>
+                                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" onclick="showCustomDialog('/admin/showUnlock/{{this.id}}')">Unlock</button>
                                                 <button type="submit" class="btn btn-outline-secondary" data-toggle="modal"
                                                     data-target="#reset{{this.id}}">Reset</button>
                                             </center>
@@ -131,7 +130,7 @@
 <br>
 
 
-{{#if displayLocked}}
+{{!-- {{#if displayLocked}}
     {{#each displayLocked}}
         <div class="modal fade" id="unlock{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -156,7 +155,7 @@
             </div>
         </div>
     {{/each}}
-{{/if}}
+{{/if}} --}}
 
 {{#if displayStallowner}}
     {{#each displayStallowner}}

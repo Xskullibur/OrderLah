@@ -100,7 +100,7 @@ router.get('/adminPanel', auth_login.authAdmin, (req, res) =>{
     })
 })
 
-router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
+router.post('/submitStall', auth_login.authAdmin, uuid_middleware.verify, async (req, res) =>{
     var passGen = generator.generate({
         length: 15,
         numbers: true
@@ -213,7 +213,7 @@ router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
     }  
 })
 
-router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
+router.post('/lockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, res) =>{
     const userID = req.body.userID
     const role = 'Inactive'
     const active = false
@@ -236,7 +236,7 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
                         }
                     })
                     req.session.alerts = [{
-                        message: 'successfuly locked'
+                        message: 'successfuly locked account'
                     }]   
                     res.redirect('/admin/adminPanel')
                 })
@@ -245,7 +245,7 @@ router.post('/lockAccount', auth_login.authAdmin, (req, res) =>{
     })   
 })
 
-router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
+router.post('/unlockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, res) =>{
     const userID = req.body.userID
     const role = 'Stallowner'
     const active = true
@@ -267,7 +267,9 @@ router.post('/unlockAccount', auth_login.authAdmin, (req, res) =>{
                             console.log('Email sent: ' + info.response);
                         }
                     })   
-                    displayAlert.push("successully unlocked account!")
+                    req.session.alerts = [{
+                        message: 'successfuly unlocked account'
+                    }]   
                     res.redirect('/admin/adminPanel')
                 })
             })            
@@ -327,6 +329,13 @@ router.get('/showLock/:theUserID', uuid_middleware.generate, (req, res) =>{
     let stallID = req.params.theUserID  
     User.findOne({where: {id: stallID}}).then((stallowner) =>{
         res.render('admin/lockModel', {layout: 'empty_layout', displayID: stallowner})
+    })             
+})
+
+router.get('/showUnlock/:theUserID', uuid_middleware.generate, (req, res) =>{
+    let stallID = req.params.theUserID  
+    User.findOne({where: {id: stallID}}).then((stallowner) =>{
+        res.render('admin/unlockModel', {layout: 'empty_layout', displayID: stallowner})
     })             
 })
 
