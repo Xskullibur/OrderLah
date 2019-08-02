@@ -576,33 +576,40 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
+    
     if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
     && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
-        user_util.getUserByID(currentUser).then(user => {
-            if(user.role === 'Stallowner'){
-                checkUnique(itemName).then(isUnique => {
-                    if(isUnique){                   
-                            Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-                                const stallId = theStall.id                    
-                                MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
-                                    req.session.alerts = [{
-                                        message: 'Item successfully added'
-                                    }]
-                                    res.send('success')                      
-                                }).catch(err => console.log(err))
-                            })
-                    }else{
-                        uuid_middleware.registerToken(req, req.body.csrf)
-                        res.status(400)
-                        res.send('The name ' + itemName + ' is already taken, item not added!')          
-                    }
-                })
-            }else{
-                res.render('./successErrorPages/error', {
-                    nav: 'manageMenu'
-                })
-            }
-        })
+        if(fs.existsSync(process.cwd() + '/public/img/uploads/' + image)){
+            user_util.getUserByID(currentUser).then(user => {
+                if(user.role === 'Stallowner'){
+                    checkUnique(itemName).then(isUnique => {
+                        if(isUnique){                   
+                                Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                                    const stallId = theStall.id                    
+                                    MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
+                                        req.session.alerts = [{
+                                            message: 'Item successfully added'
+                                        }]
+                                        res.send('success')                      
+                                    }).catch(err => console.log(err))
+                                })
+                        }else{
+                            uuid_middleware.registerToken(req, req.body.csrf)
+                            res.status(400)
+                            res.send('The name ' + itemName + ' is already taken, item not added!')          
+                        }
+                    })
+                }else{
+                    res.render('./successErrorPages/error', {
+                        nav: 'manageMenu'
+                    })
+                }
+            })
+        }else{
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('Image is required')
+        }      
     }else{
         uuid_middleware.registerToken(req, req.body.csrf)
         res.status(400)
