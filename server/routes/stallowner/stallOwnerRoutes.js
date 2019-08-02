@@ -569,38 +569,36 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-
-    user_util.getUserByID(currentUser).then(user => {
-        if(user.role === 'Stallowner'){
-            checkUnique(itemName).then(isUnique => {
-                if(isUnique){
-                    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
-                        Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-                            const stallId = theStall.id
-                    
-                            MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
-                                req.session.alerts = [{
-                                    message: 'Item successfully added'
-                                }]
-                                res.send('success')                      
-                            }).catch(err => console.log(err))
-                        })
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
+        user_util.getUserByID(currentUser).then(user => {
+            if(user.role === 'Stallowner'){
+                checkUnique(itemName).then(isUnique => {
+                    if(isUnique){                   
+                            Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                                const stallId = theStall.id                    
+                                MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
+                                    req.session.alerts = [{
+                                        message: 'Item successfully added'
+                                    }]
+                                    res.send('success')                      
+                                }).catch(err => console.log(err))
+                            })
                     }else{
                         uuid_middleware.registerToken(req, req.body.csrf)
                         res.status(400)
+                        res.send('The name ' + itemName + ' is already taken, item not added!')          
                     }
-                }else{
-                    uuid_middleware.registerToken(req, req.body.csrf)
-                    res.status(400)
-                    res.send('The name ' + itemName + ' is already taken, item not added!')          
-                }
-            })
-        }else{
-            res.render('./successErrorPages/error', {
-                nav: 'manageMenu'
-            })
-        }
-    })
+                })
+            }else{
+                res.render('./successErrorPages/error', {
+                    nav: 'manageMenu'
+                })
+            }
+        })
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+    }
 })
 
 router.post('/deleteItem', uuid_middleware.verify, async (req, res) =>{
@@ -636,37 +634,40 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     const id = req.body.itemID
     var imageName = req.body.imgName
 
-    await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
-        MenuItem.findOne({where:{id}}).then(checkMenu =>{
-            if(checkStall.id === checkMenu.stallId){
-                 checkUnique(itemName).then(isUnique => {
-                    if((checkMenu.itemName === itemName) || isUnique){
-                        if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){           
-                            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                                    if(err){
-                                        console.log(err)
-                                    }
-                                })
-                                req.session.alerts = [{
-                                    message: 'Item successfully added'
-                                }]
-                                res.send('success') 
-                            }).catch(err => console.log(err))
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
+        await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
+            MenuItem.findOne({where:{id}}).then(checkMenu =>{
+                if(checkStall.id === checkMenu.stallId){
+                    checkUnique(itemName).then(isUnique => {
+                        if((checkMenu.itemName === itemName) || isUnique){                                  
+                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
+                                    fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
+                                        if(err){
+                                            console.log(err)
+                                        }
+                                    })
+                                    req.session.alerts = [{
+                                        message: 'Item successfully updated'
+                                    }]
+                                    res.send('success') 
+                                }).catch(err => console.log(err))
+                        }else{           
+                            uuid_middleware.registerToken(req, req.body.csrf)
+                            res.status(400)
+                            res.send('The name ' + itemName + ' is already taken, item not added!')          
                         }
-                    }else{           
-                        uuid_middleware.registerToken(req, req.body.csrf)
-                        res.status(400)
-                        res.send('The name ' + itemName + ' is already taken, item not added!')          
-                    }
-                })
-            }else{
-                uuid_middleware.registerToken(req, req.body.csrf)
-                res.status(400)
-                res.send('This Menu Item does not belong to you')
-            }
+                    })
+                }else{
+                    uuid_middleware.registerToken(req, req.body.csrf)
+                    res.status(400)
+                    res.send('This Menu Item does not belong to you')
+                }
+            })
         })
-    })
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+    }   
 })
 
 router.post('/filterItem', (req, res) =>{
