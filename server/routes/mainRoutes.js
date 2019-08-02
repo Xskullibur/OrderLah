@@ -34,7 +34,16 @@ const moment = require('moment')
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./uploadProfile')
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    } 
+})
 
 // Create a token generator with the default settings:
 var randtoken = require('rand-token');

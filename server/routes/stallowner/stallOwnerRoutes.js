@@ -6,7 +6,16 @@ const router = express.Router();
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./upload');
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage ,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    }
+})
 
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
@@ -520,8 +529,6 @@ router.get('/orderDetails/ratings/', (req, res) => {
 
 router.use(auth_login.auth)
 const op = Sequelize.Op
-var displayAlert = []
-var errorAlert = []
 
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
@@ -681,8 +688,7 @@ router.post('/filterItem', (req, res) =>{
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
-                        stall: myStall,
-                        errorAlert: errorAlert,
+                        stall: myStall,                  
                         nav: 'manageMenu'
                     })
                     errorAlert = []
