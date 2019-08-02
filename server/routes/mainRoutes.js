@@ -656,36 +656,30 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
+router.get('/changeProfile', uuid_middleware.generate, (req, res) =>{
+    currentUser = req.user.id
+    user_utils.getUserByID(currentUser).then(user =>{
+        res.render('profileUpdateModel', {layout: 'empty_layout', DisplayUser: user})
+    })
+})
+
 router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
-    var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
-    var birthday = req.body.birthday
 
     //Validate inputs
-    if(validator.isEmail(email) &&
-    validator.isBefore(birthday, new Date().toString()) &&
-    validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
-
+    if(validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
         req.session.alerts = []
-
-        await user_utils.checkUniqueEmail(email).then(isUnique =>{
-            if(!isUnique){
-                req.session.alerts.push({
-                    message: ' Email: ' + email + ' ',
-                    type: 'alert-danger',
-                    timeout: -1
-                })
-            }
-        })
-    
+        
         await user_utils.checkUniquePhone(phone).then(isUnique => {
-            if(!isUnique){
-                req.session.alerts.push({
-                    message: ' Phone: ' + phone + ' ',
-                    type: 'alert-danger',
-                    timeout: -1
-                })
-            }
+            user_utils.getUserByID(currentUser).then(user =>{
+                if(user.phone !== phone && !isUnique){
+                    req.session.alerts.push({
+                        message: ' Phone: ' + phone + ' ',
+                        type: 'alert-danger',
+                        timeout: -1
+                    })
+                }
+            })
         })
     
         if(req.session.alerts.length > 0){
@@ -693,18 +687,14 @@ router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.ve
             res.send('Failed')
             //res.redirect('/profile')
         }else{
-            User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
+            User.update({phone}, {where: {id: req.user.id}}).then(function(){
                 req.session.alerts.push({
                     message: 'profile successfully updated'
                 })
                 res.redirect('/profile')
             })
         }
-
-    }
-
-
-    
+    } 
 })
 
 
