@@ -324,18 +324,18 @@ router.post('/requesttoken',(req, res) => {
     let mailOptions = {
         from:'Orderlah Team',
         to: req.body.email,
-        subject: 'testing',
+        subject: 'OrderLah Register Verification',
         html: `
         <div style="border: 1px solid rgba(200,200,200,1.00);">
             <div style="background-color: darkorange; padding: 1px 20px;">
-                <h3>Login Verification</h3>
+                <h3>Register Verification</h3>
             </div>
             <div style="padding: 20px 20px 0;">
                 <p>Verification Code: ${req.session.token}</p>
                 <hr/>
                 <div>
                     <p style="text-align: right;">
-                        <img src="tuturu" width="20%" height="auto"/>
+                        <img src="tuturu" width="10%" height="auto"/>
                     </p>
                 </div>
             </div>
@@ -506,7 +506,7 @@ router.post('/forgotPassword', (req, res) =>{
                             <hr/>
                             <div>
                                 <p style="text-align: right;">
-                                    <img src="tuturu" width="20%" height="auto"/>
+                                    <img src="tuturu" width="10%" height="auto"/>
                                 </p>
                             </div>
                         </div>

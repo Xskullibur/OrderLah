@@ -174,43 +174,4 @@
 
 </div>
 
-<!--
-<script>
-
-    $(function() {
-        
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-
-        {{#if toDate}}
-            {{#if frDate}}                
-                start = moment({{{frDate}}})
-                end = moment({{{toDate}}})
-            {{/if}}
-        {{/if}}
-
-        function cb(start, end) {
-            $('#daterange span').html(start.format('DD MMMM YYYY') + ' - ' + end.format('DD MMMM YYYY'));
-            $('#frDate').val(`${start.format('YYYY-MM-DD')}`)
-            $('#toDate').val(`${end.format('YYYY-MM-DD')}`) 
-        }
-
-        $('#daterange').daterangepicker({
-            startDate: start,
-            endDate: end,
-            ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            }
-        }, cb);
-
-        cb(start, end);
-
-    });
-
-</script>
--->
+{{> fixed_scroll_btn}}

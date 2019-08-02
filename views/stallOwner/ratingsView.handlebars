@@ -21,59 +21,38 @@
                                 <div class="card-body container p-4">
                                     <form id="filter">
 
-                                        <div class="row">
-
-                                            {{!-- Item --}}
-                                            <div class="col-12 col-lg-4 py-1 p-lg-3">
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <h6>Items:</h6>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col">
-
-                                                        <select class="custom-select" name="item_filter" id="item_filter">
-                                                            <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}} id="item_filter_default">Filter by menu item</option>
-                                                            {{#each menu_items as |item|}}
-                                                                <option value="{{item.id}}" {{#ifCondition @root.item_filter "==" item.id}}selected{{/ifCondition}}>{{item.itemName}}</option>
-                                                            {{/each}}
-                                                        </select>
-
-                                                    </div>
-                                                </div>
-
+                                        <div class="form-row justify-content-between">
+                                            <div class="form-group col-12 col-lg-5">
+                                                <label for="item_filter">Item:</label>
+                                                <select class="custom-select" name="item_filter" id="item_filter">
+                                                    <option value="" {{#ifCondition item_filter "||" rating_filter}}{{else}}selected{{/ifCondition}} id="item_filter_default">Filter by menu item</option>
+                                                    {{#each menu_items as |item|}}
+                                                        <option value="{{item.id}}" {{#ifCondition @root.item_filter "==" item.id}}selected{{/ifCondition}}>{{item.itemName}}</option>
+                                                    {{/each}}
+                                                </select>
                                             </div>
-
-                                            {{!-- Rating --}}
-                                            <div class="col-12 col-lg-4 py-3 p-lg-3">
-
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <h6 class="m-0">Rating:</h6>
-                                                    </div>
+                                            <div class="form-group col-12 col-lg-5">
+                                                <div class="form-row">
+                                                    <label for="rating_filter">Ratings:</label>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <span class="rating" style="font-size: 2em"></span>
-                                                        <input type="hidden" name="rating_filter" id="rating_filter">      
-                                                    </div>
+                                                <div class="form-row">
+                                                    <span class="rating" style="font-size: 2em"></span>
+                                                    <input type="hidden" name="rating_filter" id="rating_filter">      
                                                 </div>
-                                                
                                             </div>
-
                                         </div>
 
-                                        <div class="row">
-                                            <div class="col text-right">
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <a href="/stallOwner/orderDetails/ratings/" class="btn btn-outline-danger">Reset</a>
-                                                        <button class="btn btn-outline-danger">Filter</button>
-                                                    </div>
-                                                </div>
+                                        <div class="form-row">
+                                            <div class="form-group col">
+                                                <label for="daterange">Date Range:</label>
+                                                {{> date_range_picker}}
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col text-right">
+                                                <a href="/stallOwner/orderDetails/ratings/" class="btn btn-outline-danger">Reset</a>
+                                                <button class="btn btn-outline-danger">Filter</button>
                                             </div>
                                         </div>
 
@@ -117,7 +96,7 @@
 
                                                 {{!-- Each Rating --}}
                                                 {{#each item.ratings as |itemRating|}}                                            
-                                                    <div class="card d-inline-block">
+                                                    <div class="card d-inline-block col-12 col-md-auto">
 
                                                         {{#if itemRating.image}}
                                                             <img class="card-img-top" src="/img/reviewimages/{{itemRating.image}}" alt="">
@@ -131,7 +110,7 @@
                                                             <p>{{itemRating.comments}}</p>
                                                             <footer class="blockquote-footer">
                                                                 <small class="text-muted">
-                                                                    Rating by: <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
+                                                                    <cite title="{{itemRating.CUSTOMER_NAME}}">{{itemRating.CUSTOMER_NAME}}</cite>
                                                                 </small>
                                                             </footer>
                                                         </blockquote>
@@ -166,6 +145,9 @@
         </div>
     </div>
 </div>
+
+{{> fixed_scroll_btn}}
+
 <script>
 
     $('.rating').mdbRate({{#if rating_filter}}{{rating_filter}}, false{{/if}});

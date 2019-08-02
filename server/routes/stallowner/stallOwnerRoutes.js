@@ -204,7 +204,7 @@ router.get('/orderDetails/allOrders/', (req, res, next) => {
     let error
 
     frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    toDate = moment().toString('YYYY-MM-DD')
+    toDate = moment().format('YYYY-MM-DD')
 
     if (req.query.toDate && req.query.frDate) {
         toDate = req.query.toDate
@@ -422,6 +422,14 @@ router.get('/orderDetails/ratings/', (req, res) => {
     item_filter = null
     rating_filter = null
 
+    frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    toDate = moment().format('YYYY-MM-DD')
+
+    if (req.query.toDate && req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
+    }
+
     function getFilters() {
 
         filters = false
@@ -468,7 +476,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
                                 newLine.itemName = menuItem.itemName
             
                                 // Get ratings for each items and push into new line 
-                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter, toDate, frDate).then(([ratings, metadata]) => {
                                     newLine.ratings = ratings
                                 })
             
@@ -484,7 +492,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
                             newLine.itemName = menuItem.itemName
         
                             // Get ratings for each items and push into new line 
-                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter, toDate, frDate).then(([ratings, metadata]) => {
                                 newLine.ratings = ratings
                             })
         
@@ -500,7 +508,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
         // res.send(items)
 
         res.render('stallOwner/ratingsView', {
-            allRatings, title, menu_items, item_filter, rating_filter,
+            allRatings, title, menu_items, item_filter, rating_filter, toDate, frDate,
             nav: 'orderDetails'
         })
 
