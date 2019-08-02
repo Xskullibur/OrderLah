@@ -93,7 +93,7 @@ router.post('/saveReview/:id/:orderid', [uuid_middleware.verify, upload.single("
 router.get('/pastOrders', (req, res) => {
     
     frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
-    toDate = moment().toString('YYYY-MM-DD')
+    toDate = moment().format('YYYY-MM-DD')
 
     if (req.query.toDate && req.query.frDate) {
         toDate = req.query.toDate
