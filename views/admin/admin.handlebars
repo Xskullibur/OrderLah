@@ -39,7 +39,7 @@
         </div>
         <div class="col-sm-12 col-md-3 col-lg-4">
             <center>
-                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#createStall">Add Stall</button>
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" onclick="showCustomDialog('/admin/showCreateStall')">Add Stall</button>
             </center>
             <br>
         </div>
@@ -81,6 +81,50 @@
         </div>
     </div>
 </div>
+<br>
+
+{{#if displayLocked}}
+    {{#each displayLocked}}
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="card border-secondary" style="background-color: #fff;  width: 100% !important; height: 100% !important;">
+                        <center><h2>Locked Stalls</h2></center>
+                        <br>
+                        <div class="row">                    
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                <div class="column">
+                                    <div class="container">
+                                        <div class="card">
+                                            <br>
+                                            <div class="card__image-container">
+                                                <center><img class="card__image" src="/img/profiles/{{this.id}}.png"
+                                                        onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';"
+                                                        height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
+                                            </div>
+                                            <br>
+                                            <div class="card__content">
+                                                <center>
+                                                    <h4 class="card__title">{{this.username}}</h4>
+                                                </center>
+                                                <center>
+                                                    <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#unlock{{this.id}}">Unlock</button>
+                                                    <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>
+                                                </center>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>                         
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+    {{/each}}
+{{/if}}
 
 {{#if displayStallowner}}
     {{#each displayStallowner}}
@@ -94,6 +138,33 @@
                         </button>
                     </div>
                     <form method="POST" action="/admin/lockAccount">
+                        <br>
+                        <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
+                        <div class="modal-body">
+                            <center>
+                                <button type="submit" class="btn btn-outline-danger">Yes</button>
+                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
+                            </center>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{/if}}
+
+{{#if displayLocked}}
+    {{#each displayLocked}}
+        <div class="modal fade" id="unlock{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Unlock {{this.username}}?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/admin/unlockAccount">
                         <br>
                         <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
                         <div class="modal-body">
@@ -135,91 +206,6 @@
         </div>
     {{/each}}
 {{/if}}
-
-<div class="modal fade" id="createStall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add New Stall</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form method="POST" action="/admin/submitStall" class="needs-validation" novalidate>
-                <div class="modal-body">
-                    <br>                   
-                    <div class="form-group row">
-                        <label for="username" class="col-sm-2 col-form-label">username</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,50}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 50 characters</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="firstName" id="firstName" pattern="[a-zA-Z\s]{1,100}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 100 letters</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="lastName" id="lastName" pattern="[a-zA-Z\s]{1,100}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 100 letters</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="email" class="col-sm-2 col-form-label">Email</label>
-                        <div class="col-sm-10">
-                            <input type="email" class="form-control" name="email" id="email" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">email required!</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="birthday" class="col-sm-2 col-form-label">Birthday</label>
-                        <div class="col-sm-10">
-                            <input type="date" class="form-control" name="birthday" id="birthday" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required!</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="phone" class="col-sm-2 col-form-label">Phone</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, 8-10 numbers</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="stallName" class="col-sm-2 col-form-label">Stall Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,125}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 50 characters</div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="description" class="col-sm-2 col-form-label">Description</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="description" id="description" pattern="[a-zA-Z0-9\s]{1,255}" required>
-                            <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 255 characters</div>
-                        </div>
-                    </div>                                                     
-                    <input type="hidden" id="holder" name="holder"  value="">
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-danger">Create</button>
-                    </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <script>
     // Example starter JavaScript for disabling form submissions if there are invalid fields

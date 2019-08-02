@@ -88,6 +88,17 @@ module.exports = {
         
     },
 
+    
+    /**
+     * Register a token as csrf, be careful when using this function
+     * @param {*} req 
+     * @param {*} token 
+     */
+    registerToken: function(req, token){
+        req.session.csrfs.push(token)
+    },
+
+
     /**
      * Send CSRF token to client, IMPORTANT: this should be disabled in production
      * @param {*} req 

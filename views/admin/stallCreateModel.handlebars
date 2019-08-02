@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="/css/admin.css">
+<div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Stall</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="modal-alerts"></div>
+            <form id="stallForm" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <br>                   
+                    <div class="form-group row">
+                        <label for="username" class="col-sm-2 col-form-label">username</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,50}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, max 50 characters</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="firstName" id="firstName" pattern="[a-zA-Z\s]{1,100}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, max 100 letters</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="lastName" id="lastName" pattern="[a-zA-Z\s]{1,100}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, max 100 letters</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="email" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" name="email" id="email" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">email required!</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="birthday" class="col-sm-2 col-form-label">Birthday</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" name="birthday" id="birthday" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required!</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, 8-10 numbers</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="stallName" class="col-sm-2 col-form-label">Stall Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,125}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, max 50 characters</div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="description" class="col-sm-2 col-form-label">Description</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="description" id="description" pattern="[a-zA-Z0-9\s]{1,255}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, max 255 characters</div>
+                        </div>
+                    </div>                                                     
+                    <input name="csrf" type="hidden" value="{{csrf}}"/>
+                    <div class="modal-footer">
+                        <button type="button" id="createStall" class="btn btn-outline-danger">Create</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })
+</script>
+
+<script>
+    $(document).ready(function (){
+        $('#createStall').click(function(){
+            createStall();
+        });
+    });
+
+    function createStall(){
+        var form_data = {csrf: $('#csrf-token').val()};
+        //Get form data as array and convert it into a json object
+        $('#stallForm').serializeArray().forEach(e => {
+            form_data[e.name] = e.value;
+        });
+        console.log(form_data)
+        $.ajax({
+            method: "POST",
+            url: "/admin/submitStall",
+            data: form_data,
+            dataType: 'text',
+            success: function (html, status, response) {
+                location.reload();
+            },
+            error: function (error) {
+                showAlertInSelector(error.responseText, '#modal-alerts', 3000, 'alert-danger');
+            }
+        })
+    }
+</script>
