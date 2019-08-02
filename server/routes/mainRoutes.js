@@ -337,9 +337,6 @@ router.post('/requesttoken',(req, res) => {
                     <p style="text-align: right;">
                         <img src="tuturu" width="20%" height="auto"/>
                     </p>
-                    <p style="text-align: right;">
-                        OrderLah!
-                    </p>
                 </div>
             </div>
         </div>`,
@@ -510,9 +507,6 @@ router.post('/forgotPassword', (req, res) =>{
                             <div>
                                 <p style="text-align: right;">
                                     <img src="tuturu" width="20%" height="auto"/>
-                                </p>
-                                <p style="text-align: right;">
-                                    OrderLah!
                                 </p>
                             </div>
                         </div>

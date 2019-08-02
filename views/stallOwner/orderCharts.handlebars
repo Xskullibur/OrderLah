@@ -61,7 +61,7 @@
                     <!--Accordion wrapper-->
                     <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
 
-                        <!-- Accordion card -->
+                        <!-- General Information -->
                         <div class="card">
 
                             <!-- Card header -->
@@ -70,10 +70,10 @@
 
                                     <div class="container">
                                         <div class="row">
-                                            <h5 class="col-11 mb-0">
+                                            <h5 class="col mb-0">
                                                 General Information
                                             </h5>
-                                            <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                            <i class="col-auto text-right fas fa-angle-down rotate-icon mt-1"></i>
                                         </div>
                                     </div>
 
@@ -116,9 +116,8 @@
                             </div>
 
                         </div>
-                        <!-- Accordion card -->
 
-                        <!-- Accordion card -->
+                        <!-- Rating for each Item -->
                         <div class="card">
 
                             <!-- Card header -->
@@ -126,10 +125,10 @@
                                 <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2">
                                     <div class="container">    
                                         <div class="row">
-                                            <h5 class="col-11 mb-0">
+                                            <h5 class="col mb-0">
                                                 Rating for each items
                                             </h5>
-                                            <i class="col-1 text-right fas fa-angle-down rotate-icon"></i>
+                                            <i class="col-auto pt-1 text-right fas fa-angle-down rotate-icon"></i>
                                         </div>
                                     </div>
                                 </a>
@@ -141,23 +140,19 @@
                                 
                                 
                                     {{!-- Each Food Item Charts --}}
-                                    <div class="container-fluid text-center" id="EIR">
+                                    <div class="container-fluid text-center p-0" id="EIR">
 
-                                        <div class="col">
+                                        {{!-- Each Food Item Charts --}}
+                                        {{#each EachItemRating as |item|}}
 
-                                            {{!-- Each Food Item Charts --}}
-                                            {{#each EachItemRating as |item|}}
-
-                                                <div class="card d-inline-block mx-2 my-2" style="width: 25rem">
-                                                    <div class="card-body">
-                                                        <h4 class="card-title">{{item.itemName}}</h4>
-                                                        <canvas id="Rating_{{item.id}}"></canvas>
-                                                    </div>
+                                            <div class="card d-inline-block mx-md-2 my-2 col-md-5 col-12">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">{{item.itemName}}</h4>
+                                                    <canvas id="Rating_{{item.id}}"></canvas>
                                                 </div>
+                                            </div>
 
-                                            {{/each}}
-
-                                        </div>
+                                        {{/each}}
 
                                     </div>
                                 
