@@ -82,76 +82,54 @@
     </div>
 </div>
 <br>
-
 {{#if displayLocked}}
-    {{#each displayLocked}}
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="card border-secondary" style="background-color: #fff;  width: 100% !important; height: 100% !important;">
-                        <center><h2>Locked Stalls</h2></center>
-                        <br>
-                        <div class="row">                    
-                            <div class="col-sm-12 col-md-6 col-lg-4">
-                                <div class="column">
-                                    <div class="container">
-                                        <div class="card">
-                                            <br>
-                                            <div class="card__image-container">
-                                                <center><img class="card__image" src="/img/profiles/{{this.id}}.png"
-                                                        onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';"
-                                                        height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
-                                            </div>
-                                            <br>
-                                            <div class="card__content">
-                                                <center>
-                                                    <h4 class="card__title">{{this.username}}</h4>
-                                                </center>
-                                                <center>
-                                                    <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#unlock{{this.id}}">Unlock</button>
-                                                    <button type="submit" class="btn btn-outline-secondary" data-toggle="modal" data-target="#reset{{this.id}}">Reset</button>
-                                                </center>
-                                            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="card border-secondary"
+                style="background-color: #fff;  width: 100% !important; height: 100% !important;">
+                <center>
+                    <h2>Locked Stalls</h2>
+                </center>
+                <br>
+                <div class="row">                  
+                    {{#each displayLocked}}
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="column">
+                                <div class="container">
+                                    <div class="card">
+                                        <br>
+                                        <div class="card__image-container">
+                                            <center><img class="card__image" src="/img/profiles/{{this.id}}.png"
+                                                    onerror="this.src='http://cliquecities.com/assets/no-image-e3699ae23f866f6cbdf8ba2443ee5c4e.jpg';"
+                                                    height="180" width="180" alt="" style="max-width: 65%; border-radius: 50%;"></center>
+                                        </div>
+                                        <br>
+                                        <div class="card__content">
+                                            <center>
+                                                <h4 class="card__title">{{this.username}}</h4>
+                                            </center>
+                                            <center>
+                                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+                                                    data-target="#unlock{{this.id}}">Unlock</button>
+                                                <button type="submit" class="btn btn-outline-secondary" data-toggle="modal"
+                                                    data-target="#reset{{this.id}}">Reset</button>
+                                            </center>
                                         </div>
                                     </div>
-                                    <br>
                                 </div>
-                            </div>                         
+                                <br>
+                            </div>
                         </div>
-                    </div>
+                    {{/each}}                    
                 </div>
             </div>
         </div>
-        <br>
-    {{/each}}
-{{/if}}
+    </div>
+</div>
+{{/if}} 
+<br>
 
-{{!-- {{#if displayStallowner}}
-    {{#each displayStallowner}}
-        <div class="modal fade" id="freeze{{this.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">lock account for {{this.username}}?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form method="POST" action="/admin/lockAccount">
-                        <br>
-                        <input type="hidden" id="userID" name="userID" value="{{this.id}}"> 
-                        <div class="modal-body">
-                            <center>
-                                <button type="submit" class="btn btn-outline-danger">Yes</button>
-                                <button data-dismiss="modal" class="btn btn-outline-danger">No</button>  
-                            </center>
-                        </div>            
-                    </form>
-                </div>
-            </div>
-        </div>
-    {{/each}}
-{{/if}} --}}
 
 {{#if displayLocked}}
     {{#each displayLocked}}
