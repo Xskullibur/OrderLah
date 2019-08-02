@@ -200,16 +200,16 @@ router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
         console.log('validation fail')
         uuid_middleware.registerToken(req, req.body.csrf)
         res.status(400)
-        if(!userUnique){
+        if(userUnique == false){
             res.send('The username ' + username + ' is already taken')
         }
-        if(!emailUnique){
+        if(emailUnique == false){
             res.send('The email ' + email + ' is already taken')
         }
-        if(!phoneUnique){
+        if(phoneUnique == false){
             res.send('The Phone Number ' + phone + ' is already taken')
         }
-        if(!stallUnique){
+        if(stallUnique == false){
             res.send('The stall name ' + stallName + ' is already taken')
         }
     }  
