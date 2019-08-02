@@ -194,24 +194,23 @@ router.post('/submitStall', uuid_middleware.verify,  async (req, res) =>{
         }else{
             uuid_middleware.registerToken(req, req.body.csrf)
             res.status(400)
-            console.log('not unique')
+            if(!userUnique){
+                res.send('The username ' + username + ' is already taken')
+            }
+            if(!emailUnique){
+                res.send('The email ' + email + ' is already taken')
+            }
+            if(!phoneUnique){
+                res.send('The Phone Number ' + phone + ' is already taken')
+            }
+            if(!stallUnique){
+                res.send('The stall name ' + stallName + ' is already taken')
+            }
         }
     }else{
         console.log('validation fail')
         uuid_middleware.registerToken(req, req.body.csrf)
-        res.status(400)
-        if(userUnique == false){
-            res.send('The username ' + username + ' is already taken')
-        }
-        if(emailUnique == false){
-            res.send('The email ' + email + ' is already taken')
-        }
-        if(phoneUnique == false){
-            res.send('The Phone Number ' + phone + ' is already taken')
-        }
-        if(stallUnique == false){
-            res.send('The stall name ' + stallName + ' is already taken')
-        }
+        res.status(400)           
     }  
 })
 
