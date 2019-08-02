@@ -161,7 +161,7 @@ const user_utils = require ('../utils/main/user')
 passport.use(new GoogleStrategy({
     clientID: '284136247085-bemrg8vspbvg4ruh4k2c5bvde4dotj1m.apps.googleusercontent.com',
     clientSecret: 'ot4lMcPHgGDBdWdQgT_KVHZs',
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: "https://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, cb){
       User.findOne({
@@ -289,20 +289,20 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
             }).catch(err => {
                 console.log(err)
                 res.status(400)//Bad request
+                uuid_middleware.registerToken(req, req.body.csrf)
                 res.send('Failed')
             })
 
         }else{
             res.status(400)//Bad request
+            uuid_middleware.registerToken(req, req.body.csrf)
             res.send('Failed')
         }
-
-
-        
     }
     else {
         console.log('Invalid token, verification failed!')
         res.status(400)//Bad request
+        uuid_middleware.registerToken(req, req.body.csrf)
         res.send('Failed')
     }
 
