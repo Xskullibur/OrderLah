@@ -569,7 +569,8 @@ router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify],
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
         user_util.getUserByID(currentUser).then(user => {
             if(user.role === 'Stallowner'){
                 checkUnique(itemName).then(isUnique => {
@@ -634,7 +635,8 @@ router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify],
     const id = req.body.itemID
     var imageName = req.body.imgName
 
-    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)){
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
         await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
             MenuItem.findOne({where:{id}}).then(checkMenu =>{
                 if(checkStall.id === checkMenu.stallId){
