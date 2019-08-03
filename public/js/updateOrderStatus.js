@@ -115,7 +115,7 @@ $(document).ready(function (){
                 }
     
                 var card = `                                          
-                <div class="d-inline-block m-3 p-0 card shadow-sm col-lx-2 col-md-3 col-11" id="orderCard_${orderDetails.publicOrderID}">
+                <div class="d-inline-block m-3 p-0 card shadow-sm col-md-3 col-11" id="orderCard_${orderDetails.publicOrderID}">
     
                     <div class="card-header font-weight-bold bg-danger text-right text-white">
                         <div class="row justify-content-between">

@@ -34,7 +34,16 @@ const moment = require('moment')
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./uploadProfile')
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    } 
+})
 
 // Create a token generator with the default settings:
 var randtoken = require('rand-token');
@@ -412,7 +421,7 @@ router.post('/login',
             res.redirect('/admin/adminPanel')
         }
         else if (req.user.role == 'Inactive') {
-            res.redirect('/login')
+            res.redirect('/login?error=Your account has been locked contact orderlah54@gmail.com!')
         }
         else {
             res.redirect('/stallOwner/')
@@ -618,7 +627,7 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
  * GET '/profile' path
  * Get Profile page
  */
-router.get('/profile', (req, res) => {
+router.get('/profile', uuid_middleware.generate, (req, res) => {
     const UserID = req.user.id
     res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', UserID:UserID})
 })
@@ -641,55 +650,41 @@ router.post('/changePass', uuid_middleware.verify, (req, res) =>{
     }   
 })
 
+router.get('/changeProfile', uuid_middleware.generate, (req, res) =>{
+    currentUser = req.user.id
+    user_utils.getUserByID(currentUser).then(user =>{
+        res.render('profileUpdateModel', {layout: 'empty_layout', DisplayUser: user})
+    })
+})
+
 router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
-    var email = req.body.email.replace(/\s/g, "")
     var phone = req.body.phone.replace(/\s/g, "")
-    var birthday = req.body.birthday
 
     //Validate inputs
-    if(validator.isEmail(email) &&
-    validator.isBefore(birthday, new Date().toString()) &&
-    validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
-
-        req.session.alerts = []
-
-        await user_utils.checkUniqueEmail(email).then(isUnique =>{
-            if(!isUnique){
-                req.session.alerts.push({
-                    message: ' Email: ' + email + ' ',
-                    type: 'alert-danger',
-                    timeout: -1
-                })
-            }
-        })
-    
+    if(validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){        
         await user_utils.checkUniquePhone(phone).then(isUnique => {
-            if(!isUnique){
-                req.session.alerts.push({
-                    message: ' Phone: ' + phone + ' ',
-                    type: 'alert-danger',
-                    timeout: -1
-                })
-            }
-        })
-    
-        if(req.session.alerts.length > 0){
-            res.status(400)
-            res.send('Failed')
-            //res.redirect('/profile')
-        }else{
-            User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-                req.session.alerts.push({
-                    message: 'profile successfully updated'
-                })
-                res.redirect('/profile')
+            user_utils.getUserByID(currentUser).then(user =>{
+                if(user.phone !== phone && !isUnique){
+                    uuid_middleware.registerToken(req, req.body.csrf)
+                    res.status(400)
+                    res.send('Phone number already taken')
+                    console.log('Phone number already taken')
+                }else{
+                    User.update({phone}, {where: {id: req.user.id}}).then(function(){
+                        req.session.alerts = [{
+                            message: 'Profile successfully updated'
+                        }]
+                        res.send('success')
+                    })
+                }
             })
-        }
-
-    }
-
-
-    
+        })
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+        res.send('8-10 number and cannot be empty')
+        console.log('validation fail')
+    } 
 })
 
 

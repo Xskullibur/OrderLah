@@ -14,31 +14,31 @@
                     <div class="form-group row">
                         <label for="username" class="col-sm-2 col-form-label">username</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9\s]{1,50}" required>
+                            <input type="text" class="form-control" name="username" id="username" pattern="[a-zA-Z0-9]{1,50}" required>
                             <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 50 characters</div>
+                            <div class="invalid-feedback">required, max 50 characters, no space</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="firstName" id="firstName" pattern="[a-zA-Z\s]{1,100}" required>
+                            <input type="text" class="form-control" name="firstName" id="firstName" pattern="[a-zA-Z]{1,100}" required>
                             <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 100 letters</div>
+                            <div class="invalid-feedback">required, max 100 letters, no space</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="lastName" id="lastName" pattern="[a-zA-Z\s]{1,100}" required>
+                            <input type="text" class="form-control" name="lastName" id="lastName" pattern="[a-zA-Z]{1,100}" required>
                             <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, max 100 letters</div>
+                            <div class="invalid-feedback">required, max 100 letters, no space</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="email" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                            <input type="email" class="form-control" name="email" id="email" required>
+                            <input type="email" class="form-control" name="email" id="email" pattern="[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}" required>
                             <div class="valid-feedback">Valid!</div>
                             <div class="invalid-feedback">email required!</div>
                         </div>
@@ -46,7 +46,7 @@
                     <div class="form-group row">
                         <label for="birthday" class="col-sm-2 col-form-label">Birthday</label>
                         <div class="col-sm-10">
-                            <input type="date" class="form-control" name="birthday" id="birthday" required>
+                            <input type="date" class="form-control" name="birthday" id="birthday" max="{{maxDate}}" required>
                             <div class="valid-feedback">Valid!</div>
                             <div class="invalid-feedback">required!</div>
                         </div>
@@ -56,13 +56,13 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" required>
                             <div class="valid-feedback">Valid!</div>
-                            <div class="invalid-feedback">required, 8-10 numbers</div>
+                            <div class="invalid-feedback">required, 8-10 numbers, no spaces</div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="stallName" class="col-sm-2 col-form-label">Stall Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,125}" required>
+                            <input type="text" class="form-control" name="stallName" id="stallName" pattern="[a-zA-Z0-9\s]{1,50}" required>
                             <div class="valid-feedback">Valid!</div>
                             <div class="invalid-feedback">required, max 50 characters</div>
                         </div>
@@ -85,11 +85,11 @@
 
 <script>
     $(document).ready(function() {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
+            var forms = document.getElementsByClassName('needs-validation')          
+            var createBtn = document.getElementById("createStall")
+           
             var validation = Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
+                createBtn.addEventListener('click', function (event) {
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();

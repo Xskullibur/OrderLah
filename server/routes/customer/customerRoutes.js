@@ -87,10 +87,10 @@ router.get('/review/:id/:orderid', uuid_middleware.generate, (req, res)=> {
 router.post('/saveReview/:id/:orderid', [upload.single("reviewImage"), uuid_middleware.verify], (req, res) => {
     let comments = req.body.comments;
     let rating = req.body.rating;
-    let image = req.user.id + Date.now() + '.jpeg';
+    let image = req.user.id + req.params.id + req.params.orderid + '.jpeg';
 
-    if (!fs.existsSync('./public/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
-        fs.mkdirSync('./public/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
+    if (!fs.existsSync('./public/img/reviewimages')){//this code creates a new folder if there is no folder './public/uploads'
+        fs.mkdirSync('./public/img/reviewimages'); //this needs to be edited, specifically the file routing './public/uploads' 
     }
 
     OrderItem.update({
