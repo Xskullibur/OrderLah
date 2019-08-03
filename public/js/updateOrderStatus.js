@@ -1,6 +1,8 @@
 // Init Web Socket
 var socket = null;
 
+var isComplete = null
+
 $(document).ready(function (){
 
     var sessionId = subStrCookie(getCookie('connect.sid'))
@@ -21,10 +23,13 @@ $(document).ready(function (){
             console.log(updatedStatus);
 
             if(updatedStatus.valueOf() == 'Collection Confirmed'){
+                $('#order-status').removeClass('text-primary');
+                $('#order-status').addClass('text-success');
                 $('#while-order').addClass('d-none');
                 if(!$(".trigger").hasClass('drawn'))$(".trigger").addClass("drawn");
                 setCircleProgress(100);
                 setTime(0);
+                isComplete = true;
             }
 
             $('#order-status').text(updatedStatus)
@@ -33,6 +38,7 @@ $(document).ready(function (){
     
         socket.on('update-timing', function({timing}){
             console.log("Timing: " + timing);
+            if(isComplete)return
             setTime(timing);
             setCircleProgress((60 - timing) / 60 * 100);
         })
