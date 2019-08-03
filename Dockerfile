@@ -4,7 +4,7 @@ FROM node:latest
 # Create /app directory
 WORKDIR /app
 # Copy files to /app directory
-COPY .push/ ./push
+COPY .push/ ./.push
 COPY public/ ./public
 COPY sass/ ./sass
 COPY server/ ./server
