@@ -421,7 +421,7 @@ router.post('/login',
             res.redirect('/admin/adminPanel')
         }
         else if (req.user.role == 'Inactive') {
-            res.redirect('/login')
+            res.redirect('/login?error=Your account has been locked contact orderlah54@gmail.com!')
         }
         else {
             res.redirect('/stallOwner/')
