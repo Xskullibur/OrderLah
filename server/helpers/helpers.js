@@ -23,6 +23,23 @@ module.exports = {
         return JSON.stringify(context)
     },
 
+    doCalc(operand1, operators, operand2){
+
+        if (!isNaN(operand1) && !isNaN(operand2)) {
+            switch (operators) {
+                case "+":
+                    return (operand1 + operand2).toFixed(2)
+                case "-":
+                    return (operand1 - operand2).toFixed(2) 
+                case "*":
+                    return (operand1 * operand2).toFixed(2)
+                case "/":
+                    return (operand1 / operand2).toFixed(2)
+            }
+        }
+
+    },
+
     ifEquals(input1, input2, trueOutput, falseOutput){
         return (input1 === input2) ? trueOutput : falseOutput;
     },
@@ -47,7 +64,11 @@ module.exports = {
                     return options.fn(this)
                 }
                 return options.inverse(this)
-
+            case "!=":
+                if (input1 !== input2) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
             case "==":
                 if (input1 === input2) {
                     return options.fn(this)

@@ -1,82 +1,201 @@
+<link rel="stylesheet" href="/css/effect/ping.css">
+<link rel="stylesheet" href="/css/md/md_chip.css">
+<script text="application/javascript" src="/js/load_menu_item.js"></script>
 <div class="container" style="position: relative; top: 5vh; width:">
-{{#if currentOrders}}
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="p-3" style="width: 100%;">
-                <div class="accordion" id="accordion"  role="tablist" aria-multiselectable="true">
 
-                    {{#each currentOrders as |order|}}
-                        <div class="card">
+<div class="row">
+<div class="col-md-12 p-3">
+<div class="col p-3" style="width: 100%">
 
-                            <div class="card-header bg-secondary" role="tab" id="head{{@index}}">
-                                    <button class="btn btn-link container-fluid text-white font-weight-bold" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
-                                        <span class="float-left">
-                                            {{inc @index}})
-                                            {{getTitle order.menuItems}}
-                                        </span>
-                                    </button>
+    <div class="row pb-4">
+        <div class="col">
+            <div class="card bg-light">
+                <div class="card-body container-fluid">
+
+                    <form class="form" action="/pastOrders">
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="daterange">Date Range:</label>
+                                {{> date_range_picker}}
                             </div>
-                            <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}} p-3" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
+                        </div>
 
-                                <div class="card container bg-light">
-                                    <div class="card-body">
-                                        {{!-- Order Details --}}
-                                        <div class="row">
-                                            <div class="col">
-                                                <h3 class="mb-0">Order: {{substringTo5 order.publicOrderID}}</h3>    
-                                            </div>
-                                            <div class="col text-right">
-                                                <p class="mb-0">Order Timing: {{formatDate order.orderTiming "hh:mm:ss"}}</p>
-                                                <p class="mb-0">User ID: {{order.userId}}</p>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        {{!-- Order Items --}}
-                                        {{#each order.menuItems as |item|}}
-                                        <div class="card mb-3">
-                                            <div class="card-body row">
-                                                <div class="col-2">
-                                                    <img class="img-thumbnail" src="{{#if item.image}}{{item.image}}{{else}}img/no-image.jpg{{/if}}" alt"">
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="row">
-                                                        {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
-                                                    </div>
-                                                    <div class="row my-5">
-                                                        <div class="col">
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/orderStatus/{{order.publicOrderID}}';">Check Status</button>
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
-                                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
-                                                    
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col" style="text-align: right;">
-                                                    ${{calcItemPrice item}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {{/each}}
-                                        {{!-- Total Price   --}}
-                                        <hr>  
-                                        <div class="row text-right">
-                                            <div class="col">
-                                                <b>Total Amount: ${{calcOrderTotal order}}</b>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                    </div>
-                                </div>
-
+                        <div class="form-row float-right">
+                            <div class="form-group col">
+                                <a class="btn btn-outline-danger" href="/pastOrders">Clear</a>
+                                <button class="btn btn-outline-danger" id="filterSubmitBtn">Filter</button>
                             </div>
-                        </div> 
-                    {{/each}}
+                        </div>
+
+                    </form>
 
                 </div>
             </div>
         </div>
     </div>
+
+    {{#if currentOrders}}
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="list-group">
+
+                {{#each currentOrders as |order|}}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="font-weight-bold">
+                                <div class="row">
+                                    <div class="col p-0">
+                                        {{#ifCondition order.status '!=' 'Collection Confirmed'}}
+                                        <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
+                                            <div class="ring-container" style="min-height: 40px; min-width: 40px;">
+                                                <div class="ring small-ping"></div> <a class="dot"></a>
+                                            </div>
+                                            <div><span class="text-small" style="position: absolute;top:30%;font-size: .69em;">Live</span></div>
+                                        </div>
+                                        {{/ifCondition}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        Order: {{substringTo5 order.publicOrderID}}
+                                    </div>
+                                </div>
+                            </h5>
+                            <small class="float-right font-weight-bold text-right">
+                                <div class="row">
+                                    <div class="col">
+                                        Order Timing: {{formatDate order.orderTiming "DD MMM YYYY, hh:mm:ss"}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        User ID: {{order.userId}}
+                                    </div>
+                                </div>
+                            </small>
+                            
+                        </div>
+
+                        <hr>
+
+                        <p class="mb-1">
+                            {{#each order.menuItems as |item|}}
+                            <div class="row mb-2">
+                                <div class="col-9">
+                                    {{item.itemName}}
+                                    
+                                        <span class="badge  mx-0 mx-lg-3 p-2" style="background-color: lightgray; width: 38px; height: 25px;"><i class="material-icons fas fa-times d-inline"></i> <span class="font-weight-bold m-0 d-inline">{{item.orderItem.quantity}}</h6></span>
+
+                                     
+                                    {{!-- <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span> --}}
+                                </div>
+                                <div class="col text-right">
+                                    ${{doCalc item.price "*" item.orderItem.quantity}}
+                                </div>
+                            </div>
+                            <div class="row mb-3 mt-2">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-danger my-2 my-sm-0" type="submit" onclick="showCustomDialog('/customDialog/itemDesc?id={{item.id}}')">View product page</button>
+                                    <button class="btn btn-sm btn-danger my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </p>
+
+                        <hr>
+
+                        <p class="text-right">Total Amount: ${{calcOrderTotal order}}</p>
+
+                    </div>
+
+                    <!--
+                    <div class="card">
+
+                        <div class="card-header bg-secondary" role="tab" id="head{{@index}}">
+                                <button class="btn btn-link container-fluid text-white font-weight-bold" type="button" data-toggle="collapse"data-target="#content{{@index}}" aria-expanded="false" aria-controls="content{{@index}}">
+                                    <span class="float-left">
+                                        {{inc @index}})
+                                        Order: {{substringTo5 order.publicOrderID}}
+                                    </span>
+                                </button>
+                        </div>
+                        <div id="content{{@index}}" class="collapse {{#if @index}}{{else}}show{{/if}} p-3" role="tabpanel" data-parent="#accordion" aria-labelledby="head{{@index}}">
+
+                            <div class="card container bg-light">
+                                <div class="card-body">
+                                    {{!-- Order Details --}}
+                                    <div class="row">
+                                        <div class="col-5 col-md-3">
+                                            <h3 class="mb-0">Order: {{substringTo5 order.publicOrderID}}</h3>    
+                                        </div>
+                                        {{#ifCondition order.status '!=' 'Collection Confirmed'}}
+                                        <div class="col-2 d-flex">
+                                            <div class="live-clickable" data-order-id="{{order.publicOrderID}}">
+                                                <div class="ring-container" style="min-height: 40px; min-width: 40px;">
+                                                    <div class="ring small-ping"></div> <a class="dot"></a>
+                                                </div>
+                                                <div><span class="text-bold" style="position: absolute;top:16%;">Live</span></div>
+                                            </div>
+                                        </div>
+                                        {{/ifCondition}}
+                                        <div class="col text-right">
+                                            <p class="mb-0">Order Timing: {{formatDate order.orderTiming "hh:mm:ss"}}</p>
+                                            <p class="mb-0">User ID: {{order.userId}}</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    {{!-- Order Items --}}
+                                    {{#each order.menuItems as |item|}}
+                                    <div class="card mb-3">
+                                        <div class="card-body row">
+                                            <div class="col-2">
+                                                <img class="img-thumbnail" src="/img/{{#if item.image}}uploads/{{item.image}}{{else}}no-image.jpg{{/if}}" alt"">
+                                            </div>
+                                            <div class="col-8">
+                                                <div class="row">
+                                                    {{item.itemName}} x{{item.orderItem.quantity}} @ ${{item.price}}
+                                                </div>
+                                                <div class="row my-5">
+                                                    <div class="col">
+                                                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">View product page</button>
+                                                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onclick="location.href='/review/{{id}}/{{order.id}}';">Review order</button>
+                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col" style="text-align: right;">
+                                                ${{calcItemPrice item}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+                                    {{!-- Total Price   --}}
+                                    <hr>  
+                                    <div class="row text-right">
+                                        <div class="col">
+                                            <b>Total Amount: ${{calcOrderTotal order}}</b>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div> 
+                    -->
+                {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else}}
+        <h3>No Orders</h3>
+    {{/if}}
+
 </div>
-{{else}}
-    <h3>No Orders</h3>
-{{/if}}
+</div>
+</div>
+
+
+<script text="application/javascript" src="/js/pastorder.js"></script>

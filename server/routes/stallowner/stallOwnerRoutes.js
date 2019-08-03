@@ -6,7 +6,16 @@ const router = express.Router();
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./upload');
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage ,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    }
+})
 
 //Login authentication middleware
 const auth_login = require('../../libs/auth_login')
@@ -18,8 +27,10 @@ const uuid_middleware = require('../../libs/uuid_middleware')
 const moment = require('moment')
 
 // Utils
+const user_util = require('../../utils/main/user')
 const order_util = require('../../utils/stallowner/order')
 const update_util = require('../../utils/stallowner/update_status')
+const stall_util = require('../../utils/stallowner/stall')
 
 //Global
 //Models
@@ -35,9 +46,13 @@ const app = globalHandle.get('app')
 
 //Sequelize and DB
 const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
 var validator = require('validator')
+
+
 
 router.use(auth_login.authStallOwner)
 
@@ -46,7 +61,7 @@ router.use(auth_login.authStallOwner)
  */
 
 //Current Orders Route
-router.get('/', (req, res, next) => {
+router.get('/', uuid_middleware.generate, (req, res) => {
     
     //Get Stall ID
     order_util.getStallInfo(req.user.id).then((stallOwner) => {
@@ -194,116 +209,71 @@ router.get('/monthlySummary/:monthYear?/', (req, res, next) => {
 })
 
 // Orders
-router.get('/orderDetails/allOrders/:pageNo/', (req, res, next) => {
+router.get('/orderDetails/allOrders/', (req, res, next) => {
 
-    //Check for filters
-    let orderFilter = req.query.orderNo
-    let dateFilter = req.query.orderDate
+    // let dateFilter = req.query.orderDate
     let title = "Orders"
     let filter = false
     let error
 
-    if (orderFilter && dateFilter) {
-        error = "Only one filter is allowed to be applied..."
-    }
-    else if (orderFilter){
-        if (isNaN(orderFilter)) {
-            error = "Please input a valid Order Number"
-        }
-        filterCondition = { id: orderFilter }
-        filter = true
-    }
-    else if (dateFilter) {
-        if (!Date.parse(dateFilter)) {
-            error = "Please input a valid Order Date"
-        }
-        filterCondition = db.where(db.fn('DATE', Sequelize.col('orderTiming')), dateFilter)
-        filter = true
+    frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    toDate = moment().format('YYYY-MM-DD')
+
+    if (req.query.toDate && req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
     }
 
     //Get StallID of logged in stallowner
     order_util.getStallInfo(req.user.id).then(stallOwner => {
 
-        whereCondition = [{stallId: stallOwner.stall.id, status: 'Collection Confirmed'}]
+        whereCondition = [{
+            stallId: stallOwner.stall.id, 
+            status: 'Collection Confirmed',
+        },
+            db.where(db.fn('DATE', Sequelize.col('orderTiming')), '<=', toDate),
+            db.where(db.fn('DATE', Sequelize.col('orderTiming')), '>=', frDate),
+        ]
 
         if (filter) {
             whereCondition.push(filterCondition)
             title += " (Filtered)"
         }
 
-        //Get total number of orders for the Stall
-        Order.count({ where: whereCondition }).then(orderCount => {
-
-            let currentPage = req.params.pageNo;                // Current page user is on
-            let offset = 0;                                     // Starting index of items
-            let limit = 5;                                      // Number of items per page
-            const pages = Math.ceil(orderCount / limit);       // Get the number of pages rounded down
-
-    
-            /**
-             * If user is not on 1st page,
-             * calculate offset based on
-             * currentPage * limit (number of items per page)
-             */
-            if (currentPage !== 1) {
-                offset = (currentPage - 1) * limit
-            }
-
-            // Get paginated orders
-            Order.findAll({
-                where: whereCondition,                          // Filtered based on Status and Stall
-                offset,
-                limit,
-                order: Sequelize.col('orderTiming'),
-                include: [{
-                    model: MenuItem
-                }]
-            }).then(allOrders => {
-    
-                currentPage = parseInt(currentPage)
-    
-                res.render('stallOwner/allOrders',{
-                     pages, allOrders, currentPage, orderFilter, dateFilter, error, title,
-                     nav: 'orderDetails',
-                     helpers: {
-    
-                        //Pagination previous button Helper
-                        getPrevious(currentPg){
-                            if (currentPg > 1) {
-                                return currentPg - 1
-                            }
-                         },
-    
-                         //Pagination next button Helper
-                         getNext(currentPg){
-                             if (currentPg < pages) {
-                                 return currentPg + 1
-                             }
-                         }, 
-                    }
-                })
+        // Get paginated orders
+        Order.findAll({
+            where: whereCondition,                          // Filtered based on Status and Stall
+            order: Sequelize.col('orderTiming'),
+            include: [{
+                model: MenuItem
+            }]
+        }).then(allOrders => {
+            res.render('stallOwner/allOrders',{
+                allOrders, error, title, toDate, frDate,
+                nav: 'orderDetails'
             })
-    
-    
         })
+            
     })
 
 });
 
 // Charts
 router.get('/orderDetails/charts/', (req, res) =>{
-    
-    toDate = req.query.toDate
-    frDate = req.query.frDate
+
+    toDate = undefined, frDate = undefined
+
     filter = false
     title = "Charts"
     fitlerStatement = ""
+    
+    if (req.query.toDate || req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
 
-    if (toDate && frDate) {
         filter = true
-        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN '${frDate}' AND '${toDate}' `    
-    }   
-
+        fitlerStatement = ` AND DATE(orders.orderTiming) BETWEEN ${SqlString.escape(frDate)} AND ${SqlString.escape(toDate)} `    
+    }
 
     function getStallOwner() {
         return new Promise(function(resolve, reject) {
@@ -356,6 +326,9 @@ router.get('/orderDetails/charts/', (req, res) =>{
 
     // Get Rating Count
     function getRatingCount(menuItemId, rating) {
+
+        menuItemId = SqlString.escape(menuItemId);
+        rating = SqlString.escape(rating);
 
         return new Promise(function(resolve, reject) {
             db.query(`SELECT COUNT(orderItems.menuItemId) AS Rating
@@ -462,6 +435,14 @@ router.get('/orderDetails/ratings/', (req, res) => {
     item_filter = null
     rating_filter = null
 
+    frDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    toDate = moment().format('YYYY-MM-DD')
+
+    if (req.query.toDate && req.query.frDate) {
+        toDate = req.query.toDate
+        frDate = req.query.frDate
+    }
+
     function getFilters() {
 
         filters = false
@@ -508,7 +489,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
                                 newLine.itemName = menuItem.itemName
             
                                 // Get ratings for each items and push into new line 
-                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                                await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter, toDate, frDate).then(([ratings, metadata]) => {
                                     newLine.ratings = ratings
                                 })
             
@@ -524,7 +505,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
                             newLine.itemName = menuItem.itemName
         
                             // Get ratings for each items and push into new line 
-                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter).then(([ratings, metadata]) => {
+                            await order_util.getMenuItemRatings(menuItem.id, item_filter, rating_filter, toDate, frDate).then(([ratings, metadata]) => {
                                 newLine.ratings = ratings
                             })
         
@@ -540,7 +521,7 @@ router.get('/orderDetails/ratings/', (req, res) => {
         // res.send(items)
 
         res.render('stallOwner/ratingsView', {
-            allRatings, title, menu_items, item_filter, rating_filter,
+            allRatings, title, menu_items, item_filter, rating_filter, toDate, frDate,
             nav: 'orderDetails'
         })
 
@@ -556,8 +537,6 @@ router.get('/orderDetails/ratings/', (req, res) => {
 
 router.use(auth_login.auth)
 const op = Sequelize.Op
-var displayAlert = []
-var errorAlert = []
 
 function toCap(str) {
     var splitStr = str.toLowerCase().split(' ');
@@ -576,118 +555,162 @@ function checkUnique(theName){
     })
 }
 
-router.get('/showMenu', uuid_middleware.generate, (req, res) => {
+router.get('/showMenu', auth_login.authStallOwner, (req, res) => {
     const id = req.user.id
-    User.findOne({ where: id }).then(user => {
-         if(user.role === 'Stallowner'){
-            Stall.findOne({where: {userId: id}}).then(myStall => {
-                MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
-                    res.render('stallOwner/stallowner-menu', {
-                        item:item,
-                        stall: myStall,
-                        displayAlert: displayAlert,
-                        errorAlert: errorAlert,
-                        nav: 'manageMenu'
-                    })
-                    displayAlert = []
-                    errorAlert = []
-                })    
-            })
-        }else{
-            res.render('./successErrorPages/error', {
-                nav: 'manageMenu'
-            })
-        }      
-      })
+
+    user_util.getUserByID(id).then(user => {
+        Stall.findOne({where: {userId: id}}).then(myStall => {
+            MenuItem.findAll({where: {stallId: myStall.id, active: true}}).then((item) =>{
+                res.render('stallOwner/stallowner-menu', {
+                    item:item,
+                    stall: myStall,                                             
+                    nav: 'manageMenu'
+                })                                                                
+            })    
+        })   
+    })
 })
 
-router.post('/submitItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
+router.post('/submitItem', auth_login.authStallOwner, [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))     
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-    checkUnique(itemName).then(isUnique => {
-        if(isUnique){
-            if(validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price)
-            && !validator.isEmpty(itemDesc)){
-                Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
-                    const stallId = theStall.id
-            
-                    MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
-                        displayAlert.push('Item successfully added')
-                        res.redirect('/stallOwner/showMenu')
-                    }).catch(err => console.log(err))
-                })
-            }else{
-                res.send('validation check failed')
-            }
+    
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
+        if(fs.existsSync(process.cwd() + '/public/img/uploads/' + image)){
+            user_util.getUserByID(currentUser).then(user => {           
+                checkUnique(itemName).then(isUnique => {
+                    if(isUnique){                   
+                            Stall.findOne({where: {userId : currentUser}}).then(theStall =>{
+                                const stallId = theStall.id                    
+                                MenuItem.create({ itemName, price, itemDesc, owner:currentUser, active, image, stallId}).then(function(){
+                                    req.session.alerts = [{
+                                        message: 'Item successfully added'
+                                    }]
+                                    res.send('success')                      
+                                }).catch(err => console.log(err))
+                            })
+                    }else{
+                        uuid_middleware.registerToken(req, req.body.csrf)
+                        res.status(400)
+                        res.send('The name ' + itemName + ' is already taken, item not added!')          
+                    }
+                })               
+            })
         }else{
-            errorAlert.push('The name ' + itemName + ' is already taken, item not added!')
-            res.redirect('/stallOwner/showMenu')
-        }
-    })
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.status(400)
+            res.send('Image is required')
+        }      
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+    }
 })
 
-router.post('/deleteItem', uuid_middleware.verify, (req, res) =>{
-    displayAlert.push('Item deleted!')
+router.post('/deleteItem', auth_login.authStallOwner, uuid_middleware.verify, async (req, res) =>{
+    currentUser = req.user.id
     const active = false
     const id = req.body.itemID
-    MenuItem.update({active}, {where:{id}}).then(function(){
-        //res.render('./successErrorPages/removeSuccess')
-        res.redirect('/stallOwner/showMenu')
-    }).catch(err => console.log(err))
+    await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
+        MenuItem.findOne({where:{id}}).then(checkMenu =>{
+            if(checkStall.id === checkMenu.stallId){
+                MenuItem.update({active}, {where:{id}}).then(function(){      
+                    req.session.alerts = [{
+                        message: 'Item successfully deleted'
+                    }]
+                    res.send('success')
+                }).catch(err => console.log(err))
+            }else{
+                uuid_middleware.registerToken(req, req.body.csrf)
+                res.status(400)
+                res.send('This Menu Item does not belong to you')
+            }
+        })
+    })
+
 })
 
-router.post('/updateItem', [upload.single("itemImage"), uuid_middleware.verify], (req, res) =>{   
+router.post('/updateItem', auth_login.authStallOwner, [upload.single("itemImage"), uuid_middleware.verify], async (req, res) =>{   
+
     const currentUser = req.user.id
     const itemName = toCap(req.body.itemName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     const price = req.body.itemPrice
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
     const id = req.body.itemID
-    var checkName = toCap(req.body.checkName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n"))
     var imageName = req.body.imgName
 
-    checkUnique(itemName).then(isUnique => {
-        if(isUnique || (checkName === itemName)){
-            MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {
-                fs.rename(process.cwd()+'/public/img/uploads/'+ imageName, process.cwd()+'/public/img/uploads/'+currentUser+itemName.replace(/\s/g, "")+'.jpeg', function(err){
-                    if(err){
-                        console.log(err)
-                    }
-                })
-                displayAlert.push('Item updated!')
-                res.redirect('/stallOwner/showMenu')
-            }).catch(err => console.log(err))
-        }else{
-            errorAlert.push('The name ' + itemName + ' is already taken, item not updated!')
-            res.redirect('/stallOwner/showMenu')
-        }
-    })
+    if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
+    && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
+        await Stall.findOne({where: {userId : currentUser}}).then(checkStall => {
+            MenuItem.findOne({where:{id}}).then(checkMenu =>{
+                if(checkStall.id === checkMenu.stallId){
+                    checkUnique(itemName).then(isUnique => {
+                        if((checkMenu.itemName === itemName) || isUnique){                                  
+                                MenuItem.update({ itemName, price, itemDesc, image}, {where:{id}}).then(function() {                                       
+                                    req.session.alerts = [{
+                                        message: 'Item successfully updated'
+                                    }]
+                                    res.send('success') 
+                                }).catch(err => console.log(err))
+                        }else{           
+                            uuid_middleware.registerToken(req, req.body.csrf)
+                            res.status(400)
+                            res.send('The name ' + itemName + ' is already taken, item not updated!')          
+                        }
+                    })
+                }else{
+                    uuid_middleware.registerToken(req, req.body.csrf)
+                    res.status(400)
+                    res.send('This Menu Item does not belong to you')
+                }
+            })
+        })
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+    }   
 })
 
-router.post('/filterItem', (req, res) =>{
+router.post('/filterItem', auth_login.authStallOwner, (req, res) =>{
     var filterName = '%' + toCap(req.body.filterName.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n")) + '%'
     const id = req.user.id
     User.findOne({ where: id }).then(user => {
-         if(user.role === 'Stallowner'){
             Stall.findOne({where: {userId: id}}).then(myStall => {
                 MenuItem.findAll({where: {stallId: myStall.id, active: true, itemName:{[op.like]: filterName}}}).then((item) =>{
                     res.render('stallOwner/stallowner-menu', {
                         item:item,
-                        stall: myStall,
-                        errorAlert: errorAlert,
+                        stall: myStall,                  
                         nav: 'manageMenu'
                     })
                     errorAlert = []
                 })    
-            })
-        }else{
-            res.render('./successErrorPages/error')
-        }      
+            })      
       })
+})
+
+router.get('/showAddMenu', auth_login.authStallOwner, uuid_middleware.generate, (req, res) =>{
+    res.render('stallOwner/stallOwnerModel/addMenuModel', {layout: 'empty_layout'})
+})
+
+router.get('/showEditMenu/:menuID', auth_login.authStallOwner, uuid_middleware.generate, (req, res) =>{
+    let menuID = req.params.menuID
+    MenuItem.findOne({where: {id: menuID}}).then(menu =>{
+        res.render('stallOwner/stallOwnerModel/editMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+    })        
+})
+
+router.get('/deletePrompt/:menuID', auth_login.authStallOwner, uuid_middleware.generate, async (req, res) =>{
+    var currentUser = req.user.id
+    var menuID = req.params.menuID
+    MenuItem.findOne({where: {id: menuID}}).then(menu => {
+        res.render('stallOwner/stallOwnerModel/deleteMenuModel', {layout: 'empty_layout', DisplayMenu: menu})
+    })        
 })
 
 module.exports = router;

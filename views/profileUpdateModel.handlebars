@@ -1,0 +1,104 @@
+<div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="modal-alerts"></div>
+            <form id="profileForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <input name="csrf" type="hidden" value="{{csrf}}"/>
+                <div class="modal-body">
+                    <br>
+                    <div class="form-group row">
+                        <label for="itemPrice" class="col-sm-2 col-form-label">Phone</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="phone" id="phone" pattern="[0-9]{8,10}" value="{{DisplayUser.phone}}" required>
+                            <div class="valid-feedback">Valid!</div>
+                            <div class="invalid-feedback">required, 8-10 numbers</div>
+                        </div>
+                    </div>               
+                    <div class="form-group row">
+                        <div class="col-sm-2 imgUp">
+                            <div class="imagePreview"style="background: url(/img/profiles/{{DisplayUser.id}}.png); background-size: 140px 140px;"></div>                            
+                                <input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg">
+                            </div>
+                    </div>              
+                    <input type="hidden" id="checkPhone" name="checkPhone" value="{{displayPhone}}">                    
+                    <div class="modal-footer">
+                         <button type="button" id="updateBtn" class="btn btn-outline-success">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(".imgAdd").click(function () {
+            $(this).closest(".row").find('.imgAdd').before('<div class="col-sm-2 imgUp"><div class="imagePreview"></div><label class="btn btn-primary">Upload<input type="file" class="uploadFile img" name="profileImage" id="profileImage" accept="image/png,image/jpeg,image/jpg" style="width:0px;height:0px;overflow:hidden;"></label><i class="fa fa-times del"></i></div>');
+        });
+        $(document).on("click", "i.del", function () {
+            $(this).parent().remove();
+        });
+        $(function () {
+            $(document).on("change", ".uploadFile", function () {
+                var uploadFile = $(this);
+                var files = !!this.files ? this.files : [];
+                if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
+
+                if (/^image/.test(files[0].type)) { // only image file
+                    var reader = new FileReader(); // instance of the FileReader
+                    reader.readAsDataURL(files[0]); // read the local file
+
+                    reader.onloadend = function () { // set image data as background of div
+                        //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
+                        uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
+                    }
+                }
+            });
+        });
+</script>
+
+<script>
+    $(document).ready(function() {
+            var forms = document.getElementsByClassName('needs-validation')          
+            var createBtn = document.getElementById("create-menu-btn")
+           
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                createBtn.addEventListener('click', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })
+</script>
+
+<script>
+    $(document).ready(function (){
+        $('#updateBtn').click(function(){
+            updateProfile();
+        });
+    });
+
+    function updateProfile(){
+        var form_data = new FormData(document.getElementById('profileForm'));
+        $.ajax({
+            method: "POST",
+            url: "/updateProfile",
+            data: form_data,
+            dataType: 'text',
+            contentType: false,
+            processData: false,
+            success: function (html, status, response) {
+                location.reload();
+            },
+            error: function (error) {
+                showAlertInSelector(error.responseText, '#modal-alerts', 3000, 'alert-danger');
+            }
+        })
+    }
+</script>

@@ -34,25 +34,33 @@ const moment = require('moment')
 const fs = require('fs');
 const multer = require('multer')
 const storage = require('./uploadProfile')
-const upload = multer({storage : storage })
+var path = require('path')
+const upload = multer({storage : storage,
+    fileFilter: function (req, file, cb) {
+        var ext = path.extname(file.originalname).toLowerCase()
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+            return callback(new Error('Only images are allowed'))
+        }
+        cb(null, true)
+    } 
+})
 
 // Create a token generator with the default settings:
 var randtoken = require('rand-token');
 
 //nodemailer
-const nodemailer = require('nodemailer');
-
-var session = require('express-session')
+const nodemailer = require('nodemailer')
 
 //sequelize operator
 const Sequelize = require('sequelize').Sequelize
 const Op = Sequelize.Op
 
-//var token = '';
-app.use(session({
-    token : '',
-    cookie: { maxAge: 6000000 },
-}));
+//Alerts 
+const alert = require('../libs/alert')
+router.use(alert)
+
+//Validator
+const validator = require('validator')
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -115,16 +123,6 @@ router.post('/resetpassword/:id', (req, res) =>{
             console.log('reset password success! New password is: ', hash)
         }).catch((err) => console.error(err));
       });
-    // User.update({
-    //     password
-    // }, {
-    //     where: {
-    //         id: req.params.id
-    //     }
-    // }).then(() => {
-    //     res.redirect('/login');
-    //     console.log('reset password success! New password is: ', password)
-    // }).catch((err) => console.error(err));
 })
 
 passport.use(new LocalStrategy({usernameField: 'email',},
@@ -158,7 +156,7 @@ passport.use(new RememberMeStrategy(
   ))
 
 passport.serializeUser(function(user, done) {   
-    done(null, user.id)
+    done(null, user.userId || user.id)
 })
   
 passport.deserializeUser(function(id, done) {
@@ -172,7 +170,7 @@ const user_utils = require ('../utils/main/user')
 passport.use(new GoogleStrategy({
     clientID: '284136247085-bemrg8vspbvg4ruh4k2c5bvde4dotj1m.apps.googleusercontent.com',
     clientSecret: 'ot4lMcPHgGDBdWdQgT_KVHZs',
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: "https://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, cb){
       User.findOne({
@@ -231,7 +229,6 @@ const profile_gen = require('../libs/profile_img_generator')
  */
 router.get('/register', uuid_middleware.generate, (req, res) => {
     res.render('register', {layout: 'blank_layout'})
-    registerFail = []
 })
 
 /**
@@ -249,36 +246,45 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
         var username = req.body.username
         var email = req.body.email
         var phone = req.body.phone
+        var fname = req.body.fname
+        var lname = req.body.lname
+        var dob = req.body.dob
+
+        //Validate inputs
+        if(validator.isEmail(email) && validator.isAlphanumeric(username) &&
+          validator.isAlpha(fname) && validator.isAlpha(lname) && 
+          validator.isBefore(dob, new Date().toString()) &&
+          validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
+            
+            //Check if user values is already inside database
+            await user_utils.checkUniqueUsername(username).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Username: ' + username + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniqueEmail(email).then(isUnique =>{
+                if(!isUnique){
+                    res.send(' Email: ' + email + ' ')
+                    return 
+                }
+            })
+        
+            await user_utils.checkUniquePhone(phone).then(isUnique => {
+                if(!isUnique){
+                    res.send(' Phone: ' + phone + ' ')
+                    return 
+                }
+            })
     
-        await checkUniqueUsername(username).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' username: ' + username + ' ')
-            }
-        })
-    
-        await checkUniqueEmail(email).then(isUnique =>{
-            if(!isUnique){
-                registerFail.push(' Email: ' + email + ' ')
-            }
-        })
-    
-        await checkUniquePhone(phone).then(isUnique => {
-            if(!isUnique){
-                registerFail.push(' Phone: ' + phone + ' ')
-            }
-        })
-    
-        if(registerFail.length > 0){
-            res.send('fail')
-        }
-        else{
             //Create the user account
             User.create({
                 username,
                 email,
-                firstName: req.body.fname,
-                lastName: req.body.lname,
-                birthday: req.body.dob,
+                firstName: fname,
+                lastName: lname,
+                birthday: dob,
                 phone,
                 password: req.body.password
             }).then(user => {
@@ -292,13 +298,20 @@ router.post('/register', uuid_middleware.verify, async (req, res) => {
             }).catch(err => {
                 console.log(err)
                 res.status(400)//Bad request
+                uuid_middleware.registerToken(req, req.body.csrf)
                 res.send('Failed')
             })
+
+        }else{
+            res.status(400)//Bad request
+            uuid_middleware.registerToken(req, req.body.csrf)
+            res.send('Failed')
         }
     }
     else {
-        console.log('error occured, verification failed!')
+        console.log('Invalid token, verification failed!')
         res.status(400)//Bad request
+        uuid_middleware.registerToken(req, req.body.csrf)
         res.send('Failed')
     }
 
@@ -320,8 +333,27 @@ router.post('/requesttoken',(req, res) => {
     let mailOptions = {
         from:'Orderlah Team',
         to: req.body.email,
-        subject: 'testing',
-        html: 'Your Orderlah verfication code is: ' + req.session.token
+        subject: 'OrderLah Register Verification',
+        html: `
+        <div style="border: 1px solid rgba(200,200,200,1.00);">
+            <div style="background-color: darkorange; padding: 1px 20px;">
+                <h3>Register Verification</h3>
+            </div>
+            <div style="padding: 20px 20px 0;">
+                <p>Verification Code: ${req.session.token}</p>
+                <hr/>
+                <div>
+                    <p style="text-align: right;">
+                        <img src="tuturu" width="10%" height="auto"/>
+                    </p>
+                </div>
+            </div>
+        </div>`,
+        attachments: [{
+            filename: 'logo.png',
+            path: process.cwd()+ '/public/img/logo.png',
+            cid: 'tuturu' //same cid value as in the html img src
+        }]
     };
 
     transporter.sendMail(mailOptions, function(err, data){
@@ -331,33 +363,35 @@ router.post('/requesttoken',(req, res) => {
             console.log('email sent!!')
         }
     })
+    res.send('done')
 })
 
-/*router.post('/checktoken',(req, res) => {
-    if(session.token === req.body.code){
-        console.log('verification success!!')
-    } else {
-        console.log('error occured, verification failed!')
-    }    
-})*/
+if(process.env.NODE_ENV === 'dev'){
+    router.get('/debug/register/token', (req, res) => {
+        res.type('json')
+        res.send(JSON.stringify(req.session.token))
+    })
+}
 
 /**
  * Login GET '/login' path
  */
 router.get('/login', (req, res) => {
     if(req.query.error){
+        req.session.alerts = [{
+            message: req.query.error,
+            type: 'alert-danger',
+            timeout: -1
+        }]
+
+        //Refresh alerts
+        alert(req, res, () => {})
+
         res.render('login', {
-            layout: 'blank_layout',
-            error: req.query.error
-        })
-    }else if(req.query.success){
-        res.render('login', {
-            layout: 'blank_layout',
-            success: req.query.success
+            layout: 'blank_layout'
         })
     }else{
-        res.render('login', {layout: 'blank_layout', displayAlert:failAlert})
-        failAlert = []
+        res.render('login', {layout: 'blank_layout'})
     }
 })
 
@@ -379,6 +413,7 @@ router.post('/login',
             return next();
         });
     }, (req, res) => {
+
         if (req.user.role === "Customer") {
             res.redirect('/')
         }
@@ -386,8 +421,7 @@ router.post('/login',
             res.redirect('/admin/adminPanel')
         }
         else if (req.user.role == 'Inactive') {
-            failAlert.push("Your account has been locked please contact admin for more details")
-            res.redirect('/login')
+            res.redirect('/login?error=Your account has been locked contact orderlah54@gmail.com!')
         }
         else {
             res.redirect('/stallOwner/')
@@ -402,6 +436,7 @@ router.get('/logout', (req, res) => {
     req.logout()
     //Destroy firstLogin
     req.session.firstLogin = undefined
+    req.session.destroy()
     res.redirect('/login')
 })
 
@@ -425,13 +460,11 @@ router.get('/guestLogin',(req, res) =>{
 router.get('/forgotPassword', (req, res) =>{
     if(req.query.error){
         res.render('resetpassword1', {
-            layout: 'blank_layout',
-            error: req.query.error
+            layout: 'blank_layout'
         })
     }else if(req.query.success){
         res.render('resetpassword1', {
-            layout: 'blank_layout',
-            success: req.query.success
+            layout: 'blank_layout'
         })
     }else{
         res.render('resetpassword1', {layout: 'blank_layout'})
@@ -447,7 +480,13 @@ router.post('/forgotPassword', (req, res) =>{
     }).then( user =>{
       if (!user){
           console.log('Error! Account not found...')
-          res.redirect('/forgotPassword?error=Account Not Found!')
+          req.session.alerts = [
+              {
+                  message: 'Account Not Found!',
+                  type: 'alert-danger'
+              }
+          ]
+          res.redirect('/forgotPassword')
       }else{
             resetpassword.createResetPass({
                 token: uuidv4(),
@@ -466,16 +505,42 @@ router.post('/forgotPassword', (req, res) =>{
                     from:'Orderlah Team',
                     to: req.body.email,
                     subject: 'Reset password',
-                    html: '<p>Click <a href="http://localhost:3000' + '/resetpassword/' + resetpassword.userId + '/' + resetpassword.token +'">here</a> to reset your password</p>'
+                    html: `
+                    <div style="border: 1px solid rgba(200,200,200,1.00);">
+                        <div style="background-color: darkorange; padding: 1px 20px;">
+                            <h3>Login Verification</h3>
+                        </div>
+                        <div style="padding: 20px 20px 0;">
+                            <p>Click <a href="https://localhost:3000/resetpassword/${resetpassword.userId}/${resetpassword.token}">here</a> to reset your password</p>
+                            <hr/>
+                            <div>
+                                <p style="text-align: right;">
+                                    <img src="tuturu" width="10%" height="auto"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>`,
+                    attachments: [{
+                        filename: 'logo.png',
+                        path: process.cwd()+ '/public/img/logo.png',
+                        cid: 'tuturu' //same cid value as in the html img src
+                    }]
                 };
             
                 transporter.sendMail(mailOptions, function(err, data){
                     if (err) {
                         console.log('error occured: ', err)
-                        res.redirect('/forgotPassword?error=' + err)
+                        req.session.alerts = [{
+                            message: err,
+                            type: 'alert-danger'
+                        }]
+                        res.redirect('/forgotPassword')
                     } else {
                         console.log('reset password email sent to user id:', resetpassword.userId, 'token:', resetpassword.token)
-                        res.redirect('/forgotPassword?success=Email sent!')
+                        req.session.alerts = [{
+                            message: 'Email sent!'
+                        }]
+                        res.redirect('/forgotPassword')
                     }
                 })
             })
@@ -488,7 +553,7 @@ router.post('/forgotPassword', (req, res) =>{
 
 /*DEBUG route for getting token */
 if(process.env.NODE_ENV === 'dev'){
-    router.get('/debug/token/:userId', (req, res) => {
+    router.get('/debug/reset/token/:userId', (req, res) => {
         const userId = req.params.userId
         //Get the token for user id 
         ResetPass.findOne({
@@ -534,7 +599,7 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
                 }
             }).then(resetpassword => {
                 if(!resetpassword){
-                    console.log('Error! Resetaccount issue...')
+                    console.log('Error! Reset account issue...')
                 }
                 else{
                     res.render('resetpassword2', {
@@ -557,55 +622,26 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
 
 /* HsienXiang route */
 
+
 /**
  * GET '/profile' path
  * Get Profile page
  */
-
-function checkUniqueEmail(theEmail){
-    return User.count({where: {email: theEmail}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-function checkUniqueUsername(theName){
-    return User.count({where: {username: theName}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-function checkUniquePhone(theNumber){
-    return User.count({where: {phone: theNumber}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-var displayAlert = []
-var failAlert = []
-var registerFail = []
-
-router.get('/profile', auth_login.auth, (req, res) => {
+router.get('/profile', uuid_middleware.generate, (req, res) => {
     const UserID = req.user.id
-    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', displayAlert:displayAlert, failAlert:failAlert, UserID:UserID})
-    displayAlert = []
-    failAlert = []
+    res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', UserID:UserID})
 })
 
-router.post('/changePass', (req, res) =>{  
+router.post('/changePass', uuid_middleware.verify, (req, res) =>{  
     if(req.body.password != req.body.password2){
-        failAlert.push(' password does not match' )
+        req.session.alerts = [{
+            message: 'password does not match'
+        }]
         res.redirect('/profile')
     }else{
-        displayAlert.push('password successfully changed')
+        req.session.alerts = [{
+            message: 'password successfully changed'
+        }]
         bcrypt.hash(req.body.password, 10).then(hash =>{
             User.update({password: hash}, {where:{id: req.user.id}}).then(function(){
                 res.redirect('/profile')
@@ -614,60 +650,42 @@ router.post('/changePass', (req, res) =>{
     }   
 })
 
-function checkUniquePhone(theNumber){
-    return User.count({where: {phone: theNumber}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
+router.get('/changeProfile', uuid_middleware.generate, (req, res) =>{
+    currentUser = req.user.id
+    user_utils.getUserByID(currentUser).then(user =>{
+        res.render('profileUpdateModel', {layout: 'empty_layout', DisplayUser: user})
     })
-}
-
-function checkUniqueEmail(theEmail){
-    return User.count({where: {email: theEmail}}).then(count =>{
-        if(count !== 0){
-            return false
-        }
-        return true
-    })
-}
-
-router.post('/updateProfile', upload.single('profileImage'), async (req, res) =>{
-    var email = req.body.email.replace(/\s/g, "")
-    var phone = req.body.phone.replace(/\s/g, "")
-    var birthday = req.body.birthday
-    const checkEmail = req.body.checkEmail.replace(/\s/g, "")
-    const checkPhone = req.body.checkPhone.replace(/\s/g, "")
-    console.log(checkEmail)
-    console.log(email)
-    console.log(checkPhone)
-    console.log(phone)
-
-
-    await checkUniqueEmail(email).then(isUnique =>{
-        if(email === checkEmail){
-
-        }else if(!isUnique){
-            failAlert.push(' Email: ' + email + ' ')
-        }
-    })
-
-    await checkUniquePhone(phone).then(isUnique => {
-        if(phone === checkPhone){
-
-        }else if(!isUnique){
-            failAlert.push(' Phone: ' + phone + ' ')
-        }
-    })
-
-    if(failAlert.length > 0){
-        res.redirect('/profile')
-    }else{
-        User.update({email, phone, birthday}, {where: {id: req.user.id}}).then(function(){
-            displayAlert.push('profile successfully updated')
-            res.redirect('/profile')
-        })
-    }
 })
+
+router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.verify], async (req, res) =>{
+    var phone = req.body.phone.replace(/\s/g, "")
+
+    //Validate inputs
+    if(validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){        
+        await user_utils.checkUniquePhone(phone).then(isUnique => {
+            user_utils.getUserByID(currentUser).then(user =>{
+                if(user.phone !== phone && !isUnique){
+                    uuid_middleware.registerToken(req, req.body.csrf)
+                    res.status(400)
+                    res.send('Phone number already taken')
+                    console.log('Phone number already taken')
+                }else{
+                    User.update({phone}, {where: {id: req.user.id}}).then(function(){
+                        req.session.alerts = [{
+                            message: 'Profile successfully updated'
+                        }]
+                        res.send('success')
+                    })
+                }
+            })
+        })
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+        res.send('8-10 number and cannot be empty')
+        console.log('validation fail')
+    } 
+})
+
 
 module.exports = router

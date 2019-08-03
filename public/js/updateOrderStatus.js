@@ -1,19 +1,21 @@
 // Init Web Socket
 var socket = null;
 
+var isComplete = null
+
 $(document).ready(function (){
 
-    var sid = subStrCookie(getCookie('connect.sid'))
+    var sessionId = subStrCookie(getCookie('connect.sid'))
     //Connect to websocket
     socket = io.connect(window.location.protocol + '//' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
-        socket.emit('sessionid', sid)
+        socket.emit('sessionid', {sessionId, csrf: $('#csrf-token').val()})
 
         if(typeof getPublicOrderId === "function"){
             //Is a customer on a order status page
             var publicOrderId = getPublicOrderId();
-            socket.emit('customer-init', {publicOrderId});
+            socket.emit('customer-init', {publicOrderId, csrf: $('#csrf-token').val()});
         }
 
         //Customers events
@@ -21,10 +23,13 @@ $(document).ready(function (){
             console.log(updatedStatus);
 
             if(updatedStatus.valueOf() == 'Collection Confirmed'){
+                $('#order-status').removeClass('text-primary');
+                $('#order-status').addClass('text-success');
                 $('#while-order').addClass('d-none');
                 if(!$(".trigger").hasClass('drawn'))$(".trigger").addClass("drawn");
                 setCircleProgress(100);
                 setTime(0);
+                isComplete = true;
             }
 
             $('#order-status').text(updatedStatus)
@@ -33,6 +38,7 @@ $(document).ready(function (){
     
         socket.on('update-timing', function({timing}){
             console.log("Timing: " + timing);
+            if(isComplete)return
             setTime(timing);
             setCircleProgress((60 - timing) / 60 * 100);
         })
@@ -108,8 +114,8 @@ $(document).ready(function (){
                     }
                 }
     
-                var card = `                                            
-                <div class="card shadow-sm" id="orderCard_${orderDetails.publicOrderID}">
+                var card = `                                          
+                <div class="d-inline-block m-3 p-0 card shadow-sm col-md-3 col-11" id="orderCard_${orderDetails.publicOrderID}">
     
                     <div class="card-header font-weight-bold bg-danger text-right text-white">
                         <div class="row justify-content-between">
@@ -145,7 +151,7 @@ $(document).ready(function (){
 
                         <div class="row">
                             <div class="col text-right">
-                                ${orderTotal}   
+                                $${orderTotal}   
                             </div>
                         </div>
     
@@ -183,7 +189,7 @@ $(document).ready(function (){
 function updateStatus(publicOrderId, qrcode=false) {
 
     // Send websocket (update-status) || Update DB
-    socket.emit('update-status', {publicOrderId, qrcode})
+    socket.emit('update-status', {publicOrderId, qrcode, csrf: $('#csrf-token').val()})
 
 }
 

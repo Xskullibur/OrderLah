@@ -51,7 +51,8 @@ h1 { font-size: 1.5em; margin: 10px; }
           <input name="csrf" type="hidden" value="{{csrf}}"/>
             <div class="row">
                 <div class="col-lg-3">
-                    <img id="poster" src="/img/no-image.jpg" alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
+                    {{!-- <div class="imagePreview" style="background: url(/img/reviewimages/{{orderItem.image}}); background-size: 225px 140px;"></div> --}}
+                    <img id="poster" {{#if orderItem.image}}src="/img/reviewimages/{{orderItem.image}}"{{/if}} alt="" class="border img-thumbnail img-fluid" style="height:95%;width:100%">
                 </div>
                 <div class="col-lg-9">
                     <row>
@@ -88,3 +89,20 @@ function getstars(){
   document.getElementById("star"+document.getElementById("ratingstar").value).click();
 }
 </script>
+<script>
+  function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+      $('#poster').attr('src', e.target.result);
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#reviewImage").change(function() {
+  readURL(this);
+});
+</Script>

@@ -21,10 +21,10 @@
 </script>
 
 {{!-- Main --}}
-<div class="container" style="position: relative; top: 5vh;">
+<div class="container-fluid" style="position: relative; top: 5vh;">
     <div class="row justify-content-center">
-        <div class="col-md-12 mb-4">
-            <div style="width: 100%;">
+        <div class="col-md-10 col-xl-8 mb-4">
+            <div class="w-md-100 w-xl-75">
 
 
                 {{!-- Block --}}
@@ -51,82 +51,80 @@
                             <div class="card p-4" id="card-view">
                                 {{!-- <div class="card-columns" id="all-orders-column"> --}}
 
-                                <div class="container-fluid">
+                                <div id="all-orders-column" class="container-fluid">
                                 {{#if currentOrders}}
 
                                         {{!-- Order Cards --}}
                                         {{#each currentOrders as |order|}}
-                                        <div class="d-inline-block p-3">
-                                            <div class="card shadow-sm" id="orderCard_{{order.publicOrderID}}" style="width: 15rem">
+                                        <div class="d-inline-block m-3 p-0 card shadow-sm col-md-3 col-11" id="orderCard_{{order.publicOrderID}}">
 
-                                                {{!-- Header / Order ID, Order Timing --}}
-                                                <div class="card-header font-weight-bold bg-danger text-right text-white">
-                                                    <div class="row justify-content-between">
-                                                        <div class="col">
-                                                            <h7>Order: {{substringTo5 order.publicOrderID}}</h7>
-                                                        </div>
+                                            {{!-- Header / Order ID, Order Timing --}}
+                                            <div class="card-header font-weight-bold bg-danger text-right text-white">
+                                                <div class="row justify-content-between">
+                                                    <div class="col">
+                                                        <h7>Order: {{substringTo5 order.publicOrderID}}</h7>
                                                     </div>
-                                                    <div class="row justify-content-between">
-                                                        <div class="col">
-                                                            <h6>{{formatDate order.orderTiming "hh:mm:ss"}}</h6>
+                                                </div>
+                                                <div class="row justify-content-between">
+                                                    <div class="col">
+                                                        <h6>{{formatDate order.orderTiming "hh:mm:ss"}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{!-- Body / Order Details --}}
+                                            <div class="card-body" style="font-family: Roboto">
+
+                                                <!-- Current Order Status -->
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="row">
+                                                            <u class="mx-auto">Current Status:</u>
+                                                        </div>
+                                                        <div class="row">
+                                                            <b class="mx-auto" id="currentStatusTxt_{{order.publicOrderID}}">{{order.status}}</b>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                {{!-- Body / Order Details --}}
-                                                <div class="card-body" style="font-family: Roboto">
+                                                <hr>
 
-                                                    <!-- Current Order Status -->
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <div class="row">
-                                                                <u class="mx-auto">Current Status:</u>
-                                                            </div>
-                                                            <div class="row">
-                                                                <b class="mx-auto" id="currentStatusTxt_{{order.publicOrderID}}">{{order.status}}</b>
-                                                            </div>
+                                                <!-- Order Info -->
+                                                {{#each order.menuItems as |item|}}
+                                                    <div class="row font-weight-light">
+                                                        <div class="col-md-auto">
+                                                            {{item.itemName}}
                                                         </div>
-                                                    </div>
-
-                                                    <hr>
-
-                                                    <!-- Order Info -->
-                                                    {{#each order.menuItems as |item|}}
-                                                        <div class="row font-weight-light">
-                                                            <div class="col-md-auto">
-                                                                {{item.itemName}}
-                                                            </div>
-                                                            <div class="col text-right">
-                                                                <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
-                                                            </div>
-                                                        </div>
-                                                    {{/each}}
-
-                                                    <hr>
-
-                                                    <!-- Order Total -->
-                                                    <div class="row">
                                                         <div class="col text-right">
-                                                            ${{calcOrderTotal order}}   
+                                                            <span class="badge badge-secondary">x{{item.orderItem.quantity}}</span>
                                                         </div>
                                                     </div>
+                                                {{/each}}
 
-                                                </div>
+                                                <hr>
 
-                                                {{!-- Footer / Update Status --}}
-                                                <div class="card-footer text-muted">
-                                                    <div class="row">
-                                                        <form action="./updateStatus/{{order.publicOrderID}}" method="post" class="mx-auto">
-
-                                                            <button type="button" onclick="updateStatus('{{order.publicOrderID}}');" id="updateStatusBtn_{{order.publicOrderID}}" class="btn btn-sm btn-outline-primary mx-auto">
-                                                                <b id="updateStatusTxt_{{order.publicOrderID}}">{{getNextStatus order.status}}</b>
-                                                            </button>
-                                                            
-                                                        </form>
+                                                <!-- Order Total -->
+                                                <div class="row">
+                                                    <div class="col text-right">
+                                                        ${{calcOrderTotal order}}   
                                                     </div>
                                                 </div>
 
                                             </div>
+
+                                            {{!-- Footer / Update Status --}}
+                                            <div class="card-footer text-muted">
+                                                <div class="row">
+                                                    <form action="./updateStatus/{{order.publicOrderID}}" method="post" class="mx-auto">
+
+                                                        <button type="button" onclick="updateStatus('{{order.publicOrderID}}');" id="updateStatusBtn_{{order.publicOrderID}}" class="btn btn-sm btn-outline-primary mx-auto">
+                                                            <b id="updateStatusTxt_{{order.publicOrderID}}">{{getNextStatus order.status}}</b>
+                                                        </button>
+                                                        
+                                                    </form>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         {{/each}}
                                         
