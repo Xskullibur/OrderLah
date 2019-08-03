@@ -40,7 +40,12 @@ router.get('/orderStatus/:pubOrderId', uuid_middleware.generate, async (req, res
         let valid = await order_util.checkOrderIsInUser(userId, orderId)
     
         if(valid){
-            res.render('customer/order-status', {order})
+
+            if(order.status != 'Collection Confirmed'){
+                res.render('customer/order-status', {order})
+            }else{
+                res.redirect('/pastorders')
+            }
         }else res.redirect('/orderStatus')
     })
 })
