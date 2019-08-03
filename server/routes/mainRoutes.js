@@ -678,9 +678,9 @@ router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.ve
                 }else{
                     User.update({phone}, {where: {id: req.user.id}}).then(function(){
                         req.session.alerts = [{
-                            message: 'Item successfully deleted'
+                            message: 'Profile successfully updated'
                         }]
-                        res.redirect('/profile')
+                        res.send('success')
                     })
                 }
             })
