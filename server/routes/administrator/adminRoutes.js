@@ -218,30 +218,38 @@ router.post('/lockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, 
     const role = 'Inactive'
     const active = false
     User.findOne({where: {id: userID}}).then((stallowner) =>{
-        User.update({role}, {where: {id:req.body.userID}}).then(function(){
-            Stall.findOne({where: {userId: userID}}).then(theStall =>{
-                MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
-                    var mailOptions = {
-                        from: 'Orderlah',
-                        to: stallowner.email,
-                        subject: 'Account lockdown notice',
-                        text: 'Hi your stall account have been locked'
-                    }
-                
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
+        if(stallowner.role === 'Stallowner'){
+            User.update({role}, {where: {id:req.body.userID}}).then(function(){
+                Stall.findOne({where: {userId: userID}}).then(theStall =>{
+                    MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
+                        var mailOptions = {
+                            from: 'Orderlah',
+                            to: stallowner.email,
+                            subject: 'Account lockdown notice',
+                            text: 'Hi your stall account have been locked'
                         }
+                    
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        })
+                        req.session.alerts = [{
+                            message: 'successfuly locked account'                            
+                        }]   
+                        res.redirect('/admin/adminPanel')
                     })
-                    req.session.alerts = [{
-                        message: 'successfuly locked account'
-                    }]   
-                    res.redirect('/admin/adminPanel')
-                })
-            })            
-        })
+                })            
+            })
+        }else{
+            req.session.alerts = [{
+                message: 'selected account is not stallowner',
+                type: 'alert-danger'
+            }]   
+            res.redirect('/admin/adminPanel')
+        }       
     })   
 })
 
@@ -250,30 +258,38 @@ router.post('/unlockAccount', auth_login.authAdmin, uuid_middleware.verify, (req
     const role = 'Stallowner'
     const active = true
     User.findOne({where: {id: userID}}).then((stallowner) =>{
-        User.update({role}, {where: {id:req.body.userID}}).then(function(){
-            Stall.findOne({where: {userId: userID}}).then(theStall =>{
-                MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
-                    var mailOptions = {
-                        from: 'Orderlah',
-                        to: stallowner.email,
-                        subject: 'Account unlock notice',
-                        text: 'Your account has been unlocked'
-                    }
-                
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
+        if(stallowner.role === 'Stallowner'){
+            User.update({role}, {where: {id:req.body.userID}}).then(function(){
+                Stall.findOne({where: {userId: userID}}).then(theStall =>{
+                    MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
+                        var mailOptions = {
+                            from: 'Orderlah',
+                            to: stallowner.email,
+                            subject: 'Account unlock notice',
+                            text: 'Your account has been unlocked'
                         }
-                    })   
-                    req.session.alerts = [{
-                        message: 'successfuly unlocked account'
-                    }]   
-                    res.redirect('/admin/adminPanel')
-                })
-            })            
-        })
+                    
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        })   
+                        req.session.alerts = [{
+                            message: 'successfuly unlocked account'
+                        }]   
+                        res.redirect('/admin/adminPanel')
+                    })
+                })            
+            })
+        }else{
+            req.session.alerts = [{
+                message: 'selected account is not stallowner',
+                type: 'alert-danger'
+            }]   
+            res.redirect('/admin/adminPanel')
+        }
     })   
 })
 
@@ -283,33 +299,42 @@ router.post('/resetPassword', auth_login.authAdmin, uuid_middleware.verify, (req
         numbers: true
     })
     const userID = req.body.userID
-    
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-        bcrypt.hash(passGen, salt).then(hash =>{
-            User.findOne({where: {id: userID}}).then((stallowner) =>{
-                User.update({password: hash}, {where:{id: userID}}).then(function(){
-                    const email = stallowner.email
-                    var mailOptions = {
-                        from: 'Orderlah',
-                        to: email,
-                        subject: 'Account password reset',
-                        text: 'Hi your account password have been reset new password is ' + passGen
-                    }
-                
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    })   
+    User.findOne({where: {id: userID}}).then((stallowner) =>{
+        if(stallowner.role === 'Stallowner'){
+            bcrypt.genSalt(saltRounds, function(err, salt) {
+                bcrypt.hash(passGen, salt).then(hash =>{
+                    User.findOne({where: {id: userID}}).then((stallowner) =>{
+                        User.update({password: hash}, {where:{id: userID}}).then(function(){
+                            const email = stallowner.email
+                            var mailOptions = {
+                                from: 'Orderlah',
+                                to: email,
+                                subject: 'Account password reset',
+                                text: 'Hi your account password have been reset new password is ' + passGen
+                            }
+                        
+                            transporter.sendMail(mailOptions, function (error, info) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    console.log('Email sent: ' + info.response);
+                                }
+                            })   
+                        })
+                        req.session.alerts = [{
+                            message: 'successfuly reset account'
+                        }]   
+                        res.redirect('/admin/adminPanel')             
+                    })          
                 })
-                req.session.alerts = [{
-                    message: 'successfuly reset account'
-                }]   
-                res.redirect('/admin/adminPanel')             
-            })          
-        })
+            })
+        }else{
+            req.session.alerts = [{
+                message: 'selected account is not stallowner',
+                type: 'alert-danger'
+            }]   
+            res.redirect('/admin/adminPanel')
+        }
     })   
 })
 

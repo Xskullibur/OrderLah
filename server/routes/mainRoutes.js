@@ -661,33 +661,29 @@ router.post('/updateProfile', [upload.single('profileImage'), uuid_middleware.ve
     var phone = req.body.phone.replace(/\s/g, "")
 
     //Validate inputs
-    if(validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){
-        req.session.alerts = []
-        
+    if(validator.isNumeric(phone) && validator.isLength(phone, {min: 8, max: 10})){        
         await user_utils.checkUniquePhone(phone).then(isUnique => {
             user_utils.getUserByID(currentUser).then(user =>{
                 if(user.phone !== phone && !isUnique){
-                    req.session.alerts.push({
-                        message: ' Phone: ' + phone + ' ',
-                        type: 'alert-danger',
-                        timeout: -1
+                    uuid_middleware.registerToken(req, req.body.csrf)
+                    res.status(400)
+                    res.send('Phone number already taken')
+                    console.log('Phone number already taken')
+                }else{
+                    User.update({phone}, {where: {id: req.user.id}}).then(function(){
+                        req.session.alerts = [{
+                            message: 'Profile successfully updated'
+                        }]
+                        res.send('success')
                     })
                 }
             })
         })
-    
-        if(req.session.alerts.length > 0){
-            res.status(400)
-            res.send('Failed')
-            //res.redirect('/profile')
-        }else{
-            User.update({phone}, {where: {id: req.user.id}}).then(function(){
-                req.session.alerts.push({
-                    message: 'profile successfully updated'
-                })
-                res.redirect('/profile')
-            })
-        }
+    }else{
+        uuid_middleware.registerToken(req, req.body.csrf)
+        res.status(400)
+        res.send('8-10 number and cannot be empty')
+        console.log('validation fail')
     } 
 })
 
