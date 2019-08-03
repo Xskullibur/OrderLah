@@ -627,7 +627,7 @@ router.get('/resetpassword/:id/:token', (req, res) =>{
  * GET '/profile' path
  * Get Profile page
  */
-router.get('/profile', (req, res) => {
+router.get('/profile', uuid_middleware.generate, (req, res) => {
     const UserID = req.user.id
     res.render('profile', {birthday: req.user != undefined ? moment(req.user.birthday).format('YYYY-MM-DD') : '', UserID:UserID})
 })
