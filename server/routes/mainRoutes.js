@@ -22,6 +22,9 @@ const OrderItem = globalHandle.get('orderItem')
 const Order = globalHandle.get('order')
 const ResetPass = globalHandle.get('resetpass')
 
+//Alert
+const alert = globalHandle.get('alert')
+
 //Get App
 const app = globalHandle.get('app')
 
@@ -55,9 +58,7 @@ const nodemailer = require('nodemailer')
 const Sequelize = require('sequelize').Sequelize
 const Op = Sequelize.Op
 
-//Alerts 
-const alert = require('../libs/alert')
-router.use(alert)
+
 
 //Validator
 const validator = require('validator')
