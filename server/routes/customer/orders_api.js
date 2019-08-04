@@ -44,7 +44,7 @@ router.get('/orderStatus/:pubOrderId', uuid_middleware.generate, async (req, res
             if(order.status != 'Collection Confirmed'){
                 res.render('customer/order-status', {order})
             }else{
-                res.redirect('/pastorders')
+                res.redirect('/pastOrders')
             }
         }else res.redirect('/orderStatus')
     })

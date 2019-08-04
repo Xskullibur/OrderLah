@@ -410,18 +410,6 @@ async function createTestData() {
             menuItemId: chickenItem.id
         })
 
-        let order3 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 6,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 3,
-            orderId: order3.id,
-            menuItemId: porkRiceItem.id
-        })
-
         let order4 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
@@ -434,30 +422,6 @@ async function createTestData() {
             menuItemId: chickenItem.id
         })
         
-        let order5 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 1,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 2,
-            orderId: order5.id,
-            menuItemId: duckRiceItem.id
-        })
-
-        let order6 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 3,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 1,
-            orderId: order6.id,
-            menuItemId: porkRiceItem.id
-        })
-
         //Orders (Completed)
         let order7 = await order_util.createOrder({
             status: 'Collection Confirmed',

@@ -231,7 +231,7 @@ async function sendOrderToStallOwner(stallId, orderDetails){
 
 function sendTiming(stallId){
     //Update customer timing
-    stall_util.getAllPendingCustomersIDByStallID(stallId).then(custIds => {
+    stall_util.getAllPendingCustomersIDByStallID(stallId).then((custIds) => {
         custIds.forEach(custId => {
 
             let userID = custId.userId
@@ -254,7 +254,7 @@ function sendTiming(stallId){
 
 function getOrderTimingForOrder(orderid, cb){
     const timingForEachOrder = 2
-    order_util.getNumberOfOrdersBeforeOrder(orderid).then(count => {
+    order_util.getNumberOfOrdersBeforeOrder(orderid).then((count) => {
         cb(count[0].ordersCount * timingForEachOrder)
     })
 }

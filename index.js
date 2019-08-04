@@ -102,6 +102,10 @@ app.use((req, res, next) => {
     next()
 })
 
+//Alerts 
+const alert = require('./server/libs/alert')
+app.use(alert)
+
 //Setup debug if needed
 const debug = require('./server/debug')
 debug.debugSetup(app)
@@ -138,6 +142,9 @@ globalHandle.put('rememberme', RememberMe)
 globalHandle.put('payments', Payments)
 
 globalHandle.put('resetpass', ResetPass)
+
+//Alert inside global
+globalHandle.put('alert', alert)
 
 //connect to db
 const dummy = require('./dummy')

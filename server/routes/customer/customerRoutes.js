@@ -33,9 +33,6 @@ const Sequelize = require('sequelize')
 const SqlString = require('sequelize/lib/sql-string')
 const db = globalHandle.get('db')
 
-//Alerts 
-const alert = require('../../libs/alert')
-router.use(alert)
 
 //Get App
 const app = globalHandle.get('app')

@@ -106,7 +106,7 @@ module.exports = {
 
         return Order.findAll({
             where: whereCondition,
-            order: Sequelize.literal('orderTiming DESC'),
+            order: [Sequelize.literal('status'), Sequelize.literal('orderTiming DESC')],
             include: [{
                 model: MenuItem
             }]
@@ -261,7 +261,6 @@ module.exports = {
         WHERE orders.stallId = a.stallId
         AND orders.status != 'Collection Confirmed'
         AND orders.id <= a.id
-        AND DATE(orders.orderTiming) = current_date()
         AND a.orderTiming >= orders.orderTiming;`, { type: Sequelize.QueryTypes.SELECT })
     },
 

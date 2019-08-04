@@ -578,10 +578,9 @@ router.post('/submitItem', auth_login.authStallOwner, [upload.single("itemImage"
     const itemDesc = req.body.itemDescription.replace(/(^\s*)|(\s*$)/gi, ""). replace(/[ ]{2,}/gi, " ").replace(/\n +/, "\n") 
     const active = true
     const image = currentUser+itemName.replace(/\s/g, "")+'.jpeg'
-    
     if(validator.isAlpha(itemName.replace(/\s/g,'')) && validator.isFloat(price) && !validator.isEmpty(itemName) && !validator.isEmpty(price) && !validator.isEmpty(itemDesc)
     && validator.isLength(itemName, {min:0, max:50}) && validator.isLength(itemDesc, {min:0, max:255}) && (parseFloat(price) <= 1000)){
-        if(fs.existsSync(process.cwd() + '/public/img/uploads/' + image)){
+        if(req.file !== undefined){
             user_util.getUserByID(currentUser).then(user => {           
                 checkUnique(itemName).then(isUnique => {
                     if(isUnique){                   

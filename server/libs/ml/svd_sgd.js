@@ -108,6 +108,7 @@ function SVD_Optimizer(R, K, alpha, iterations){
             //There is new users
             //Create new rows for P matrix
             for (let i = this.num_users; i < new_num_users; i++) {
+                this.P[i] = []
                 //Create a new row for P matrix
                 for (let j = 0; j < this.K; j++) {
                     this.P[i][j] = randn(1.0/this.K)
@@ -120,6 +121,7 @@ function SVD_Optimizer(R, K, alpha, iterations){
             //There is new items
             //Create new rows for Q matrix
             for (let i = this.num_items; i < new_num_items; i++) {
+                this.Q[i] = []
                 //Create a new row for Q matrix
                 for (let j = 0; j < this.K; j++) {
                     this.Q[i][j] = randn(1.0/this.K)
