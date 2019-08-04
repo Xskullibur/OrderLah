@@ -8,7 +8,6 @@
     import {toggleScanning, initQRScanner} from '/js/current_orders_QRscanner.mjs'
     
     initQRScanner((result) => {
-        alert(result)
         updateStatus(result, true)
     })
 

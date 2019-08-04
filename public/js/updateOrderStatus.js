@@ -1,7 +1,7 @@
 // Init Web Socket
 var socket = null;
-
 var isComplete = null
+var resultSent = null
 
 $(document).ready(function (){
 
@@ -26,6 +26,7 @@ $(document).ready(function (){
                 $('#order-status').removeClass('text-primary');
                 $('#order-status').addClass('text-success');
                 $('#while-order').addClass('d-none');
+                $('#while-order').remove();
                 if(!$(".trigger").hasClass('drawn'))$(".trigger").addClass("drawn");
                 setCircleProgress(100);
                 setTime(0);
@@ -47,11 +48,13 @@ $(document).ready(function (){
         socket.on('update-status-complete', function({publicOrderId, updatedStatus, nxtStatus, errorMsg}){
             
             if (errorMsg != "") {
-                showAlert(errorMsg, 3000, "alert-warning")
+                if (resultSent != publicOrderId) {
+                    showAlert(errorMsg, 3000, "alert-warning")
+                }
             }
             else{
-    
                 var orderCard = document.getElementById(`orderCard_${publicOrderId}`)
+                resultSent = null
                 
                 // Remove Card if updatedStatus = "Collection Confirmed"
                 if (updatedStatus == "Collection Confirmed") {
