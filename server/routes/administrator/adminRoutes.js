@@ -171,7 +171,26 @@ router.post('/submitStall', auth_login.authAdmin, uuid_middleware.verify, async 
                             from: 'Orderlah',
                             to: email,
                             subject: 'Account creation notice',
-                            text: 'Hi your username is ' + email + ' and password is ' + password
+                            html: `
+                            <div style="border: 1px solid rgba(200,200,200,1.00);">
+                                <div style="background-color: darkorange; padding: 1px 20px;">
+                                    <h3>Account creation notice</h3>
+                                </div>
+                                <div style="padding: 20px 20px 0;">
+                                    <p>Hi your username is ${email} and password is ${password}</p>
+                                    <hr/>
+                                    <div>
+                                        <p style="text-align: right;">
+                                            <img src="tuturu" width="10%" height="auto"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>`,
+                            attachments: [{
+                                filename: 'logo.png',
+                                path: process.cwd()+ '/public/img/logo.png',
+                                cid: 'tuturu' //same cid value as in the html img src
+                            }]
                         }
                     
                         transporter.sendMail(mailOptions, function (error, info) {
@@ -183,7 +202,7 @@ router.post('/submitStall', auth_login.authAdmin, uuid_middleware.verify, async 
                         })   
                     })  
                     req.session.alerts = [{
-                        message: 'Item successfully added'
+                        message: 'Stallowner successfully added'
                     }]
                     res.send('success')
                     console.log('all unique')          
@@ -222,13 +241,31 @@ router.post('/lockAccount', auth_login.authAdmin, uuid_middleware.verify, (req, 
             User.update({role}, {where: {id:req.body.userID}}).then(function(){
                 Stall.findOne({where: {userId: userID}}).then(theStall =>{
                     MenuItem.update({active}, {where:{stallId: theStall.id}}).then(function(){
-                        var mailOptions = {
-                            from: 'Orderlah',
+                        let mailOptions = {
+                            from:'Orderlah Team',
                             to: stallowner.email,
                             subject: 'Account lockdown notice',
-                            text: 'Hi your stall account have been locked'
-                        }
-                    
+                            html: `
+                            <div style="border: 1px solid rgba(200,200,200,1.00);">
+                                <div style="background-color: darkorange; padding: 1px 20px;">
+                                    <h3>Account lockdown notice</h3>
+                                </div>
+                                <div style="padding: 20px 20px 0;">
+                                    <p>Hi your account has been locked, contact admin54@gamil.com for more detail</p>
+                                    <hr/>
+                                    <div>
+                                        <p style="text-align: right;">
+                                            <img src="tuturu" width="10%" height="auto"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>`,
+                            attachments: [{
+                                filename: 'logo.png',
+                                path: process.cwd()+ '/public/img/logo.png',
+                                cid: 'tuturu' //same cid value as in the html img src
+                            }]
+                        }                   
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
                                 console.log(error);
@@ -265,9 +302,27 @@ router.post('/unlockAccount', auth_login.authAdmin, uuid_middleware.verify, (req
                         from: 'Orderlah',
                         to: stallowner.email,
                         subject: 'Account unlock notice',
-                        text: 'Your account has been unlocked'
-                    }
-                
+                        html: `
+                        <div style="border: 1px solid rgba(200,200,200,1.00);">
+                            <div style="background-color: darkorange; padding: 1px 20px;">
+                                <h3>Account unlock notice</h3>
+                            </div>
+                            <div style="padding: 20px 20px 0;">
+                                <p>Hi your account has been unlocked</p>
+                                <hr/>
+                                <div>
+                                    <p style="text-align: right;">
+                                        <img src="tuturu" width="10%" height="auto"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>`,
+                        attachments: [{
+                            filename: 'logo.png',
+                            path: process.cwd()+ '/public/img/logo.png',
+                            cid: 'tuturu' //same cid value as in the html img src
+                        }]
+                    }               
                     transporter.sendMail(mailOptions, function (error, info) {
                         if (error) {
                             console.log(error);
@@ -302,7 +357,26 @@ router.post('/resetPassword', auth_login.authAdmin, uuid_middleware.verify, (req
                                 from: 'Orderlah',
                                 to: email,
                                 subject: 'Account password reset',
-                                text: 'Hi your account password have been reset new password is ' + passGen
+                                html: `
+                                <div style="border: 1px solid rgba(200,200,200,1.00);">
+                                    <div style="background-color: darkorange; padding: 1px 20px;">
+                                        <h3>Account password reset</h3>
+                                    </div>
+                                    <div style="padding: 20px 20px 0;">
+                                        <p>Hi your account password have been reset new password is ${passGen}</p>
+                                        <hr/>
+                                        <div>
+                                            <p style="text-align: right;">
+                                                <img src="tuturu" width="10%" height="auto"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>`,
+                                attachments: [{
+                                    filename: 'logo.png',
+                                    path: process.cwd()+ '/public/img/logo.png',
+                                    cid: 'tuturu' //same cid value as in the html img src
+                                }]
                             }
                         
                             transporter.sendMail(mailOptions, function (error, info) {
