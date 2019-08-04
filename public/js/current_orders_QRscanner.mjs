@@ -16,14 +16,18 @@ video.onloadeddata = function(){
     console.log("close")
 }
 
-
 const initQRScanner = function(setResult){
 
     // ####### Web Cam Scanning #######
     //Causing error
     // QrScanner.hasCamera().then(hasCamera => camHasCamera.textContent = hasCamera);
 
-    scanner = new QrScanner(video, result => setResult(result));
+    scanner = new QrScanner(video, result => {
+        if (resultSent != result) {
+            resultSent = result
+            setResult(result)
+        }
+    });
     //scanner.start()
 
 }
