@@ -823,12 +823,9 @@ async function createTestData() {
             image: '12IceLemonTea.jpeg'
         })
 
-        await createData(stall.id, barleyItem)
-        await createData(stall.id, iceLemonTeaItem)
-
         //Orders
         let order = await order_util.createOrder({
-            status: 'Collection Confirmed',
+            status: 'Order Pending',
             orderTiming: new Date,
             userId: 6,
             stallId: stall.id
@@ -842,7 +839,7 @@ async function createTestData() {
         })
 
         let order2 = await order_util.createOrder({
-            status: 'Collection Confirmed',
+            status: 'Order Pending',
             orderTiming: new Date,
             userId: 7,
             stallId: stall.id
@@ -856,7 +853,7 @@ async function createTestData() {
         })
 
         let order3 = await order_util.createOrder({
-            status: 'Collection Confirmed',
+            status: 'Order Pending',
             orderTiming: new Date,
             userId: 1,
             stallId: stall.id
@@ -868,49 +865,6 @@ async function createTestData() {
             rating: "3",
             comments: "A real thirst quencher",
         })
-
-        let order4 = await order_util.createOrder({
-            status: 'Collection Confirmed',
-            orderTiming: new Date,
-            userId: 2,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 1,
-            orderId: order4.id,
-            menuItemId: iceLemonTeaItem.id,
-            rating: "2",
-            comments: "Really Sour!",
-        })
-
-        let order5 = await order_util.createOrder({
-            status: 'Collection Confirmed',
-            orderTiming: new Date,
-            userId: 3,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 5,
-            orderId: order5.id,
-            menuItemId: iceLemonTeaItem.id,
-            rating: "4",
-            comments: "",
-        })
-
-        let order6 = await order_util.createOrder({
-            status: 'Collection Confirmed',
-            orderTiming: new Date,
-            userId: 4,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 1,
-            orderId: order6.id,
-            menuItemId: iceLemonTeaItem.id,
-            rating: "1",
-            comments: "SOURRRRR",
-        })
-
 
     })
 }
