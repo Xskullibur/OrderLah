@@ -19,7 +19,7 @@
 
     {{!-- Body --}}
     <div class="modal-body">
-            {{> alerts/top-popup }}
+        {{> alerts/top-popup }}
         <div class="container">
 
             {{!-- Item Desc --}}
@@ -46,7 +46,7 @@
                             Reviews
                         </div>
 
-                        <div class="card-body container-scoll p-2">
+                        <div class="card-body {{#if ratings}}container-scoll{{/if}} p-2">
                             <ul class="mdc-list mdc-list--two-line">
 
                                 {{#if ratings}}

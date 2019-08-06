@@ -50,7 +50,7 @@ async function createData(stallId, menuItem) {
         randomNo = await getRandomNumberInRange(0, 3)
     
         for (let i = 0; i < randomNo; i++) {
-            userId = await getRandomNumberInRange(1, 7)
+            userId = await getRandomNumberInRange(1, 6)
             ratings = await getRandomNumberInRange(1, 5)
             quantity = await getRandomNumberInRange(1, 3)
             comments = await getComment(ratings)
@@ -413,7 +413,7 @@ async function createTestData() {
         let order4 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
-            userId: 7,
+            userId: 6,
             stallId: stall.id
         })
         await order_util.createOrderItem({
@@ -503,7 +503,7 @@ async function createTestData() {
         let order12 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: previousDate,
-            userId: 7,
+            userId: 6,
             stallId: stall.id
         })
         await order_util.createOrderItem({
@@ -646,7 +646,7 @@ async function createTestData() {
         let order4 = await order_util.createOrder({
             status: 'Collection Confirmed',
             orderTiming: new Date,
-            userId: 7,
+            userId: 6,
             stallId: stall.id
         })
         await order_util.createOrderItem({
@@ -841,7 +841,7 @@ async function createTestData() {
         let order2 = await order_util.createOrder({
             status: 'Order Pending',
             orderTiming: new Date,
-            userId: 7,
+            userId: 4,
             stallId: stall.id
         })
         await order_util.createOrderItem({
