@@ -54,6 +54,7 @@ io.on('connection', function(socket){
 
     /**
      * Customer will send the order id upon connecting to socket
+     * Emit Update Timing (Update Timing of Order)
      */
     socket.on('customer-init', function({publicOrderId, csrf}) {
 
@@ -85,11 +86,6 @@ io.on('connection', function(socket){
         })
 
     })
-    
-    // On User Disconnect
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-    });
 
     var STATUS = {
         OrderPending: 'Order Pending',
@@ -98,8 +94,13 @@ io.on('connection', function(socket){
         CollectionConfirmed: 'Collection Confirmed'
     }
 
-    // Stallowners events
-    // [On Update Order Status]
+    /**
+     * [On Update Order Status]
+     * Emit Update-Timing (Update Timing of Order)
+     * Emit Update-Status (Update Order's Status on Customer)
+     * Send Notification
+     * Emit Update-Status-Complete (Update Order's Status on Stall Owner)
+     */
     socket.on('update-status', async function({publicOrderId, qrcode, csrf}) {
 
         let stallownerId = null
@@ -212,9 +213,17 @@ io.on('connection', function(socket){
         
 
     })
-
+        
+    // On User Disconnect
+    socket.on('disconnect', function(){
+        console.log('user disconnected');
+    });
 });
 
+
+/**
+ * Add a new order for Stall Owner
+ */
 async function sendOrderToStallOwner(stallId, orderDetails){
 
     const stall = await stall_util.getStallFromStallID(stallId)

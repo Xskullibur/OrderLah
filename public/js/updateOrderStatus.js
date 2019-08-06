@@ -10,6 +10,8 @@ $(document).ready(function (){
     socket = io.connect(window.location.protocol + '//' + window.location.hostname +':3000/');
     socket.on('connect', () => {
     console.log('Listening for updates'); // true
+
+        // Emit SessionId on Connect
         socket.emit('sessionid', {sessionId, csrf: $('#csrf-token').val()})
 
         if(typeof getPublicOrderId === "function"){
