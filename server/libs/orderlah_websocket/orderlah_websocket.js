@@ -122,91 +122,93 @@ io.on('connection', function(socket){
                 let stallId = stallOwner.stall.id
     
                 sendTiming(stallId)
-            })
-    
-            // Get Order Id from Public Order Id
-            let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
-            let orderID = order.id
-            updatedStatus = null
-            nxtStatus = null
-            errorMsg = ""
+
         
-            // Get Current Status from Order Id
-            let currentStatus = await update_util.getCurrentStatus(orderID)
-        
-            // Check if called from QR Code (Inital Status = 'Ready for Collection')
-            if (qrcode) {
-                if (currentStatus != STATUS.ReadyForCollection) {
-                    errorMsg = "Order not ready for collection!"
-                }
-            }
-        
-            // Get updated status
-            switch (currentStatus) {
-                case STATUS.OrderPending:
-                    updatedStatus = STATUS.PreparingOrder
-                    nxtStatus = STATUS.ReadyForCollection
-                    break;
-        
-                case STATUS.PreparingOrder:
-                    updatedStatus = STATUS.ReadyForCollection
-                    nxtStatus = STATUS.CollectionConfirmed
-                    break;
-        
-                case STATUS.ReadyForCollection:
-                    updatedStatus = STATUS.CollectionConfirmed
-                    break;
+                // Get Order Id from Public Order Id
+                let order = await order_util.getOrderFromPublicOrderID(publicOrderId)
+                let orderID = order.id
+                updatedStatus = null
+                nxtStatus = null
+                errorMsg = ""
             
-                default:
-                    errorMsg = "Invalid Order Status!"
-                    break;
-            }
+                // Get Current Status from Order Id
+                let currentStatus = await update_util.getCurrentStatus(orderID)
+            
+                // Check if called from QR Code (Inital Status = 'Ready for Collection')
+                if (qrcode) {
+                    if (currentStatus != STATUS.ReadyForCollection) {
+                        errorMsg = "Order not ready for collection!"
+                    }
+                }
+            
+                // Get updated status
+                switch (currentStatus) {
+                    case STATUS.OrderPending:
+                        updatedStatus = STATUS.PreparingOrder
+                        nxtStatus = STATUS.ReadyForCollection
+                        break;
+            
+                    case STATUS.PreparingOrder:
+                        updatedStatus = STATUS.ReadyForCollection
+                        nxtStatus = STATUS.CollectionConfirmed
+                        break;
+            
+                    case STATUS.ReadyForCollection:
+                        updatedStatus = STATUS.CollectionConfirmed
+                        break;
+                
+                    default:
+                        errorMsg = "Invalid Order Status!"
+                        break;
+                }
+            
+                // Update and redirect if no errorMsg
+                if (errorMsg == "") {
         
-            // Update and redirect if no errorMsg
-            if (errorMsg == "") {
-    
-                update_util.updateOrderStatus({
-                    orderID, updatedStatus
-                }).then((result) => {
-                    console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
-                    transactions.getCustomerByOrderID(orderID).then(orderCust => {
-                        getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
-                            getSocketIDsBySessionID(sessionid, (socketId) => {
-                                console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
-                                
-                                io.to(socketId).emit('update-status', {updatedStatus})
-                                
-                                //Send push notications
-                                client.get('subscription:' + sessionid, function(err, subscription){
-                                    const payload = JSON.stringify({title:'Hey, there is an update to your order!',
-                                     body:`Your Order: ${orderID} is in status: ${updatedStatus}`})
-    
-                                    console.log(subscription)
-    
-                                    webpush.sendNotification(JSON.parse(subscription), payload).catch(err => {
-                                        console.log(err)
+                    update_util.updateOrderStatus({
+                        orderID, updatedStatus
+                    }).then((result) => {
+                        console.log(`\nUpdating order id of ${orderID} to ${updatedStatus}`)
+                        transactions.getCustomerByOrderID(orderID).then(orderCust => {
+                            getSessionsFromUserID(orderCust.user.id, (sessionid, session) => {
+                                getSocketIDsBySessionID(sessionid, (socketId) => {
+                                    console.log(`Sending order update to socket id of ${socketId} which equate to session id: ${sessionid}`);
+                                    
+                                    io.to(socketId).emit('update-status', {updatedStatus})
+                                    sendTiming(stallId)
+                                    
+                                    //Send push notications
+                                    client.get('subscription:' + sessionid, function(err, subscription){
+                                        const payload = JSON.stringify({title:'Hey, there is an update to your order!',
+                                        body:`Your Order: ${orderID} is in status: ${updatedStatus}`})
+        
+                                        console.log(subscription)
+        
+                                        webpush.sendNotification(JSON.parse(subscription), payload).catch(err => {
+                                            console.log(err)
+                                        })
                                     })
+                                    
+        
                                 })
-                                
-    
                             })
                         })
+                    }).catch((err) => {
+                        console.log(`errorMsg: ${err}`)
+                    });
+        
+                }
+                else{
+                    console.log(errorMsg)
+                }
+                
+                // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
+        
+                // Get all stallowner's socket id
+                getSessionsFromUserID(stallownerId, (sessionId) => {
+                    getSocketIDsBySessionID(sessionId, (socketId) => {
+                        io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
                     })
-                }).catch((err) => {
-                    console.log(`errorMsg: ${err}`)
-                });
-    
-            }
-            else{
-                console.log(errorMsg)
-            }
-            
-            // socket.emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
-    
-            // Get all stallowner's socket id
-            getSessionsFromUserID(stallownerId, (sessionId) => {
-                getSocketIDsBySessionID(sessionId, (socketId) => {
-                    io.to(socketId).emit('update-status-complete', {publicOrderId, updatedStatus, nxtStatus, errorMsg})
                 })
             })
         })
