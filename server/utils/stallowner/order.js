@@ -64,13 +64,14 @@ module.exports = {
      * @param {OrderItem} orderitem - to be created inside database
      * @return {Promise} 
      */
-    createOrderItem: function({orderId, menuItemId, rating = null, comments = null, quantity = 1}){
+    createOrderItem: function({orderId, menuItemId, rating = null, comments = null, image = null, quantity = 1}){
         return OrderItem.create({
             quantity: quantity,
             orderId: orderId,
             menuItemId: menuItemId,
             rating,
-            comments
+            comments,
+            image
         })
     },
 

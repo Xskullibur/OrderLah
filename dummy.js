@@ -47,7 +47,7 @@ async function createData(stallId, menuItem) {
     const threeMonthsAgo = new Date(new Date().setMonth(now.getMonth()-2))
 
     for (var d = threeMonthsAgo; d <= now; d.setDate(d.getDate() + 1)) {
-        randomNo = await getRandomNumberInRange(0, 3)
+        randomNo = await getRandomNumberInRange(0, 2)
     
         for (let i = 0; i < randomNo; i++) {
             userId = await getRandomNumberInRange(1, 6)
@@ -397,30 +397,6 @@ async function createTestData() {
             orderId: order.id,
             menuItemId: duckRiceItem.id
         })
-
-        let order2 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 5,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 2,
-            orderId: order2.id,
-            menuItemId: chickenItem.id
-        })
-
-        let order4 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 6,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 1,
-            orderId: order4.id,
-            menuItemId: chickenItem.id
-        })
         
         //Orders (Completed)
         let order7 = await order_util.createOrder({
@@ -433,13 +409,15 @@ async function createTestData() {
             quantity: 5,
             rating: "5",
             comments: "The chicken rice was FANTASTIC!!!",
+            image: 'chickenRice.jpg',
             orderId: order7.id,
             menuItemId: chickenItem.id
         })
         await order_util.createOrderItem({
             quantity: 5,
             rating: "5",
-            comments: "The chicken rice was FANTASTIC!!!",
+            comments: "The duck rice was really delicious!!!",
+            image: 'duckRice.jpg',
             orderId: order7.id,
             menuItemId: duckRiceItem.id
         })
@@ -454,6 +432,7 @@ async function createTestData() {
             quantity: 2,
             rating: "5",
             comments: "Very crispy skin",
+            image: 'roastPorkRice.jpg',
             orderId: order8.id,
             menuItemId: porkRiceItem.id
         })
@@ -468,6 +447,7 @@ async function createTestData() {
             quantity: 1,
             rating: "3",
             comments: "Chicken a little dry...",
+            image: 'chickenRice.jpg',
             orderId: order9.id,
             menuItemId: chickenItem.id
         })
@@ -482,22 +462,9 @@ async function createTestData() {
             quantity: 2,
             rating: "4",
             comments: "Sauce it really delicious",
+            image: 'duckRice.jpg',
             orderId: order10.id,
             menuItemId: duckRiceItem.id
-        })
-
-        let order11 = await order_util.createOrder({
-            status: 'Collection Confirmed',
-            orderTiming: previousMonth,
-            userId: 6,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 2,
-            rating: "1",
-            comments: "Too dry, disgusting",
-            orderId: order11.id,
-            menuItemId: deletedRiceItem.id
         })
 
         let order12 = await order_util.createOrder({
@@ -510,6 +477,7 @@ async function createTestData() {
             quantity: 3,
             rating: "5",
             comments: "As delicious as before, keep up the good work!",
+            image: 'roastPorkRice.jpg',
             orderId: order12.id,
             menuItemId: porkRiceItem.id
         })
@@ -524,6 +492,7 @@ async function createTestData() {
             quantity: 1,
             rating: "5",
             comments: "Very tender",
+            image: 'duckRice.jpg',
             orderId: order13.id,
             menuItemId: duckRiceItem.id
         })
@@ -538,6 +507,7 @@ async function createTestData() {
             quantity: 2,
             rating: "5",
             comments: "Best chicken rice around here!",
+            image: 'chickenRice.jpg',
             orderId: order14.id,
             menuItemId: chickenItem.id
         })
@@ -552,6 +522,7 @@ async function createTestData() {
             quantity: 2,
             rating: "5",
             comments: "Irresistible!",
+            image: 'duckRice.jpg',
             orderId: order15.id,
             menuItemId: duckRiceItem.id
         })
@@ -836,34 +807,6 @@ async function createTestData() {
             menuItemId: barleyItem.id,
             rating: "5",
             comments: "Really Homemade!",
-        })
-
-        let order2 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 4,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 5,
-            orderId: order2.id,
-            menuItemId: barleyItem.id,
-            rating: "3",
-            comments: "",
-        })
-
-        let order3 = await order_util.createOrder({
-            status: 'Order Pending',
-            orderTiming: new Date,
-            userId: 1,
-            stallId: stall.id
-        })
-        await order_util.createOrderItem({
-            quantity: 1,
-            orderId: order3.id,
-            menuItemId: barleyItem.id,
-            rating: "3",
-            comments: "A real thirst quencher",
         })
 
     })
